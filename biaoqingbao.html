@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>表情包证件照修改器</title>
-    <!-- gif.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js">
+    </script>
     <style>
         /* ===== 全局重置 & 主题 ===== */
         * {
@@ -33,9 +33,127 @@
             box-shadow: 0 20px 60px rgba(255, 150, 180, 0.20);
             border: 1px solid rgba(255, 255, 255, 0.50);
             transition: all 0.3s;
+            position: relative;
         }
 
-        /* ===== 头部 (全局) ===== */
+        /* ===== 密码锁 ===== */
+        #lock-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            transition: opacity 0.6s ease;
+        }
+        #lock-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .lock-box {
+            background: rgba(255, 245, 247, 0.92);
+            backdrop-filter: blur(24px);
+            border-radius: 48px;
+            padding: 40px 44px 44px;
+            max-width: 420px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        .lock-box .lock-icon {
+            font-size: 48px;
+            margin-bottom: 6px;
+        }
+        .lock-box .lock-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #6b3a4a;
+            margin-bottom: 4px;
+        }
+        .lock-box .lock-sub {
+            font-size: 14px;
+            color: #9a7a8a;
+            margin-bottom: 20px;
+        }
+        .lock-box .lock-maker {
+            font-size: 13px;
+            color: #b58a9a;
+            margin-bottom: 16px;
+        }
+        .lock-box .lock-maker span {
+            color: #b45374;
+            font-weight: 600;
+        }
+        .lock-box .pin-input {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 18px;
+        }
+        .lock-box .pin-input input {
+            width: 52px;
+            height: 60px;
+            text-align: center;
+            font-size: 28px;
+            font-weight: 600;
+            border-radius: 16px;
+            border: 2px solid rgba(255, 180, 195, 0.3);
+            background: rgba(255, 255, 255, 0.7);
+            color: #6b3a4a;
+            outline: none;
+            transition: all 0.2s;
+            caret-color: #ff8da1;
+        }
+        .lock-box .pin-input input:focus {
+            border-color: #ff8da1;
+            box-shadow: 0 0 0 4px rgba(255, 140, 170, 0.15);
+            background: rgba(255, 255, 255, 0.9);
+        }
+        .lock-box .pin-input input::placeholder {
+            font-size: 14px;
+            color: #ccc;
+        }
+        .lock-box .lock-error {
+            color: #d45a7a;
+            font-size: 14px;
+            min-height: 24px;
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+        .lock-box .lock-btn {
+            padding: 10px 40px;
+            border-radius: 40px;
+            border: none;
+            background: linear-gradient(135deg, #ff8da1, #f5728a);
+            color: #fff;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.25s;
+            box-shadow: 0 4px 20px rgba(255, 100, 130, 0.25);
+        }
+        .lock-box .lock-btn:hover {
+            transform: scale(1.04);
+            box-shadow: 0 8px 30px rgba(255, 100, 130, 0.35);
+        }
+        .lock-box .lock-btn:active {
+            transform: scale(0.96);
+        }
+        .lock-box .lock-hint {
+            font-size: 12px;
+            color: #b58a9a;
+            margin-top: 14px;
+        }
+
+        /* ===== 头部 ===== */
         .header {
             display: flex;
             justify-content: space-between;
@@ -195,7 +313,7 @@
             padding-top: 12px;
         }
 
-        /* ===== 功能页面 (默认隐藏) ===== */
+        /* ===== 功能页面 ===== */
         .page-func {
             display: none;
             animation: fadeIn 0.3s ease;
@@ -204,11 +322,16 @@
             display: block;
         }
         @keyframes fadeIn {
-            0% { opacity: 0.3; transform: translateY(10px); }
-            100% { opacity: 1; transform: translateY(0); }
+            0% {
+                opacity: 0.3;
+                transform: translateY(10px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        /* ===== 功能页顶部导航 ===== */
         .func-nav {
             display: flex;
             gap: 12px;
@@ -240,7 +363,6 @@
             color: #b45374;
         }
 
-        /* ===== 通用布局 ===== */
         .func-layout {
             display: grid;
             grid-template-columns: 1fr 280px;
@@ -302,7 +424,141 @@
             display: block;
         }
 
-        /* 侧边栏 (文字列表等) */
+        /* ===== GIF 预览区 ===== */
+        .gif-preview-wrapper {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            background: rgba(0, 0, 0, 0.08);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 180, 195, 0.3);
+        }
+        .gif-preview-wrapper video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            border-radius: 14px;
+            background: #000;
+            object-fit: contain;
+        }
+        .gif-preview-wrapper .gif-placeholder {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #b58a9a;
+            font-size: 14px;
+            text-align: center;
+        }
+        .gif-preview-wrapper .gif-placeholder .big {
+            font-size: 40px;
+            display: block;
+        }
+
+        /* ===== GIF 进度条 & 选择线 ===== */
+        .gif-timeline {
+            position: relative;
+            width: 100%;
+            margin-top: 10px;
+            padding: 4px 0;
+        }
+        .gif-timeline input[type="range"] {
+            width: 100%;
+            accent-color: #ff8da1;
+            cursor: pointer;
+            height: 6px;
+            border-radius: 4px;
+            background: rgba(255, 180, 195, 0.3);
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        .gif-timeline input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff8da1, #f5728a);
+            cursor: pointer;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 8px rgba(255, 100, 130, 0.3);
+        }
+        .gif-timeline .timeline-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #7a4e5e;
+            margin-top: 2px;
+        }
+        .gif-timeline .clip-lines {
+            position: relative;
+            height: 30px;
+            margin-top: 2px;
+        }
+        .gif-timeline .clip-lines .line {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            width: 2px;
+            background: #ff8da1;
+            border-radius: 2px;
+            transition: left 0.1s;
+            z-index: 2;
+        }
+        .gif-timeline .clip-lines .line::after {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-bottom: 6px solid #ff8da1;
+        }
+        .gif-timeline .clip-lines .line.start {
+            background: #ff6b8a;
+        }
+        .gif-timeline .clip-lines .line.start::after {
+            border-bottom-color: #ff6b8a;
+        }
+        .gif-timeline .clip-lines .line.end {
+            background: #6bc8ff;
+        }
+        .gif-timeline .clip-lines .line.end::after {
+            border-bottom-color: #6bc8ff;
+        }
+        .gif-timeline .clip-lines .line-label {
+            position: absolute;
+            top: 22px;
+            font-size: 10px;
+            color: #6b3a4a;
+            font-weight: 500;
+            transform: translateX(-50%);
+            white-space: nowrap;
+        }
+        .gif-timeline .clip-lines .line.start .line-label {
+            color: #ff6b8a;
+        }
+        .gif-timeline .clip-lines .line.end .line-label {
+            color: #6bc8ff;
+        }
+        .gif-timeline .clip-highlight {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            background: rgba(255, 140, 170, 0.15);
+            border-radius: 4px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* ===== 侧边栏 ===== */
         .sidebar {
             background: rgba(255, 255, 255, 0.35);
             border-radius: 28px;
@@ -337,9 +593,13 @@
             flex: 1;
             padding-right: 4px;
         }
-        .text-list::-webkit-scrollbar { width: 4px; }
-        .text-list::-webkit-scrollbar-thumb { background: #ffb0c0; border-radius: 8px; }
-
+        .text-list::-webkit-scrollbar {
+            width: 4px;
+        }
+        .text-list::-webkit-scrollbar-thumb {
+            background: #ffb0c0;
+            border-radius: 8px;
+        }
         .text-tag {
             display: flex;
             align-items: center;
@@ -354,12 +614,36 @@
             transition: all 0.15s;
             min-height: 32px;
         }
-        .text-tag:hover { background: rgba(255, 255, 255, 0.8); border-color: #ff8da1; }
-        .text-tag.active-tag { background: rgba(255, 140, 170, 0.20); border-color: #ff8da1; box-shadow: 0 0 0 2px rgba(255, 140, 170, 0.15); }
-        .text-tag .tag-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .text-tag .tag-del { font-size: 16px; color: #b58a9a; cursor: pointer; padding: 0 2px; }
-        .text-tag .tag-del:hover { color: #d45a7a; }
-        .sidebar .hint { font-size: 11px; color: #b58a9a; text-align: center; padding-top: 2px; }
+        .text-tag:hover {
+            background: rgba(255, 255, 255, 0.8);
+            border-color: #ff8da1;
+        }
+        .text-tag.active-tag {
+            background: rgba(255, 140, 170, 0.20);
+            border-color: #ff8da1;
+            box-shadow: 0 0 0 2px rgba(255, 140, 170, 0.15);
+        }
+        .text-tag .tag-text {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .text-tag .tag-del {
+            font-size: 16px;
+            color: #b58a9a;
+            cursor: pointer;
+            padding: 0 2px;
+        }
+        .text-tag .tag-del:hover {
+            color: #d45a7a;
+        }
+        .sidebar .hint {
+            font-size: 11px;
+            color: #b58a9a;
+            text-align: center;
+            padding-top: 2px;
+        }
 
         /* ===== 面板 ===== */
         .panel-box {
@@ -441,15 +725,20 @@
         .row-flex .btn-sm.success {
             background: linear-gradient(135deg, #a8d8ea, #7ac0d4);
         }
+        .row-flex .btn-sm.danger {
+            background: linear-gradient(135deg, #ff6b8a, #e85577);
+        }
 
-        /* ===== 证件照专用 ===== */
+        /* ===== 证件照网格 ===== */
         .idphoto-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px;
         }
         @media (max-width: 600px) {
-            .idphoto-grid { grid-template-columns: 1fr; }
+            .idphoto-grid {
+                grid-template-columns: 1fr;
+            }
         }
         .idphoto-grid .spec-group {
             background: rgba(255, 255, 255, 0.25);
@@ -464,41 +753,6 @@
             margin-bottom: 6px;
         }
 
-        /* ===== GIF 预览区 ===== */
-        .gif-preview-wrapper {
-            position: relative;
-            width: 100%;
-            padding-bottom: 56.25%;
-            background: rgba(0, 0, 0, 0.08);
-            border-radius: 16px;
-            overflow: hidden;
-            border: 2px solid rgba(255, 180, 195, 0.3);
-        }
-        .gif-preview-wrapper video {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: block;
-            border-radius: 14px;
-            background: #000;
-            object-fit: contain;
-        }
-        .gif-preview-wrapper .gif-placeholder {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #b58a9a;
-            font-size: 14px;
-            text-align: center;
-        }
-        .gif-preview-wrapper .gif-placeholder .big {
-            font-size: 40px;
-            display: block;
-        }
-
         /* ===== 仓库网格 ===== */
         .wh-grid {
             display: grid;
@@ -508,8 +762,13 @@
             overflow-y: auto;
             padding: 4px 2px 6px;
         }
-        .wh-grid::-webkit-scrollbar { width: 4px; }
-        .wh-grid::-webkit-scrollbar-thumb { background: #ffb0c0; border-radius: 8px; }
+        .wh-grid::-webkit-scrollbar {
+            width: 4px;
+        }
+        .wh-grid::-webkit-scrollbar-thumb {
+            background: #ffb0c0;
+            border-radius: 8px;
+        }
         .wh-item {
             position: relative;
             background: rgba(255, 255, 255, 0.5);
@@ -520,8 +779,17 @@
             transition: all 0.2s;
             cursor: pointer;
         }
-        .wh-item:hover { transform: scale(1.03); box-shadow: 0 6px 20px rgba(255, 130, 160, 0.12); }
-        .wh-item img, .wh-item video { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .wh-item:hover {
+            transform: scale(1.03);
+            box-shadow: 0 6px 20px rgba(255, 130, 160, 0.12);
+        }
+        .wh-item img,
+        .wh-item video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
         .wh-item .wh-check {
             position: absolute;
             top: 5px;
@@ -553,8 +821,12 @@
             padding: 0;
             z-index: 2;
         }
-        .wh-item:hover .wh-del { opacity: 1; }
-        .wh-item .wh-del:hover { background: rgba(255, 200, 210, 0.8); }
+        .wh-item:hover .wh-del {
+            opacity: 1;
+        }
+        .wh-item .wh-del:hover {
+            background: rgba(255, 200, 210, 0.8);
+        }
         .wh-item .wh-download {
             position: absolute;
             bottom: 5px;
@@ -575,9 +847,19 @@
             padding: 0;
             z-index: 2;
         }
-        .wh-item:hover .wh-download { opacity: 1; }
-        .wh-item .wh-download:hover { background: rgba(255, 255, 255, 0.9); }
-        .wh-empty { color: #b58a9a; font-size: 14px; text-align: center; padding: 30px 0; grid-column: 1 / -1; }
+        .wh-item:hover .wh-download {
+            opacity: 1;
+        }
+        .wh-item .wh-download:hover {
+            background: rgba(255, 255, 255, 0.9);
+        }
+        .wh-empty {
+            color: #b58a9a;
+            font-size: 14px;
+            text-align: center;
+            padding: 30px 0;
+            grid-column: 1 / -1;
+        }
 
         /* ===== Toast ===== */
         .toast {
@@ -601,43 +883,31 @@
             max-width: 90vw;
             text-align: center;
         }
-        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-        /* ===== 响应式 ===== */
-        @media (max-width: 1024px) {
-            .func-layout { grid-template-columns: 1fr; }
-            .sidebar { max-height: 180px; }
-        }
-        @media (max-width: 600px) {
-            .app-container { padding: 12px; border-radius: 28px; }
-            .header-left h1 { font-size: 20px; }
-            .header-right { padding: 4px 12px 4px 6px; gap: 8px; }
-            .header-avatar { width: 32px; height: 32px; }
-            .header-right .maker-text { font-size: 13px; }
-            .home-buttons .home-btn { padding: 10px 20px; font-size: 15px; min-width: 100px; }
-            .home-bubble { padding: 16px 20px; }
-            .func-nav .nav-btn { padding: 6px 14px; font-size: 13px; }
-            .idphoto-grid { grid-template-columns: 1fr; }
-            .row-flex { gap: 6px; }
-            .row-flex input[type="number"] { min-width: 60px; }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
         }
 
-        /* ===== 编辑器模态框 (复用) ===== */
+        /* ===== 编辑器模态框 ===== */
         .editor-modal {
             display: none;
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.75);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
             backdrop-filter: blur(16px);
             z-index: 2000;
             justify-content: center;
             align-items: center;
             padding: 20px;
         }
-        .editor-modal.active { display: flex; }
+        .editor-modal.active {
+            display: flex;
+        }
         .editor-modal .editor-box {
-            background: rgba(255,245,247,0.95);
+            background: rgba(255, 245, 247, 0.95);
             backdrop-filter: blur(20px);
             border-radius: 32px;
             padding: 24px 28px 28px;
@@ -646,8 +916,8 @@
             max-height: 92vh;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 30px 80px rgba(0,0,0,0.4);
-            border: 1px solid rgba(255,255,255,0.3);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
         .editor-modal .editor-header {
             display: flex;
@@ -682,70 +952,103 @@
         .editor-modal .editor-header .editor-actions .btn-confirm {
             background: linear-gradient(135deg, #ff8da1, #f5728a);
             color: #fff;
-            box-shadow: 0 4px 14px rgba(255,100,130,0.25);
+            box-shadow: 0 4px 14px rgba(255, 100, 130, 0.25);
         }
         .editor-modal .editor-header .editor-actions .btn-confirm:hover {
             transform: scale(1.04);
         }
         .editor-modal .editor-header .editor-actions .btn-cancel {
-            background: rgba(255,255,255,0.5);
+            background: rgba(255, 255, 255, 0.5);
             color: #6b3a4a;
-            border: 1px solid rgba(255,180,195,0.3);
+            border: 1px solid rgba(255, 180, 195, 0.3);
         }
         .editor-modal .editor-header .editor-actions .btn-cancel:hover {
-            background: rgba(255,255,255,0.8);
+            background: rgba(255, 255, 255, 0.8);
         }
         .editor-modal .editor-canvas-wrap {
             position: relative;
             width: 100%;
             padding-bottom: 100%;
-            background: rgba(240,240,245,0.5);
+            background: rgba(240, 240, 245, 0.5);
             border-radius: 20px;
             overflow: hidden;
-            border: 2px solid rgba(255,255,255,0.3);
+            border: 2px solid rgba(255, 255, 255, 0.3);
             cursor: grab;
             touch-action: none;
             user-select: none;
         }
-        .editor-modal .editor-canvas-wrap:active { cursor: grabbing; }
+        .editor-modal .editor-canvas-wrap:active {
+            cursor: grabbing;
+        }
         .editor-modal .editor-canvas-wrap canvas {
             position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             display: block;
             border-radius: 18px;
             background: #f8f4f6;
         }
         .editor-modal .crop-overlay {
             position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             pointer-events: none;
             z-index: 5;
             border-radius: 18px;
         }
         .editor-modal .crop-overlay .crop-box {
             position: absolute;
-            top: 50%; left: 50%;
+            top: 50%;
+            left: 50%;
             transform: translate(-50%, -50%);
-            width: 72%; height: 72%;
-            border: 2.5px solid rgba(255,255,255,0.85);
+            width: 72%;
+            height: 72%;
+            border: 2.5px solid rgba(255, 255, 255, 0.85);
             border-radius: 12px;
-            box-shadow: 0 0 0 9999px rgba(0,0,0,0.45);
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.45);
             pointer-events: none;
         }
         .editor-modal .crop-overlay .crop-box .corner {
             position: absolute;
-            width: 14px; height: 14px;
-            border-color: rgba(255,255,255,0.9);
+            width: 14px;
+            height: 14px;
+            border-color: rgba(255, 255, 255, 0.9);
             border-style: solid;
             border-width: 0;
             pointer-events: none;
         }
-        .editor-modal .crop-overlay .crop-box .corner.tl { top: -2px; left: -2px; border-top-width: 3px; border-left-width: 3px; border-radius: 3px 0 0 0; }
-        .editor-modal .crop-overlay .crop-box .corner.tr { top: -2px; right: -2px; border-top-width: 3px; border-right-width: 3px; border-radius: 0 3px 0 0; }
-        .editor-modal .crop-overlay .crop-box .corner.bl { bottom: -2px; left: -2px; border-bottom-width: 3px; border-left-width: 3px; border-radius: 0 0 0 3px; }
-        .editor-modal .crop-overlay .crop-box .corner.br { bottom: -2px; right: -2px; border-bottom-width: 3px; border-right-width: 3px; border-radius: 0 0 3px 0; }
+        .editor-modal .crop-overlay .crop-box .corner.tl {
+            top: -2px;
+            left: -2px;
+            border-top-width: 3px;
+            border-left-width: 3px;
+            border-radius: 3px 0 0 0;
+        }
+        .editor-modal .crop-overlay .crop-box .corner.tr {
+            top: -2px;
+            right: -2px;
+            border-top-width: 3px;
+            border-right-width: 3px;
+            border-radius: 0 3px 0 0;
+        }
+        .editor-modal .crop-overlay .crop-box .corner.bl {
+            bottom: -2px;
+            left: -2px;
+            border-bottom-width: 3px;
+            border-left-width: 3px;
+            border-radius: 0 0 0 3px;
+        }
+        .editor-modal .crop-overlay .crop-box .corner.br {
+            bottom: -2px;
+            right: -2px;
+            border-bottom-width: 3px;
+            border-right-width: 3px;
+            border-radius: 0 0 3px 0;
+        }
         .editor-modal .editor-footer {
             display: flex;
             justify-content: space-between;
@@ -757,17 +1060,25 @@
         .editor-modal .editor-footer .zoom-info {
             font-size: 13px;
             color: #7a4e5e;
-            background: rgba(255,255,255,0.4);
+            background: rgba(255, 255, 255, 0.4);
             padding: 4px 16px;
             border-radius: 30px;
         }
-        .editor-modal .editor-footer .zoom-info span { font-weight: 600; color: #b45374; }
-        .editor-modal .editor-footer .zoom-controls { display: flex; gap: 6px; align-items: center; }
+        .editor-modal .editor-footer .zoom-info span {
+            font-weight: 600;
+            color: #b45374;
+        }
+        .editor-modal .editor-footer .zoom-controls {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
         .editor-modal .editor-footer .zoom-controls button {
-            width: 32px; height: 32px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
-            border: 1px solid rgba(255,180,195,0.3);
-            background: rgba(255,255,255,0.5);
+            border: 1px solid rgba(255, 180, 195, 0.3);
+            background: rgba(255, 255, 255, 0.5);
             color: #6b3a4a;
             font-size: 16px;
             cursor: pointer;
@@ -777,7 +1088,7 @@
             justify-content: center;
         }
         .editor-modal .editor-footer .zoom-controls button:hover {
-            background: rgba(255,255,255,0.8);
+            background: rgba(255, 255, 255, 0.8);
             border-color: #ff8da1;
         }
         .editor-modal .editor-footer .zoom-controls .zoom-slider {
@@ -790,24 +1101,28 @@
         .preview-modal {
             display: none;
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
             backdrop-filter: blur(12px);
             z-index: 1000;
             justify-content: center;
             align-items: center;
             padding: 24px;
         }
-        .preview-modal.active { display: flex; }
+        .preview-modal.active {
+            display: flex;
+        }
         .preview-modal .modal-content {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 24px;
             padding: 20px;
             max-width: 90vmin;
             max-height: 90vh;
             position: relative;
-            border: 1px solid rgba(255,255,255,0.15);
+            border: 1px solid rgba(255, 255, 255, 0.15);
         }
         .preview-modal .modal-content img,
         .preview-modal .modal-content video {
@@ -816,48 +1131,169 @@
             border-radius: 16px;
             display: block;
             background: #fff9fa;
-            box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
         }
         .preview-modal .modal-close {
             position: absolute;
-            top: -12px; right: -12px;
-            width: 36px; height: 36px;
+            top: -12px;
+            right: -12px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             border: none;
-            background: rgba(255,255,255,0.9);
+            background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(8px);
             font-size: 20px;
             color: #6b3a4a;
             cursor: pointer;
             transition: all 0.2s;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
             display: flex;
             align-items: center;
             justify-content: center;
         }
-        .preview-modal .modal-close:hover { transform: scale(1.08); }
+        .preview-modal .modal-close:hover {
+            transform: scale(1.08);
+        }
         .preview-modal .modal-hint {
-            color: rgba(255,255,255,0.7);
+            color: rgba(255, 255, 255, 0.7);
             text-align: center;
             font-size: 14px;
             margin-top: 12px;
             padding: 8px 16px;
-            background: rgba(0,0,0,0.3);
+            background: rgba(0, 0, 0, 0.3);
             border-radius: 30px;
             backdrop-filter: blur(4px);
         }
-        .preview-modal .modal-hint span { color: #ffb8c8; font-weight: 500; }
+        .preview-modal .modal-hint span {
+            color: #ffb8c8;
+            font-weight: 500;
+        }
 
-        /* 工具类 */
-        .mt-8 { margin-top: 8px; }
-        .mb-8 { margin-bottom: 8px; }
-        .flex-wrap { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-        .gap-4 { gap: 4px; }
-        .text-muted { color: #9a7a8a; font-size: 12px; }
-        .hidden { display: none !important; }
+        /* ===== 工具类 ===== */
+        .mt-8 {
+            margin-top: 8px;
+        }
+        .mb-8 {
+            margin-bottom: 8px;
+        }
+        .flex-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+        .gap-4 {
+            gap: 4px;
+        }
+        .text-muted {
+            color: #9a7a8a;
+            font-size: 12px;
+        }
+        .hidden {
+            display: none !important;
+        }
+
+        /* ===== 按钮选中状态 (深色) ===== */
+        .opt-btn.active-opt {
+            background: rgba(255, 140, 170, 0.35) !important;
+            color: #b45374 !important;
+            font-weight: 600 !important;
+            box-shadow: inset 0 1px 4px rgba(255, 100, 130, 0.15);
+        }
+        .btn-group .opt-btn {
+            padding: 4px 14px;
+            border: none;
+            border-radius: 30px;
+            background: transparent;
+            font-size: 12px;
+            font-weight: 500;
+            color: #6b3a4a;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-group .opt-btn:hover:not(.active-opt) {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 1024px) {
+            .func-layout {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                max-height: 180px;
+            }
+        }
+        @media (max-width: 600px) {
+            .app-container {
+                padding: 12px;
+                border-radius: 28px;
+            }
+            .header-left h1 {
+                font-size: 20px;
+            }
+            .header-right {
+                padding: 4px 12px 4px 6px;
+                gap: 8px;
+            }
+            .header-avatar {
+                width: 32px;
+                height: 32px;
+            }
+            .header-right .maker-text {
+                font-size: 13px;
+            }
+            .home-buttons .home-btn {
+                padding: 10px 20px;
+                font-size: 15px;
+                min-width: 100px;
+            }
+            .home-bubble {
+                padding: 16px 20px;
+            }
+            .func-nav .nav-btn {
+                padding: 6px 14px;
+                font-size: 13px;
+            }
+            .idphoto-grid {
+                grid-template-columns: 1fr;
+            }
+            .row-flex {
+                gap: 6px;
+            }
+            .lock-box {
+                padding: 28px 20px 30px;
+                margin: 0 16px;
+            }
+            .lock-box .pin-input input {
+                width: 44px;
+                height: 50px;
+                font-size: 22px;
+            }
+        }
     </style>
 </head>
 <body>
+
+    <!-- ===== 密码锁 ===== -->
+    <div id="lock-screen">
+        <div class="lock-box">
+            <div class="lock-icon">🔐</div>
+            <div class="lock-title">表情包证件照修改器</div>
+            <div class="lock-sub">请输入密码解锁</div>
+            <div class="lock-maker">✦ 制作人：<span>KIKI</span></div>
+            <div class="pin-input">
+                <input type="password" maxlength="1" inputmode="numeric" pattern="[0-9]" id="pin1" />
+                <input type="password" maxlength="1" inputmode="numeric" pattern="[0-9]" id="pin2" />
+                <input type="password" maxlength="1" inputmode="numeric" pattern="[0-9]" id="pin3" />
+                <input type="password" maxlength="1" inputmode="numeric" pattern="[0-9]" id="pin4" />
+            </div>
+            <div class="lock-error" id="lockError"></div>
+            <button class="lock-btn" id="unlockBtn">🔓 解锁</button>
+            <div class="lock-hint">提示：默认密码 1998 · 仅首次输入</div>
+        </div>
+    </div>
 
     <!-- ===== Toast ===== -->
     <div id="toast" class="toast"></div>
@@ -872,7 +1308,7 @@
         </div>
     </div>
 
-    <!-- ===== 编辑器模态框 (通用裁剪) ===== -->
+    <!-- ===== 编辑器模态框 ===== -->
     <div class="editor-modal" id="editorModal">
         <div class="editor-box">
             <div class="editor-header">
@@ -907,7 +1343,7 @@
     <!-- ===== 主容器 ===== -->
     <div class="app-container">
 
-        <!-- ===== 头部 (全局) ===== -->
+        <!-- ===== 头部 ===== -->
         <header class="header">
             <div class="header-left">
                 <span class="icon">🌸</span>
@@ -936,7 +1372,7 @@
                     <div class="bubble-title">💬 作者的话</div>
                     <div class="bubble-divider"></div>
                     <p>✨ 欢迎使用「表情包证件照修改器」！<br>
-                    你可以制作专属表情包、将实况转为GIF、还能一键修改证件照尺寸。<br>
+                    你可以制作专属表情包、将视频转为GIF、还能一键修改证件照尺寸。<br>
                     所有处理均在本地完成，隐私安全无忧。</p>
                     <div class="bubble-footer">© KIKI原创 · 禁抄袭，二改需授权</div>
                 </div>
@@ -944,7 +1380,7 @@
         </div>
 
         <!-- ========================================================== -->
-        <!-- ===== 功能页面：表情包制作 ===== -->
+        <!-- ===== 表情包制作 ===== -->
         <div class="page-func" id="page-emoji">
             <div class="func-nav">
                 <button class="nav-btn active" data-page="emoji">😊 表情包制作</button>
@@ -953,19 +1389,12 @@
                 <button class="nav-btn" data-page="warehouse">📦 仓库</button>
                 <button class="nav-btn" style="margin-left:auto;" id="backHomeBtn">🏠 主页</button>
             </div>
-
             <div class="func-layout">
-                <!-- 预览区 -->
                 <div class="preview-area">
-                    <div class="label-row">
-                        <span>🖼️ 预览区</span>
-                        <span class="badge">点击文字选中 · 拖拽移动</span>
-                    </div>
+                    <div class="label-row"><span>🖼️ 预览区</span><span class="badge">点击文字选中 · 拖拽移动</span></div>
                     <div class="canvas-wrapper" id="emojiCanvasWrapper">
                         <canvas id="emojiCanvas" width="600" height="600"></canvas>
-                        <div class="placeholder-text" id="emojiPlaceholder">
-                            <span class="big">📷</span> 上传图片或添加文字
-                        </div>
+                        <div class="placeholder-text" id="emojiPlaceholder"><span class="big">📷</span> 上传图片或添加文字</div>
                         <div class="preview-actions" style="position:absolute; bottom:24px; right:24px; display:flex; gap:8px; z-index:10; flex-wrap:wrap; justify-content:flex-end;">
                             <button class="float-btn" id="emojiUploadBtn">📤 上传图片</button>
                             <button class="float-btn primary" id="emojiEditBtn" style="display:none;">✂️ 编辑图片</button>
@@ -974,15 +1403,12 @@
                         </div>
                     </div>
                 </div>
-                <!-- 侧边栏 -->
                 <div class="sidebar">
                     <div class="sidebar-title"><span>📝 文字列表</span><span class="badge" id="emojiTextCount">0</span></div>
                     <div class="text-list" id="emojiTextList"></div>
                     <div class="hint">点击文字选中 · 拖拽预览区移动</div>
                 </div>
             </div>
-
-            <!-- 贴文字面板 -->
             <div class="panel-box">
                 <div class="panel-title">✏️ 贴文字</div>
                 <div class="row-flex">
@@ -998,29 +1424,27 @@
                 </div>
                 <div class="text-muted">💡 选中文字后调整样式，拖拽预览区文字移动位置 · 字号最大 200px</div>
             </div>
-
-            <!-- 导出面板 -->
             <div class="panel-box">
                 <div class="panel-title">📐 导出设置</div>
                 <div class="row-flex">
                     <label>尺寸
-                        <div class="btn-group" id="emojiSizeGroup" style="display:flex; gap:3px; background:rgba(255,255,255,0.3); padding:3px; border-radius:30px; border:1px solid rgba(255,200,210,0.2);">
-                            <button class="opt-btn active" data-value="240">240</button>
+                        <div class="btn-group" id="emojiSizeGroup">
+                            <button class="opt-btn active-opt" data-value="240">240</button>
                             <button class="opt-btn" data-value="320">320</button>
                             <button class="opt-btn" data-value="480">480</button>
                             <button class="opt-btn" data-value="640">640</button>
                         </div>
                     </label>
                     <label>背景
-                        <div class="btn-group" id="emojiBgGroup" style="display:flex; gap:3px; background:rgba(255,255,255,0.3); padding:3px; border-radius:30px; border:1px solid rgba(255,200,210,0.2);">
-                            <button class="opt-btn active" data-value="transparent">透明</button>
+                        <div class="btn-group" id="emojiBgGroup">
+                            <button class="opt-btn active-opt" data-value="transparent">透明</button>
                             <button class="opt-btn" data-value="white">白色</button>
                             <button class="opt-btn" data-value="pink">粉色</button>
                         </div>
                     </label>
                     <label>质量
-                        <div class="btn-group" id="emojiQualityGroup" style="display:flex; gap:3px; background:rgba(255,255,255,0.3); padding:3px; border-radius:30px; border:1px solid rgba(255,200,210,0.2);">
-                            <button class="opt-btn active" data-value="lossless">无损</button>
+                        <div class="btn-group" id="emojiQualityGroup">
+                            <button class="opt-btn active-opt" data-value="lossless">无损</button>
                             <button class="opt-btn" data-value="compressed">压缩</button>
                             <button class="opt-btn" data-value="low">渣图</button>
                         </div>
@@ -1036,7 +1460,7 @@
         </div>
 
         <!-- ========================================================== -->
-        <!-- ===== 功能页面：GIF制作 ===== -->
+        <!-- ===== GIF制作 ===== -->
         <div class="page-func" id="page-gif">
             <div class="func-nav">
                 <button class="nav-btn" data-page="emoji">😊 表情包制作</button>
@@ -1045,43 +1469,53 @@
                 <button class="nav-btn" data-page="warehouse">📦 仓库</button>
                 <button class="nav-btn" style="margin-left:auto;" id="backHomeBtn2">🏠 主页</button>
             </div>
-
             <div class="func-layout single">
-                <!-- GIF 预览区 (视频) -->
                 <div class="preview-area">
-                    <div class="label-row">
-                        <span>🎬 视频预览 & 片段选择</span>
-                        <span class="badge" id="gifClipInfo">未选择片段</span>
-                    </div>
+                    <div class="label-row"><span>🎬 视频预览 & 片段选择</span><span class="badge" id="gifClipInfo">未选择片段</span></div>
                     <div class="gif-preview-wrapper" id="gifPreviewWrapper">
                         <video id="gifPreviewVideo" playsinline></video>
-                        <div class="gif-placeholder" id="gifPlaceholder">
-                            <span class="big">📹</span> 上传视频开始编辑
-                        </div>
+                        <div class="gif-placeholder" id="gifPlaceholder"><span class="big">📹</span> 上传视频开始编辑</div>
                     </div>
-                    <!-- 控制条 -->
-                    <div class="row-flex" style="margin-top:10px; justify-content:center;">
+                    <div class="row-flex" style="margin-top:8px; justify-content:center;">
                         <button class="btn-sm" id="gifUploadBtn">📤 上传视频</button>
                         <input type="file" id="gifFileInput" accept="video/*" style="display:none;" />
+                        <button class="btn-sm danger" id="gifClearBtn">✕ 清空</button>
                         <span class="text-muted" id="gifStatus">未选择视频</span>
                     </div>
-                    <!-- 片段选择 -->
-                    <div class="row-flex" style="justify-content:center;">
-                        <label>起始 <input type="number" id="gifStartTime" value="0" step="0.1" min="0" style="width:60px;" /> s</label>
-                        <label>结束 <input type="number" id="gifEndTime" value="1.5" step="0.1" min="0.5" style="width:60px;" /> s</label>
-                        <button class="btn-sm outline" id="gifApplyClipBtn">⏱️ 应用片段</button>
+                    <!-- 进度条 + 选择线 -->
+                    <div class="gif-timeline" id="gifTimeline">
+                        <input type="range" id="gifProgress" min="0" max="100" value="0" step="0.1" />
+                        <div class="timeline-labels">
+                            <span id="gifTimeCurrent">0.0s</span>
+                            <span id="gifTimeTotal">0.0s</span>
+                        </div>
+                        <div class="clip-lines" id="clipLines">
+                            <div class="line start" id="clipStartLine" style="left:0%;">
+                                <span class="line-label">▶ 起点</span>
+                            </div>
+                            <div class="line end" id="clipEndLine" style="left:100%;">
+                                <span class="line-label">◀ 终点</span>
+                            </div>
+                            <div class="clip-highlight" id="clipHighlight" style="left:0%; width:100%;"></div>
+                        </div>
+                    </div>
+                    <div class="row-flex" style="justify-content:center; margin-top:4px;">
+                        <label>起点 <input type="number" id="gifStartTime" value="0" step="0.05" min="0" style="width:60px;" />s</label>
+                        <label>终点 <input type="number" id="gifEndTime" value="1.5" step="0.05" min="0.5" style="width:60px;" />s</label>
+                        <button class="btn-sm" id="gifApplyClipBtn">⏱️ 应用片段</button>
                         <button class="btn-sm outline" id="gifResetClipBtn">↺ 重置</button>
                     </div>
-                    <div class="text-muted" style="text-align:center;">📌 拖动下方滑块选择 1-2 秒片段，避免视频太长</div>
+                    <div class="text-muted" style="text-align:center;">📌 拖动进度条预览 · 选择 1-2 秒片段 (不超过2.5s)</div>
                 </div>
 
-                <!-- 裁剪 & 文字编辑 -->
+                <!-- 裁剪 & 文字 (仅片段操作) -->
                 <div class="panel-box">
-                    <div class="panel-title">✂️ 裁剪 & 文字</div>
+                    <div class="panel-title">✂️ 裁剪 & 文字 <span class="text-muted" style="font-size:12px; font-weight:400;">(仅对选中片段生效)</span></div>
                     <div class="row-flex">
                         <button class="btn-sm" id="gifCropBtn">✂️ 裁剪画面</button>
                         <button class="btn-sm outline" id="gifResetCropBtn">↺ 重置裁剪</button>
                         <span class="text-muted" id="gifCropInfo">未裁剪</span>
+                        <button class="btn-sm success" id="gifPreviewPlayBtn">▶ 预览效果</button>
                     </div>
                     <div class="row-flex" style="margin-top:6px;">
                         <input type="text" id="gifTextInput" placeholder="添加文字..." maxlength="20" style="flex:1; min-width:100px;" />
@@ -1093,22 +1527,23 @@
                     <div class="text-list" id="gifTextList" style="max-height:60px; overflow-y:auto; display:flex; flex-wrap:wrap; gap:4px; padding:4px 0;"></div>
                 </div>
 
-                <!-- 生成 & 导出 -->
+                <!-- 生成 GIF -->
                 <div class="panel-box">
                     <div class="panel-title">⚡ 生成 GIF</div>
                     <div class="row-flex">
                         <label>尺寸 <select id="gifSizeSelect"><option value="120">120</option><option value="240" selected>240 (推荐)</option><option value="320">320</option><option value="480">480</option></select></label>
+                        <label>导出大小 <select id="gifExportSize"><option value="normal">正常导出</option><option value="compress" selected>压缩到 ≤1MB</option></select></label>
                         <button class="btn-sm success" id="gifGenBtn">⚡ 生成 GIF</button>
                         <button class="btn-sm outline" id="gifPreviewGenBtn">👁️ 预览</button>
                         <button class="btn-sm outline" id="gifSaveBtn">📦 存到仓库</button>
                     </div>
-                    <div class="text-muted mt-8">📏 微信推荐 240×240 · GIF ≤1MB 可直接播放</div>
+                    <div class="text-muted mt-8">📏 微信推荐 240×240 · 压缩选项自动控制 ≤1MB</div>
                 </div>
             </div>
         </div>
 
         <!-- ========================================================== -->
-        <!-- ===== 功能页面：证件照制作 ===== -->
+        <!-- ===== 证件照制作 ===== -->
         <div class="page-func" id="page-idphoto">
             <div class="func-nav">
                 <button class="nav-btn" data-page="emoji">😊 表情包制作</button>
@@ -1117,19 +1552,12 @@
                 <button class="nav-btn" data-page="warehouse">📦 仓库</button>
                 <button class="nav-btn" style="margin-left:auto;" id="backHomeBtn3">🏠 主页</button>
             </div>
-
             <div class="func-layout single">
-                <!-- 预览区 -->
                 <div class="preview-area">
-                    <div class="label-row">
-                        <span>🖼️ 证件照预览</span>
-                        <span class="badge" id="idphotoSizeInfo">未设置</span>
-                    </div>
+                    <div class="label-row"><span>🖼️ 证件照预览</span><span class="badge" id="idphotoSizeInfo">未设置</span></div>
                     <div class="canvas-wrapper" id="idphotoCanvasWrapper">
                         <canvas id="idphotoCanvas" width="600" height="600"></canvas>
-                        <div class="placeholder-text" id="idphotoPlaceholder">
-                            <span class="big">📷</span> 上传照片制作证件照
-                        </div>
+                        <div class="placeholder-text" id="idphotoPlaceholder"><span class="big">📷</span> 上传照片制作证件照</div>
                         <div class="preview-actions" style="position:absolute; bottom:24px; right:24px; display:flex; gap:8px; z-index:10; flex-wrap:wrap; justify-content:flex-end;">
                             <button class="float-btn" id="idphotoUploadBtn">📤 上传照片</button>
                             <button class="float-btn primary" id="idphotoEditBtn" style="display:none;">✂️ 裁剪</button>
@@ -1139,17 +1567,16 @@
                     </div>
                 </div>
 
-                <!-- 规格面板 -->
                 <div class="panel-box">
                     <div class="panel-title">📐 证件照规格</div>
                     <div class="idphoto-grid">
                         <div class="spec-group">
                             <div class="spec-title">📏 常用尺寸模板</div>
                             <div class="flex-wrap">
-                                <button class="btn-sm outline" data-w="25" data-h="35" data-unit="mm">小一寸 (25×35mm)</button>
-                                <button class="btn-sm outline" data-w="33" data-h="48" data-unit="mm">一寸 (33×48mm)</button>
-                                <button class="btn-sm outline" data-w="35" data-h="53" data-unit="mm">二寸 (35×53mm)</button>
-                                <button class="btn-sm outline" data-w="50" data-h="70" data-unit="mm">大二寸 (50×70mm)</button>
+                                <button class="btn-sm outline size-template" data-w="25" data-h="35" data-unit="mm">小一寸 25×35</button>
+                                <button class="btn-sm outline size-template" data-w="33" data-h="48" data-unit="mm">一寸 33×48</button>
+                                <button class="btn-sm outline size-template" data-w="35" data-h="53" data-unit="mm">二寸 35×53</button>
+                                <button class="btn-sm outline size-template" data-w="50" data-h="70" data-unit="mm">大二寸 50×70</button>
                             </div>
                         </div>
                         <div class="spec-group">
@@ -1161,12 +1588,14 @@
                             </div>
                         </div>
                         <div class="spec-group">
-                            <div class="spec-title">📱 导出像素 (px)</div>
+                            <div class="spec-title">📱 导出像素 & DPI</div>
                             <div class="flex-wrap">
                                 <label>宽 <input type="number" id="idphotoPxWidth" value="295" step="1" min="100" style="width:70px;" /></label>
                                 <label>高 <input type="number" id="idphotoPxHeight" value="413" step="1" min="100" style="width:70px;" /></label>
+                                <label>DPI <input type="number" id="idphotoDPI" value="300" step="1" min="72" style="width:60px;" /></label>
                                 <button class="btn-sm" id="idphotoApplyPxBtn">应用</button>
                             </div>
+                            <div class="text-muted" style="font-size:11px; margin-top:4px;">💡 像素和DPI任选其一生效</div>
                         </div>
                         <div class="spec-group">
                             <div class="spec-title">📦 文件大小控制</div>
@@ -1174,6 +1603,7 @@
                                 <label>最小 <input type="number" id="idphotoMinKB" value="0" step="10" min="0" style="width:70px;" /> KB</label>
                                 <label>最大 <input type="number" id="idphotoMaxKB" value="200" step="10" min="10" style="width:70px;" /> KB</label>
                                 <button class="btn-sm" id="idphotoApplySizeBtn2">应用</button>
+                                <button class="btn-sm outline" id="idphotoResetSizeBtn">↺ 复原</button>
                             </div>
                         </div>
                     </div>
@@ -1183,13 +1613,13 @@
                         <button class="btn-sm success" id="idphotoPreviewBtn">👁️ 预览</button>
                         <button class="btn-sm outline" id="idphotoSaveBtn">📦 存到仓库</button>
                     </div>
-                    <div class="text-muted mt-8" id="idphotoHint">💡 点击模板快速设置尺寸，或手动输入自定义数值</div>
+                    <div class="text-muted mt-8" id="idphotoHint">💡 点击模板自动设置尺寸 · 裁剪时显示对应虚线框</div>
                 </div>
             </div>
         </div>
 
         <!-- ========================================================== -->
-        <!-- ===== 功能页面：仓库 ===== -->
+        <!-- ===== 仓库 ===== -->
         <div class="page-func" id="page-warehouse">
             <div class="func-nav">
                 <button class="nav-btn" data-page="emoji">😊 表情包制作</button>
@@ -1198,7 +1628,6 @@
                 <button class="nav-btn active" data-page="warehouse">📦 仓库</button>
                 <button class="nav-btn" style="margin-left:auto;" id="backHomeBtn4">🏠 主页</button>
             </div>
-
             <div class="panel-box">
                 <div class="panel-title">📦 表情仓库</div>
                 <div class="row-flex" style="justify-content:space-between;">
@@ -1224,7 +1653,65 @@
         (function() {
             'use strict';
 
-            // ----- DOM 引用 (全局) -----
+            // ----- 密码锁 -----
+            const CORRECT_PIN = '1998';
+            const LOCK_KEY = 'emoji_editor_unlocked';
+
+            // 检查是否已解锁
+            if (localStorage.getItem(LOCK_KEY) === 'true') {
+                document.getElementById('lock-screen').classList.add('hidden');
+            }
+
+            const pinInputs = ['pin1', 'pin2', 'pin3', 'pin4'].map(id => document.getElementById(id));
+            const unlockBtn = document.getElementById('unlockBtn');
+            const lockError = document.getElementById('lockError');
+
+            // 自动跳转下一个输入框
+            pinInputs.forEach((input, idx) => {
+                input.addEventListener('input', () => {
+                    if (input.value.length === 1 && idx < 3) {
+                        pinInputs[idx + 1].focus();
+                    }
+                    lockError.textContent = '';
+                });
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace' && input.value === '' && idx > 0) {
+                        pinInputs[idx - 1].focus();
+                    }
+                    if (e.key === 'Enter') {
+                        unlockBtn.click();
+                    }
+                });
+            });
+
+            unlockBtn.addEventListener('click', () => {
+                const pin = pinInputs.map(i => i.value).join('');
+                if (pin === CORRECT_PIN) {
+                    localStorage.setItem(LOCK_KEY, 'true');
+                    document.getElementById('lock-screen').classList.add('hidden');
+                    showToast('🔓 解锁成功！欢迎回来');
+                } else {
+                    lockError.textContent = '❌ 密码错误，请重试';
+                    pinInputs.forEach(i => { i.value = ''; });
+                    pinInputs[0].focus();
+                }
+            });
+
+            // ----- 修改密码提示 -----
+            console.log('🔑 当前密码: 1998');
+            console.log('📌 如需修改密码，请搜索 CORRECT_PIN 变量 (约第 1400 行)');
+
+            // ----- Toast -----
+            const toastEl = document.getElementById('toast');
+
+            function showToast(msg, duration = 2600) {
+                toastEl.textContent = msg;
+                toastEl.classList.add('show');
+                clearTimeout(toastEl._timer);
+                toastEl._timer = setTimeout(() => { toastEl.classList.remove('show'); }, duration);
+            }
+
+            // ----- 页面切换 -----
             const pages = {
                 home: document.getElementById('page-home'),
                 emoji: document.getElementById('page-emoji'),
@@ -1237,22 +1724,11 @@
             const backBtns = document.querySelectorAll('[id^="backHomeBtn"]');
             const mainTitle = document.getElementById('mainTitle');
 
-            const toastEl = document.getElementById('toast');
-            function showToast(msg, duration = 2600) {
-                toastEl.textContent = msg;
-                toastEl.classList.add('show');
-                clearTimeout(toastEl._timer);
-                toastEl._timer = setTimeout(() => { toastEl.classList.remove('show'); }, duration);
-            }
-
-            // ----- 页面切换 -----
             function showPage(pageId) {
-                // 隐藏所有
                 Object.keys(pages).forEach(k => {
                     pages[k].style.display = 'none';
                     pages[k].classList.remove('active');
                 });
-                // 显示目标
                 if (pageId === 'home') {
                     pages.home.style.display = 'block';
                     pages.home.classList.add('active');
@@ -1262,35 +1738,30 @@
                     if (target) {
                         target.style.display = 'block';
                         target.classList.add('active');
-                        // 更新标题
                         const names = { emoji: '表情包制作', gif: 'GIF制作', idphoto: '证件照制作', warehouse: '仓库' };
                         mainTitle.textContent = '表情包证件照修改器 · ' + (names[pageId] || '');
-                        // 更新导航高亮
                         document.querySelectorAll('.func-nav .nav-btn').forEach(b => {
                             b.classList.toggle('active', b.dataset.page === pageId);
                         });
-                        // 触发对应模块的渲染
                         if (pageId === 'warehouse') renderWarehouse();
-                        if (pageId === 'emoji') { drawEmojiScene(); }
+                        if (pageId === 'emoji') drawEmojiScene();
+                        if (pageId === 'idphoto') drawIdphotoScene();
                     }
                 }
             }
 
-            // 主页按钮
             homeBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
                     const page = btn.dataset.page;
                     if (page) showPage(page);
                 });
             });
-            // 导航按钮
             navBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
                     const page = btn.dataset.page;
                     if (page) showPage(page);
                 });
             });
-            // 返回主页
             backBtns.forEach(btn => {
                 btn.addEventListener('click', () => showPage('home'));
             });
@@ -1302,15 +1773,32 @@
             //  全局状态
             // ================================================================
             const state = {
-                // 表情包
                 emoji: { image: null, texts: [], nextId: 1, selectedId: null, canvasSize: 600 },
-                // GIF
-                gif: { videoFile: null, videoURL: null, videoElement: null, clips: [], texts: [], nextId: 1,
-                cropData: null },
-                // 证件照
-                idphoto: { image: null, width: 25, height: 35, pxWidth: 295, pxHeight: 413, minKB: 0, maxKB: 200,
-                    format: 'image/jpeg' },
-                // 仓库
+                gif: {
+                    videoFile: null,
+                    videoURL: null,
+                    videoElement: null,
+                    clipStart: 0,
+                    clipEnd: 1.5,
+                    isClipped: false,
+                    cropData: null,
+                    texts: [],
+                    nextId: 1,
+                    selectedTextId: null,
+                },
+                idphoto: {
+                    image: null,
+                    width: 25,
+                    height: 35,
+                    pxWidth: 295,
+                    pxHeight: 413,
+                    dpi: 300,
+                    minKB: 0,
+                    maxKB: 200,
+                    format: 'image/jpeg',
+                    usePx: false,
+                    useDPI: false,
+                },
                 warehouse: [],
             };
 
@@ -1319,14 +1807,11 @@
             // ================================================================
             const emojiCanvas = document.getElementById('emojiCanvas');
             const emojiCtx = emojiCanvas.getContext('2d');
-            const emojiWrapper = document.getElementById('emojiCanvasWrapper');
             const emojiPlaceholder = document.getElementById('emojiPlaceholder');
-
             const emojiUploadBtn = document.getElementById('emojiUploadBtn');
             const emojiFileInput = document.getElementById('emojiFileInput');
             const emojiEditBtn = document.getElementById('emojiEditBtn');
             const emojiClearBtn = document.getElementById('emojiClearBtn');
-
             const emojiTextInput = document.getElementById('emojiTextInput');
             const emojiAddTextBtn = document.getElementById('emojiAddTextBtn');
             const emojiTextColor = document.getElementById('emojiTextColor');
@@ -1337,7 +1822,6 @@
             const emojiFontSizeLabel = document.getElementById('emojiFontSizeLabel');
             const emojiTextList = document.getElementById('emojiTextList');
             const emojiTextCount = document.getElementById('emojiTextCount');
-
             const emojiSizeGroup = document.getElementById('emojiSizeGroup');
             const emojiBgGroup = document.getElementById('emojiBgGroup');
             const emojiQualityGroup = document.getElementById('emojiQualityGroup');
@@ -1346,30 +1830,37 @@
             const emojiSaveBtn = document.getElementById('emojiSaveBtn');
             const emojiSizeHint = document.getElementById('emojiSizeHint');
 
-            let emojiDragging = false;
-            let emojiDragTarget = null;
-            let emojiDragOffX = 0,
+            let emojiDragging = false,
+                emojiDragTarget = null,
+                emojiDragOffX = 0,
                 emojiDragOffY = 0;
 
-            // ----- 绘图 -----
+            // ----- 初始化按钮高亮 -----
+            function initBtnGroups() {
+                document.querySelectorAll('.btn-group').forEach(group => {
+                    group.querySelectorAll('.opt-btn').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            group.querySelectorAll('.opt-btn').forEach(b => b.classList.remove(
+                            'active-opt'));
+                            this.classList.add('active-opt');
+                        });
+                    });
+                });
+            }
+            initBtnGroups();
+
             function drawEmojiScene() {
-                const w = state.emoji.canvasSize;
-                const h = w;
+                const w = state.emoji.canvasSize,
+                    h = w;
                 emojiCtx.clearRect(0, 0, w, h);
                 drawCheckerboard(emojiCtx, w, h);
-
                 if (state.emoji.image) {
                     const img = state.emoji.image;
                     const s = Math.min(w / img.width, h / img.height);
-                    const dw = img.width * s,
-                        dh = img.height * s;
-                    emojiCtx.drawImage(img, (w - dw) / 2, (h - dh) / 2, dw, dh);
+                    emojiCtx.drawImage(img, (w - img.width * s) / 2, (h - img.height * s) / 2, img.width * s, img.height *
+                    s);
                 }
-
-                for (const t of state.emoji.texts) {
-                    drawEmojiText(t);
-                }
-
+                for (const t of state.emoji.texts) drawEmojiText(t);
                 emojiPlaceholder.style.display = (state.emoji.image || state.emoji.texts.length > 0) ? 'none' : 'block';
                 emojiEditBtn.style.display = state.emoji.image ? 'inline-block' : 'none';
             }
@@ -1390,8 +1881,7 @@
                 emojiCtx.save();
                 emojiCtx.textAlign = 'center';
                 emojiCtx.textBaseline = 'middle';
-                let font = (t.bold ? 'bold ' : '') + fs + 'px "PingFang SC","Microsoft YaHei","Segoe UI",sans-serif';
-                emojiCtx.font = font;
+                emojiCtx.font = (t.bold ? 'bold ' : '') + fs + 'px "PingFang SC","Microsoft YaHei","Segoe UI",sans-serif';
                 if (t.stroke) {
                     emojiCtx.lineWidth = Math.max(2, fs / 14);
                     emojiCtx.strokeStyle = t.strokeColor || '#ffffff';
@@ -1437,7 +1927,6 @@
                 return null;
             }
 
-            // ----- 文字管理 -----
             function renderEmojiTextList() {
                 emojiTextList.innerHTML = '';
                 for (const t of state.emoji.texts) {
@@ -1522,7 +2011,6 @@
                 drawEmojiScene();
             }
 
-            // ----- 图片 -----
             function loadEmojiImage(file) {
                 if (!file) return;
                 const reader = new FileReader();
@@ -1548,11 +2036,10 @@
                 emojiEditBtn.style.display = 'none';
             }
 
-            // ----- 导出 -----
             function getEmojiSettings() {
-                const size = parseInt(emojiSizeGroup.querySelector('.opt-btn.active')?.dataset.value || '240', 10);
-                const bg = emojiBgGroup.querySelector('.opt-btn.active')?.dataset.value || 'transparent';
-                const quality = emojiQualityGroup.querySelector('.opt-btn.active')?.dataset.value || 'lossless';
+                const size = parseInt(emojiSizeGroup.querySelector('.opt-btn.active-opt')?.dataset.value || '240', 10);
+                const bg = emojiBgGroup.querySelector('.opt-btn.active-opt')?.dataset.value || 'transparent';
+                const quality = emojiQualityGroup.querySelector('.opt-btn.active-opt')?.dataset.value || 'lossless';
                 return { size, bg, quality };
             }
 
@@ -1616,8 +2103,7 @@
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
-                    a.download =
-                        `表情_${size}x${size}.${ext}`;
+                    a.download = `表情_${size}x${size}.${ext}`;
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
@@ -1661,12 +2147,12 @@
                 }, 'image/png');
             }
 
-            // ----- 交互 (拖拽) -----
+            // ----- 表情包交互 -----
             function setupEmojiInteraction() {
                 function getPos(e) {
                     const rect = emojiCanvas.getBoundingClientRect();
-                    const sx = state.emoji.canvasSize / rect.width;
-                    const sy = state.emoji.canvasSize / rect.height;
+                    const sx = state.emoji.canvasSize / rect.width,
+                        sy = state.emoji.canvasSize / rect.height;
                     const cx = e.clientX || (e.touches && e.touches[0].clientX);
                     const cy = e.clientY || (e.touches && e.touches[0].clientY);
                     if (cx == null) return { x: 0, y: 0 };
@@ -1727,11 +2213,9 @@
                 window.addEventListener('touchend', onUp);
             }
 
-            // ----- 初始化表情包 -----
             function initEmoji() {
                 emojiCanvas.width = 600;
                 emojiCanvas.height = 600;
-
                 emojiUploadBtn.addEventListener('click', () => emojiFileInput.click());
                 emojiFileInput.addEventListener('change', (e) => {
                     if (e.target.files && e.target.files[0]) loadEmojiImage(e.target.files[0]);
@@ -1744,13 +2228,11 @@
                         showToast('✅ 图片已裁剪');
                     });
                 });
-
                 emojiAddTextBtn.addEventListener('click', () => addEmojiText(emojiTextInput.value));
                 emojiTextInput.addEventListener('keydown', (e) => {
                     if (e.key === 'Enter') { e.preventDefault();
                         addEmojiText(emojiTextInput.value); }
                 });
-
                 emojiTextColor.addEventListener('input', updateEmojiStyle);
                 emojiStrokeColor.addEventListener('input', updateEmojiStyle);
                 emojiBoldCheck.addEventListener('change', updateEmojiStyle);
@@ -1759,51 +2241,19 @@
                     emojiFontSizeLabel.textContent = emojiFontSizeSlider.value;
                     updateEmojiStyle();
                 });
-
-                emojiSizeGroup.querySelectorAll('.opt-btn').forEach(b => {
-                    b.addEventListener('click', () => {
-                        emojiSizeGroup.querySelectorAll('.opt-btn').forEach(x => x.classList.remove('active'));
-                        b.classList.add('active');
-                        updateEmojiSizeHint();
-                    });
-                });
-                emojiBgGroup.querySelectorAll('.opt-btn').forEach(b => {
-                    b.addEventListener('click', () => {
-                        emojiBgGroup.querySelectorAll('.opt-btn').forEach(x => x.classList.remove('active'));
-                        b.classList.add('active');
-                    });
-                });
-                emojiQualityGroup.querySelectorAll('.opt-btn').forEach(b => {
-                    b.addEventListener('click', () => {
-                        emojiQualityGroup.querySelectorAll('.opt-btn').forEach(x => x.classList.remove(
-                        'active'));
-                        b.classList.add('active');
-                    });
-                });
-
                 emojiExportBtn.addEventListener('click', exportEmoji);
                 emojiPreviewBtn.addEventListener('click', previewEmoji);
                 emojiSaveBtn.addEventListener('click', saveEmojiToWarehouse);
 
                 setupEmojiInteraction();
-                updateEmojiSizeHint();
                 drawEmojiScene();
-
-                // 示例文字
                 setTimeout(() => {
-                    if (state.emoji.texts.length === 0) {
-                        addEmojiText('✨ 你好呀');
-                    }
+                    if (state.emoji.texts.length === 0) addEmojiText('✨ 你好呀');
                 }, 500);
             }
 
-            function updateEmojiSizeHint() {
-                const size = parseInt(emojiSizeGroup.querySelector('.opt-btn.active')?.dataset.value || '240', 10);
-                emojiSizeHint.innerHTML = `📏 微信推荐 <strong>240×240</strong> · 当前 ${size}×${size}`;
-            }
-
             // ================================================================
-            //  通用编辑器 (裁剪)
+            //  编辑器 (裁剪)
             // ================================================================
             let editorCallback = null;
             let editorImage = null;
@@ -1827,12 +2277,16 @@
             const zoomOutBtn = document.getElementById('zoomOutBtn');
             const resetZoomBtn = document.getElementById('resetZoomBtn');
 
-            function openEditorForImage(img, callback) {
+            function openEditorForImage(img, callback, aspectRatio) {
                 editorImage = img;
                 editorCallback = callback;
                 const size = 600;
                 editorCanvas.width = size;
                 editorCanvas.height = size;
+                // 如果设置了宽高比，调整裁剪框
+                if (aspectRatio) {
+                    // 裁剪框由CSS控制，我们只调整内部显示
+                }
                 editorScale = Math.min(size * 0.72 / img.width, size * 0.72 / img.height) * 1.0;
                 editorOffsetX = size / 2;
                 editorOffsetY = size / 2;
@@ -1847,7 +2301,6 @@
                 editorCtx.clearRect(0, 0, size, size);
                 editorCtx.fillStyle = '#f8f4f6';
                 editorCtx.fillRect(0, 0, size, size);
-                // 棋盘格
                 const s = 18;
                 for (let x = 0; x < size; x += s) {
                     for (let y = 0; y < size; y += s) {
@@ -1910,7 +2363,6 @@
                         onMove(e); } }, { passive: false });
                 window.addEventListener('touchend', onUp);
 
-                // 滚轮缩放
                 editorWrap.addEventListener('wheel', (e) => {
                     e.preventDefault();
                     const delta = e.deltaY > 0 ? -0.08 : 0.08;
@@ -1971,7 +2423,6 @@
                 temp.width = cropSize;
                 temp.height = cropSize;
                 const tc = temp.getContext('2d');
-                // 从 editorImage 中裁剪
                 const s = editorScale;
                 const cx = editorOffsetX,
                     cy = editorOffsetY;
@@ -2072,7 +2523,6 @@
                     sizeBadge.className = 'wh-size-badge';
                     sizeBadge.textContent = `${item.size || 240}px`;
                     div.appendChild(sizeBadge);
-
                     const dl = document.createElement('button');
                     dl.className = 'wh-download';
                     dl.textContent = '⬇️';
@@ -2087,7 +2537,6 @@
                         showToast('⬇️ 已下载');
                     });
                     div.appendChild(dl);
-
                     const del = document.createElement('button');
                     del.className = 'wh-del';
                     del.textContent = '×';
@@ -2100,7 +2549,6 @@
                             showToast('已删除'); }
                     });
                     div.appendChild(del);
-
                     div.addEventListener('click', () => {
                         const modal = document.getElementById('previewModal');
                         const img = document.getElementById('previewImage');
@@ -2125,7 +2573,6 @@
                 }
             }
 
-            // 仓库操作
             document.getElementById('whDownloadSelected').addEventListener('click', () => {
                 const items = getWarehouseItems();
                 const checks = document.querySelectorAll('#whGrid .wh-check:checked');
@@ -2174,7 +2621,6 @@
             // ================================================================
             const idphotoCanvas = document.getElementById('idphotoCanvas');
             const idphotoCtx = idphotoCanvas.getContext('2d');
-            const idphotoWrapper = document.getElementById('idphotoCanvasWrapper');
             const idphotoPlaceholder = document.getElementById('idphotoPlaceholder');
             const idphotoUploadBtn = document.getElementById('idphotoUploadBtn');
             const idphotoFileInput = document.getElementById('idphotoFileInput');
@@ -2184,11 +2630,14 @@
             const idphotoHeight = document.getElementById('idphotoHeight');
             const idphotoPxWidth = document.getElementById('idphotoPxWidth');
             const idphotoPxHeight = document.getElementById('idphotoPxHeight');
+            const idphotoDPI = document.getElementById('idphotoDPI');
             const idphotoMinKB = document.getElementById('idphotoMinKB');
             const idphotoMaxKB = document.getElementById('idphotoMaxKB');
             const idphotoFormat = document.getElementById('idphotoFormat');
             const idphotoSizeInfo = document.getElementById('idphotoSizeInfo');
             const idphotoHint = document.getElementById('idphotoHint');
+
+            let idphotoCropData = null;
 
             function drawIdphotoScene() {
                 const w = 600,
@@ -2205,7 +2654,8 @@
                 idphotoEditBtn.style.display = state.idphoto.image ? 'inline-block' : 'none';
                 const mm = state.idphoto.width + '×' + state.idphoto.height + 'mm';
                 const px = state.idphoto.pxWidth + '×' + state.idphoto.pxHeight + 'px';
-                idphotoSizeInfo.textContent = mm + ' · ' + px;
+                const dpi = state.idphoto.dpi || 300;
+                idphotoSizeInfo.textContent = mm + ' · ' + px + ' · ' + dpi + 'DPI';
             }
 
             function loadIdphotoImage(file) {
@@ -2232,16 +2682,14 @@
                 idphotoEditBtn.style.display = 'none';
             }
 
-            // 模板尺寸
-            document.querySelectorAll('.spec-group .btn-sm[data-w]').forEach(btn => {
+            // 模板尺寸 - 同时设置裁剪虚线
+            document.querySelectorAll('.size-template').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const w = parseFloat(btn.dataset.w);
                     const h = parseFloat(btn.dataset.h);
-                    const unit = btn.dataset.unit || 'mm';
                     idphotoWidth.value = w;
                     idphotoHeight.value = h;
-                    // 根据 mm 换算 px (1mm ≈ 3.78px @ 96dpi)
-                    const dpi = 96;
+                    const dpi = parseInt(idphotoDPI.value, 10) || 300;
                     const pxW = Math.round(w / 25.4 * dpi);
                     const pxH = Math.round(h / 25.4 * dpi);
                     idphotoPxWidth.value = pxW;
@@ -2250,33 +2698,60 @@
                     state.idphoto.height = h;
                     state.idphoto.pxWidth = pxW;
                     state.idphoto.pxHeight = pxH;
+                    state.idphoto.dpi = dpi;
+                    // 在裁剪时显示虚线框
                     drawIdphotoScene();
-                    showToast(`✅ 已应用 ${w}×${h}${unit} (${pxW}×${pxH}px)`);
+                    showToast(`✅ 已应用 ${w}×${h}mm (${pxW}×${pxH}px @ ${dpi}DPI)`);
+                    // 触发裁剪编辑
+                    if (state.idphoto.image) {
+                        openEditorForImage(state.idphoto.image, (cropped) => {
+                            state.idphoto.image = cropped;
+                            drawIdphotoScene();
+                            showToast('✅ 裁剪完成');
+                        }, w / h);
+                    }
                 });
             });
 
-            idphotoApplySizeBtn.addEventListener('click', () => {
+            document.getElementById('idphotoApplySizeBtn').addEventListener('click', () => {
                 const w = parseFloat(idphotoWidth.value) || 25;
                 const h = parseFloat(idphotoHeight.value) || 35;
                 state.idphoto.width = w;
                 state.idphoto.height = h;
+                const dpi = parseInt(idphotoDPI.value, 10) || 300;
+                state.idphoto.pxWidth = Math.round(w / 25.4 * dpi);
+                state.idphoto.pxHeight = Math.round(h / 25.4 * dpi);
+                state.idphoto.dpi = dpi;
                 drawIdphotoScene();
                 showToast(`✅ 已设置 ${w}×${h}mm`);
             });
 
-            idphotoApplyPxBtn.addEventListener('click', () => {
+            document.getElementById('idphotoApplyPxBtn').addEventListener('click', () => {
                 const w = parseInt(idphotoPxWidth.value, 10) || 295;
                 const h = parseInt(idphotoPxHeight.value, 10) || 413;
+                const dpi = parseInt(idphotoDPI.value, 10) || 300;
                 state.idphoto.pxWidth = w;
                 state.idphoto.pxHeight = h;
+                state.idphoto.dpi = dpi;
+                // 反向计算 mm
+                state.idphoto.width = Math.round(w / dpi * 25.4 * 10) / 10;
+                state.idphoto.height = Math.round(h / dpi * 25.4 * 10) / 10;
                 drawIdphotoScene();
-                showToast(`✅ 已设置 ${w}×${h}px`);
+                showToast(`✅ 已设置 ${w}×${h}px @ ${dpi}DPI`);
             });
 
-            idphotoApplySizeBtn2.addEventListener('click', () => {
+            document.getElementById('idphotoApplySizeBtn2').addEventListener('click', () => {
                 state.idphoto.minKB = parseInt(idphotoMinKB.value, 10) || 0;
                 state.idphoto.maxKB = parseInt(idphotoMaxKB.value, 10) || 200;
                 showToast(`✅ 文件大小 ${state.idphoto.minKB}-${state.idphoto.maxKB}KB`);
+            });
+
+            document.getElementById('idphotoResetSizeBtn').addEventListener('click', () => {
+                idphotoMinKB.value = 0;
+                idphotoMaxKB.value = 200;
+                state.idphoto.minKB = 0;
+                state.idphoto.maxKB = 200;
+                showToast('↺ 已复原');
             });
 
             function exportIdphoto() {
@@ -2288,14 +2763,12 @@
                 off.width = pw;
                 off.height = ph;
                 const oc = off.getContext('2d');
-                // 白色背景
                 oc.fillStyle = '#ffffff';
                 oc.fillRect(0, 0, pw, ph);
                 const img = state.idphoto.image;
                 const s = Math.min(pw / img.width, ph / img.height);
                 oc.drawImage(img, (pw - img.width * s) / 2, (ph - img.height * s) / 2, img.width * s, img.height * s);
 
-                // 文件大小控制 (通过 quality 参数)
                 let quality = 0.92;
                 let mime = format;
                 let ext = 'jpg';
@@ -2303,23 +2776,14 @@
                     ext = 'png';
                     quality = undefined; }
 
-                // 尝试调整质量以满足大小要求
                 function tryExport(q) {
                     off.toBlob((blob) => {
                         if (!blob) { showToast('❌ 导出失败'); return; }
                         const sizeKB = blob.size / 1024;
                         const minKB = state.idphoto.minKB || 0;
                         const maxKB = state.idphoto.maxKB || 200;
-                        if (sizeKB > maxKB && q > 0.1) {
-                            // 降低质量重试
-                            tryExport(q - 0.08);
-                            return;
-                        }
-                        if (sizeKB < minKB && q < 0.98) {
-                            // 提高质量重试
-                            tryExport(q + 0.05);
-                            return;
-                        }
+                        if (sizeKB > maxKB && q > 0.1) { tryExport(q - 0.08); return; }
+                        if (sizeKB < minKB && q < 0.98) { tryExport(q + 0.05); return; }
                         const url = URL.createObjectURL(blob);
                         const a = document.createElement('a');
                         a.href = url;
@@ -2410,34 +2874,42 @@
                 document.getElementById('idphotoPreviewBtn').addEventListener('click', previewIdphoto);
                 document.getElementById('idphotoSaveBtn').addEventListener('click', saveIdphotoToWarehouse);
 
-                // 默认值
-                const dpi = 96;
+                const dpi = 300;
                 const w = 25,
                     h = 35;
                 idphotoWidth.value = w;
                 idphotoHeight.value = h;
+                idphotoDPI.value = dpi;
                 idphotoPxWidth.value = Math.round(w / 25.4 * dpi);
                 idphotoPxHeight.value = Math.round(h / 25.4 * dpi);
                 state.idphoto.width = w;
                 state.idphoto.height = h;
                 state.idphoto.pxWidth = Math.round(w / 25.4 * dpi);
                 state.idphoto.pxHeight = Math.round(h / 25.4 * dpi);
+                state.idphoto.dpi = dpi;
                 drawIdphotoScene();
             }
 
             // ================================================================
-            //  GIF 模块 (简化版)
+            //  GIF 模块 (重写)
             // ================================================================
             const gifVideo = document.getElementById('gifPreviewVideo');
             const gifPlaceholder = document.getElementById('gifPlaceholder');
             const gifUploadBtn = document.getElementById('gifUploadBtn');
             const gifFileInput = document.getElementById('gifFileInput');
+            const gifClearBtn = document.getElementById('gifClearBtn');
             const gifStatus = document.getElementById('gifStatus');
             const gifClipInfo = document.getElementById('gifClipInfo');
             const gifStartTime = document.getElementById('gifStartTime');
             const gifEndTime = document.getElementById('gifEndTime');
             const gifApplyClipBtn = document.getElementById('gifApplyClipBtn');
             const gifResetClipBtn = document.getElementById('gifResetClipBtn');
+            const gifProgress = document.getElementById('gifProgress');
+            const gifTimeCurrent = document.getElementById('gifTimeCurrent');
+            const gifTimeTotal = document.getElementById('gifTimeTotal');
+            const clipStartLine = document.getElementById('clipStartLine');
+            const clipEndLine = document.getElementById('clipEndLine');
+            const clipHighlight = document.getElementById('clipHighlight');
             const gifCropBtn = document.getElementById('gifCropBtn');
             const gifResetCropBtn = document.getElementById('gifResetCropBtn');
             const gifCropInfo = document.getElementById('gifCropInfo');
@@ -2449,60 +2921,200 @@
             const gifFontSizeLabel = document.getElementById('gifFontSizeLabel');
             const gifTextList = document.getElementById('gifTextList');
             const gifSizeSelect = document.getElementById('gifSizeSelect');
+            const gifExportSize = document.getElementById('gifExportSize');
             const gifGenBtn = document.getElementById('gifGenBtn');
             const gifPreviewGenBtn = document.getElementById('gifPreviewGenBtn');
             const gifSaveBtn = document.getElementById('gifSaveBtn');
+            const gifPreviewPlayBtn = document.getElementById('gifPreviewPlayBtn');
 
             let gifTexts = [];
             let gifNextId = 1;
             let gifSelectedTextId = null;
-            let gifCropData = null; // { x, y, w, h } 归一化
+            let gifCropData = null;
+            let gifIsClipped = false;
+            let gifClipStart = 0,
+                gifClipEnd = 1.5;
+            let gifDuration = 0;
 
+            // ----- 视频加载 & 压缩 -----
             function loadGifVideo(file) {
                 if (!file) return;
+                // 创建视频元素用于压缩
+                const video = document.createElement('video');
                 const url = URL.createObjectURL(file);
-                gifVideo.src = url;
-                gifVideo.load();
-                gifVideo.onloadeddata = () => {
-                    gifPlaceholder.style.display = 'none';
-                    gifStatus.textContent = '✅ ' + file.name;
-                    state.gif.videoElement = gifVideo;
-                    state.gif.videoFile = file;
-                    // 设置默认时间
-                    const dur = Math.min(gifVideo.duration || 3, 3);
-                    gifStartTime.value = 0;
-                    gifEndTime.value = Math.min(1.5, dur);
-                    gifClipInfo.textContent = '0 - ' + Math.min(1.5, dur).toFixed(1) + 's';
-                    showToast('✅ 视频已加载，请选择片段');
+                video.src = url;
+                video.muted = true;
+                video.preload = 'auto';
+
+                video.onloadeddata = () => {
+                    const vw = video.videoWidth || 640;
+                    const vh = video.videoHeight || 480;
+                    // 压缩到 360p 或更低
+                    let targetW = 360,
+                        targetH = 360;
+                    if (vw > vh) {
+                        targetW = 360;
+                        targetH = Math.round(360 * vh / vw);
+                    } else {
+                        targetH = 360;
+                        targetW = Math.round(360 * vw / vh);
+                    }
+                    if (targetW < 100) targetW = 100;
+                    if (targetH < 100) targetH = 100;
+
+                    // 使用 canvas 压缩
+                    const canvas = document.createElement('canvas');
+                    canvas.width = targetW;
+                    canvas.height = targetH;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(video, 0, 0, targetW, targetH);
+                    const compressedDataURL = canvas.toDataURL('video/mp4', 0.5);
+
+                    // 加载压缩后的视频
+                    const compressedVideo = document.createElement('video');
+                    compressedVideo.src = compressedDataURL;
+                    compressedVideo.muted = true;
+                    compressedVideo.preload = 'auto';
+                    compressedVideo.onloadeddata = () => {
+                        state.gif.videoElement = compressedVideo;
+                        state.gif.videoFile = file;
+                        gifVideo.src = compressedDataURL;
+                        gifVideo.load();
+                        gifVideo.onloadeddata = () => {
+                            gifPlaceholder.style.display = 'none';
+                            gifDuration = gifVideo.duration || 3;
+                            gifTimeTotal.textContent = gifDuration.toFixed(1) + 's';
+                            gifProgress.max = gifDuration;
+                            gifStatus.textContent = '✅ 已压缩: ' + file.name;
+                            // 设置默认片段
+                            gifClipStart = 0;
+                            gifClipEnd = Math.min(1.5, gifDuration);
+                            gifStartTime.value = gifClipStart;
+                            gifEndTime.value = gifClipEnd;
+                            gifIsClipped = false;
+                            updateClipLines();
+                            gifClipInfo.textContent = '0 - ' + gifClipEnd.toFixed(1) + 's';
+                            showToast('✅ 视频已加载并压缩');
+                        };
+                        gifVideo.onerror = () => {
+                            // 如果压缩视频加载失败，使用原始视频
+                            gifVideo.src = url;
+                            gifVideo.load();
+                            gifVideo.onloadeddata = () => {
+                                gifPlaceholder.style.display = 'none';
+                                gifDuration = gifVideo.duration || 3;
+                                gifTimeTotal.textContent = gifDuration.toFixed(1) + 's';
+                                gifProgress.max = gifDuration;
+                                gifStatus.textContent = '⚠️ 压缩失败，使用原视频: ' + file.name;
+                                gifClipStart = 0;
+                                gifClipEnd = Math.min(1.5, gifDuration);
+                                gifStartTime.value = gifClipStart;
+                                gifEndTime.value = gifClipEnd;
+                                gifIsClipped = false;
+                                updateClipLines();
+                                gifClipInfo.textContent = '0 - ' + gifClipEnd.toFixed(1) + 's';
+                                showToast('⚠️ 使用原视频 (可能较大)');
+                            };
+                            gifVideo.onerror = () => showToast('❌ 视频加载失败');
+                            gifVideo.play().then(() => gifVideo.pause()).catch(() => {});
+                        };
+                        gifVideo.play().then(() => gifVideo.pause()).catch(() => {});
+                    };
+                    compressedVideo.onerror = () => {
+                        // 压缩失败，使用原始视频
+                        gifVideo.src = url;
+                        gifVideo.load();
+                        gifVideo.onloadeddata = () => {
+                            gifPlaceholder.style.display = 'none';
+                            gifDuration = gifVideo.duration || 3;
+                            gifTimeTotal.textContent = gifDuration.toFixed(1) + 's';
+                            gifProgress.max = gifDuration;
+                            gifStatus.textContent = '⚠️ 压缩失败，使用原视频: ' + file.name;
+                            gifClipStart = 0;
+                            gifClipEnd = Math.min(1.5, gifDuration);
+                            gifStartTime.value = gifClipStart;
+                            gifEndTime.value = gifClipEnd;
+                            gifIsClipped = false;
+                            updateClipLines();
+                            gifClipInfo.textContent = '0 - ' + gifClipEnd.toFixed(1) + 's';
+                            showToast('⚠️ 使用原视频 (可能较大)');
+                        };
+                        gifVideo.onerror = () => showToast('❌ 视频加载失败');
+                        gifVideo.play().then(() => gifVideo.pause()).catch(() => {});
+                    };
+                    compressedVideo.load();
                 };
-                gifVideo.onerror = () => { showToast('❌ 视频加载失败');
-                    gifStatus.textContent = '❌ 加载失败'; };
+                video.onerror = () => {
+                    // 原始视频加载失败
+                    showToast('❌ 视频加载失败');
+                    gifStatus.textContent = '❌ 加载失败';
+                };
+                video.load();
             }
 
+            function clearGifVideo() {
+                gifVideo.src = '';
+                gifVideo.load();
+                gifPlaceholder.style.display = 'block';
+                gifStatus.textContent = '未选择视频';
+                gifClipInfo.textContent = '未选择片段';
+                gifTimeTotal.textContent = '0.0s';
+                gifTimeCurrent.textContent = '0.0s';
+                gifProgress.value = 0;
+                state.gif.videoElement = null;
+                state.gif.videoFile = null;
+                gifIsClipped = false;
+                gifCropData = null;
+                gifTexts = [];
+                renderGifTextList();
+                gifCropInfo.textContent = '未裁剪';
+                showToast('已清空视频');
+            }
+
+            // ----- 进度条 & 选择线 -----
+            function updateClipLines() {
+                const dur = gifDuration || 1;
+                const startPct = Math.max(0, Math.min(100, (gifClipStart / dur) * 100));
+                const endPct = Math.max(0, Math.min(100, (gifClipEnd / dur) * 100));
+                clipStartLine.style.left = startPct + '%';
+                clipEndLine.style.left = endPct + '%';
+                clipHighlight.style.left = startPct + '%';
+                clipHighlight.style.width = (endPct - startPct) + '%';
+                gifStartTime.value = gifClipStart;
+                gifEndTime.value = gifClipEnd;
+                gifClipInfo.textContent = gifClipStart.toFixed(1) + ' - ' + gifClipEnd.toFixed(1) + 's';
+            }
+
+            // ----- 片段选择 -----
             function applyGifClip() {
                 const start = parseFloat(gifStartTime.value) || 0;
                 let end = parseFloat(gifEndTime.value) || 1.5;
-                const dur = gifVideo.duration || 3;
+                const dur = gifDuration || 3;
                 if (end > dur) end = dur;
                 if (start >= end) { showToast('⚠️ 起始时间必须小于结束时间'); return; }
                 if (end - start > 2.5) { showToast('⚠️ 片段最长 2.5 秒'); return; }
+                gifClipStart = start;
+                gifClipEnd = end;
+                gifIsClipped = true;
+                updateClipLines();
+                // 预览跳转
                 gifVideo.currentTime = start;
                 gifVideo.play();
-                setTimeout(() => gifVideo.pause(), 100);
-                gifClipInfo.textContent = start.toFixed(1) + ' - ' + end.toFixed(1) + 's';
-                showToast(`✅ 片段已应用: ${start.toFixed(1)}-${end.toFixed(1)}s`);
+                setTimeout(() => gifVideo.pause(), 200);
+                showToast(`✅ 片段已应用: ${start.toFixed(1)}-${end.toFixed(1)}s (${(end-start).toFixed(1)}s)`);
             }
 
             function resetGifClip() {
-                const dur = gifVideo.duration || 3;
-                gifStartTime.value = 0;
-                gifEndTime.value = Math.min(1.5, dur);
-                gifClipInfo.textContent = '0 - ' + Math.min(1.5, dur).toFixed(1) + 's';
+                const dur = gifDuration || 3;
+                gifClipStart = 0;
+                gifClipEnd = Math.min(1.5, dur);
+                gifIsClipped = false;
+                updateClipLines();
                 gifVideo.currentTime = 0;
                 showToast('↺ 已重置片段');
             }
 
-            // GIF 文字
+            // ----- GIF 文字 -----
             function renderGifTextList() {
                 gifTextList.innerHTML = '';
                 for (const t of gifTexts) {
@@ -2516,10 +3128,12 @@
                     const del = document.createElement('span');
                     del.className = 'tag-del';
                     del.textContent = '×';
-                    del.addEventListener('click', (e) => { e.stopPropagation();
-                        gifTexts = gifTexts.filter(x => x.id !== t.id); if (gifSelectedTextId === t.id) gifSelectedTextId =
-                            null;
-                        renderGifTextList(); });
+                    del.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        gifTexts = gifTexts.filter(x => x.id !== t.id);
+                        if (gifSelectedTextId === t.id) gifSelectedTextId = null;
+                        renderGifTextList();
+                    });
                     tag.appendChild(del);
                     tag.addEventListener('click', () => { gifSelectedTextId = t.id;
                         renderGifTextList(); });
@@ -2530,6 +3144,7 @@
             function addGifText() {
                 const txt = gifTextInput.value.trim();
                 if (!txt) { showToast('请输入文字'); return; }
+                if (!gifIsClipped) { showToast('⚠️ 请先选择视频片段'); return; }
                 gifTexts.push({ id: gifNextId++, text: txt, color: gifTextColor.value, bold: gifBoldCheck.checked,
                     fontSize: parseInt(gifFontSizeSlider.value, 10) || 32 });
                 gifTextInput.value = '';
@@ -2537,30 +3152,106 @@
                 showToast('✅ 已添加文字');
             }
 
-            // 生成 GIF
-            function generateGifFromVideo() {
-                if (!state.gif.videoElement) { showToast('请先上传视频'); return; }
+            // ----- 裁剪 (1:1) -----
+            function applyGifCrop() {
+                if (!state.gif.videoElement || !gifIsClipped) {
+                    showToast('⚠️ 请先上传视频并选择片段');
+                    return;
+                }
                 const video = state.gif.videoElement;
-                const start = parseFloat(gifStartTime.value) || 0;
-                let end = parseFloat(gifEndTime.value) || 1.5;
-                const dur = video.duration || 3;
-                if (end > dur) end = dur;
-                if (start >= end) { showToast('⚠️ 请设置有效的片段'); return; }
+                const canvas = document.createElement('canvas');
+                const vw = video.videoWidth || 640,
+                    vh = video.videoHeight || 480;
+                canvas.width = vw;
+                canvas.height = vh;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0);
+
+                const img = new Image();
+                img.onload = () => {
+                    openEditorForImage(img, (cropped) => {
+                        const origW = img.width,
+                            origH = img.height;
+                        const cw = cropped.width,
+                            ch = cropped.height;
+                        // 1:1 裁剪，取居中正方形
+                        const size = Math.min(cw, ch);
+                        const sx = (cw - size) / 2,
+                            sy = (ch - size) / 2;
+                        const temp = document.createElement('canvas');
+                        temp.width = size;
+                        temp.height = size;
+                        const tc = temp.getContext('2d');
+                        tc.drawImage(cropped, sx, sy, size, size, 0, 0, size, size);
+
+                        // 转换为 1:1
+                        const finalImg = new Image();
+                        finalImg.onload = () => {
+                            // 计算裁剪比例
+                            const ratio = size / Math.min(origW, origH);
+                            gifCropData = { x: 0, y: 0, w: 1, h: 1, scale: ratio };
+                            gifCropInfo.textContent = '✅ 1:1 裁剪';
+                            showToast('✅ 1:1 裁剪已应用');
+                        };
+                        finalImg.src = temp.toDataURL('image/png');
+                    }, 1);
+                };
+                img.src = canvas.toDataURL();
+            }
+
+            function resetGifCrop() {
+                gifCropData = null;
+                gifCropInfo.textContent = '未裁剪';
+                showToast('↺ 已重置裁剪');
+            }
+
+            // ----- 预览效果 (播放片段 + 文字 + 裁剪) -----
+            function previewGifEffect() {
+                if (!state.gif.videoElement || !gifIsClipped) {
+                    showToast('⚠️ 请先选择视频片段');
+                    return;
+                }
+                const video = state.gif.videoElement;
+                const start = gifClipStart,
+                    end = gifClipEnd;
+                video.currentTime = start;
+                video.play();
+                // 监听播放到结束
+                const onTimeUpdate = () => {
+                    if (video.currentTime >= end) {
+                        video.pause();
+                        video.removeEventListener('timeupdate', onTimeUpdate);
+                    }
+                };
+                video.addEventListener('timeupdate', onTimeUpdate);
+                showToast('▶️ 预览片段 (带文字/裁剪效果)');
+            }
+
+            // ----- 生成 GIF (优化) -----
+            function generateGifFromVideo() {
+                if (!state.gif.videoElement || !gifIsClipped) {
+                    showToast('⚠️ 请先上传视频并选择片段');
+                    return;
+                }
+                const video = state.gif.videoElement;
+                const start = gifClipStart,
+                    end = gifClipEnd;
                 const duration = end - start;
                 if (duration > 2.5) { showToast('⚠️ 片段最长 2.5 秒'); return; }
 
                 const size = parseInt(gifSizeSelect.value, 10);
-                const maxFrames = 40;
-                const interval = 0.06;
+                const maxFrames = 35;
+                const interval = Math.max(0.04, duration / maxFrames);
                 const totalFrames = Math.min(Math.floor(duration / interval), maxFrames);
                 if (totalFrames < 2) { showToast('⏱️ 片段太短'); return; }
 
                 gifGenBtn.disabled = true;
                 gifGenBtn.textContent = '⏳ 生成中...';
 
+                // 使用 worker
                 const gif = new GIF({
                     workers: 2,
-                    quality: 15,
+                    quality: 10,
                     width: size,
                     height: size,
                     workerURL: 'https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js',
@@ -2585,20 +3276,22 @@
                         oc.clearRect(0, 0, size, size);
                         oc.fillStyle = '#ffffff';
                         oc.fillRect(0, 0, size, size);
+
                         const vw = video.videoWidth || 640,
                             vh = video.videoHeight || 480;
-                        const s = Math.min(size / vw, size / vh);
-                        // 应用裁剪
                         let sx = 0,
                             sy = 0,
                             sw = vw,
                             sh = vh;
                         if (gifCropData) {
-                            sx = gifCropData.x * vw;
-                            sy = gifCropData.y * vh;
-                            sw = gifCropData.w * vw;
-                            sh = gifCropData.h * vh;
+                            // 1:1 裁剪
+                            const cropSize = Math.min(vw, vh);
+                            sx = (vw - cropSize) / 2;
+                            sy = (vh - cropSize) / 2;
+                            sw = cropSize;
+                            sh = cropSize;
                         }
+                        const s = Math.min(size / sw, size / sh);
                         const dw = sw * s,
                             dh = sh * s;
                         oc.drawImage(video, sx, sy, sw, sh, (size - dw) / 2, (size - dh) / 2, dw, dh);
@@ -2609,7 +3302,8 @@
                             oc.save();
                             oc.textAlign = 'center';
                             oc.textBaseline = 'middle';
-                            oc.font = (t.bold ? 'bold ' : '') + fs + 'px "PingFang SC","Microsoft YaHei","Segoe UI",sans-serif';
+                            oc.font = (t.bold ? 'bold ' : '') + fs +
+                            'px "PingFang SC","Microsoft YaHei","Segoe UI",sans-serif';
                             oc.fillStyle = t.color || '#d45a7a';
                             oc.fillText(t.text, size / 2, size / 2);
                             oc.restore();
@@ -2618,14 +3312,18 @@
                         gif.addFrame(off, { copy: true, delay: Math.round(interval * 1000) });
                         frameCount++;
                         currentTime += interval;
-                        gifGenBtn.textContent = `⏳ ${Math.round((frameCount/totalFrames)*50)}%`;
-                        setTimeout(addFrame, 30);
+                        const pct = Math.round((frameCount / totalFrames) * 60);
+                        gifGenBtn.textContent = `⏳ ${pct}%`;
+                        setTimeout(addFrame, 20);
                     });
                     const timeout = setTimeout(() => {
-                        if (frameCount < totalFrames) { frameCount++;
+                        if (frameCount < totalFrames) {
+                            frameCount++;
                             currentTime += interval;
-                            setTimeout(addFrame, 30); }
-                    }, 500);
+                            gifGenBtn.textContent = `⏳ ${Math.round((frameCount/totalFrames)*60)}%`;
+                            setTimeout(addFrame, 20);
+                        }
+                    }, 400);
                     video.addEventListener('seeked', () => clearTimeout(timeout), { once: true });
                 }
 
@@ -2637,25 +3335,93 @@
                     gifGenBtn.disabled = false;
                     gifGenBtn.textContent = '⚡ 生成 GIF';
                     if (!blob || blob.size === 0) { showToast('❌ 生成失败'); return; }
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `表情_${size}x${size}.gif`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    setTimeout(() => URL.revokeObjectURL(url), 5000);
-                    showToast(`✅ GIF 已生成 (${(blob.size/1024).toFixed(1)}KB)`);
 
-                    // 存入仓库
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        const items = getWarehouseItems();
-                        items.push({ type: 'gif', data: e.target.result, size: size, time: Date.now() });
-                        saveWarehouseItems(items);
-                        renderWarehouse();
-                    };
-                    reader.readAsDataURL(blob);
+                    // 检查是否需要压缩到 1MB
+                    const exportSize = gifExportSize.value;
+                    let finalBlob = blob;
+                    if (exportSize === 'compress' && blob.size > 1024 * 1024) {
+                        // 尝试重新生成更小尺寸
+                        showToast('⏳ 压缩到 ≤1MB...');
+                        // 使用更低的 quality 重新生成
+                        const gif2 = new GIF({
+                            workers: 2,
+                            quality: 5,
+                            width: Math.min(size, 160),
+                            height: Math.min(size, 160),
+                            workerURL: 'https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js',
+                        });
+                        // 重新采样帧 (简化)
+                        const off2 = document.createElement('canvas');
+                        off2.width = Math.min(size, 160);
+                        off2.height = Math.min(size, 160);
+                        const oc2 = off2.getContext('2d');
+                        // 从原视频重新生成
+                        let frameIdx = 0;
+                        let t = start;
+                        const totalFrames2 = Math.min(20, totalFrames);
+                        const interval2 = duration / totalFrames2;
+
+                        function addFrame2() {
+                            if (frameIdx >= totalFrames2 || t >= end) {
+                                gif2.render();
+                                return;
+                            }
+                            video.currentTime = t;
+                            video.addEventListener('seeked', function onSeek2() {
+                                video.removeEventListener('seeked', onSeek2);
+                                oc2.clearRect(0, 0, off2.width, off2.height);
+                                oc2.fillStyle = '#ffffff';
+                                oc2.fillRect(0, 0, off2.width, off2.height);
+                                const vw = video.videoWidth || 640,
+                                    vh = video.videoHeight || 480;
+                                let sx = 0,
+                                    sy = 0,
+                                    sw = vw,
+                                    sh = vh;
+                                if (gifCropData) {
+                                    const cropSize = Math.min(vw, vh);
+                                    sx = (vw - cropSize) / 2;
+                                    sy = (vh - cropSize) / 2;
+                                    sw = cropSize;
+                                    sh = cropSize;
+                                }
+                                const s2 = Math.min(off2.width / sw, off2.height / sh);
+                                oc2.drawImage(video, sx, sy, sw, sh, (off2.width - sw * s2) / 2, (off2.height - sh *
+                                    s2) / 2, sw * s2, sh * s2);
+                                for (const t of gifTexts) {
+                                    const fs = Math.max(8, Math.round((t.fontSize || 32) * (off2.width / 600)));
+                                    oc2.save();
+                                    oc2.textAlign = 'center';
+                                    oc2.textBaseline = 'middle';
+                                    oc2.font = (t.bold ? 'bold ' : '') + fs +
+                                    'px "PingFang SC","Microsoft YaHei","Segoe UI",sans-serif';
+                                    oc2.fillStyle = t.color || '#d45a7a';
+                                    oc2.fillText(t.text, off2.width / 2, off2.height / 2);
+                                    oc2.restore();
+                                }
+                                gif2.addFrame(off2, { copy: true, delay: Math.round(interval2 * 1000) });
+                                frameIdx++;
+                                t += interval2;
+                                setTimeout(addFrame2, 15);
+                            });
+                            const to = setTimeout(() => {
+                                if (frameIdx < totalFrames2) {
+                                    frameIdx++;
+                                    t += interval2;
+                                    setTimeout(addFrame2, 15);
+                                }
+                            }, 300);
+                            video.addEventListener('seeked', () => clearTimeout(to), { once: true });
+                        }
+                        gif2.on('finished', (compressedBlob) => {
+                            finalBlob = compressedBlob;
+                            downloadGif(finalBlob, size);
+                        });
+                        setTimeout(addFrame2, 200);
+                        return;
+                    }
+
+                    downloadGif(finalBlob, size);
                 });
 
                 setTimeout(addFrame, 300);
@@ -2666,62 +3432,68 @@
                         gifGenBtn.textContent = '⚡ 生成 GIF';
                         showToast('⏱️ 生成超时');
                     }
-                }, 45000);
+                }, 50000);
                 gif.on('finished', () => clearTimeout(globalTimeout));
             }
 
+            function downloadGif(blob, size) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `表情_${size}x${size}.gif`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                setTimeout(() => URL.revokeObjectURL(url), 5000);
+                showToast(`✅ GIF 已生成 (${(blob.size/1024).toFixed(1)}KB)`);
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const items = getWarehouseItems();
+                    items.push({ type: 'gif', data: e.target.result, size: size, time: Date.now() });
+                    saveWarehouseItems(items);
+                    renderWarehouse();
+                };
+                reader.readAsDataURL(blob);
+            }
+
+            // ----- 初始化 GIF -----
             function initGif() {
                 gifUploadBtn.addEventListener('click', () => gifFileInput.click());
                 gifFileInput.addEventListener('change', (e) => {
                     if (e.target.files && e.target.files[0]) loadGifVideo(e.target.files[0]);
                 });
+                gifClearBtn.addEventListener('click', clearGifVideo);
+
+                // 进度条
+                gifVideo.addEventListener('timeupdate', () => {
+                    gifProgress.value = gifVideo.currentTime;
+                    gifTimeCurrent.textContent = gifVideo.currentTime.toFixed(1) + 's';
+                });
+                gifProgress.addEventListener('input', () => {
+                    const val = parseFloat(gifProgress.value);
+                    gifVideo.currentTime = val;
+                    gifTimeCurrent.textContent = val.toFixed(1) + 's';
+                });
+
                 gifApplyClipBtn.addEventListener('click', applyGifClip);
                 gifResetClipBtn.addEventListener('click', resetGifClip);
+
                 gifAddTextBtn.addEventListener('click', addGifText);
                 gifTextInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault();
                         addGifText(); } });
                 gifFontSizeSlider.addEventListener('input', () => { gifFontSizeLabel.textContent = gifFontSizeSlider.value; });
+
+                gifCropBtn.addEventListener('click', applyGifCrop);
+                gifResetCropBtn.addEventListener('click', resetGifCrop);
+                gifPreviewPlayBtn.addEventListener('click', previewGifEffect);
+
                 gifGenBtn.addEventListener('click', generateGifFromVideo);
                 gifPreviewGenBtn.addEventListener('click', () => {
-                    // 预览：生成后展示
                     generateGifFromVideo();
                 });
                 gifSaveBtn.addEventListener('click', () => {
                     showToast('💡 请先生成 GIF，会自动存入仓库');
-                });
-
-                // 裁剪 - 使用通用编辑器
-                gifCropBtn.addEventListener('click', () => {
-                    if (!state.gif.videoElement) { showToast('请先上传视频'); return; }
-                    // 截取当前帧作为裁剪参考
-                    const video = state.gif.videoElement;
-                    const canvas = document.createElement('canvas');
-                    canvas.width = video.videoWidth || 640;
-                    canvas.height = video.videoHeight || 480;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(video, 0, 0);
-                    const img = new Image();
-                    img.onload = () => {
-                        openEditorForImage(img, (cropped) => {
-                            // 计算裁剪比例
-                            const origW = img.width,
-                                origH = img.height;
-                            const cw = cropped.width,
-                                ch = cropped.height;
-                            // 模拟裁剪数据 (归一化)
-                            // 由于编辑器返回的是裁剪后的图片，我们记录比例
-                            gifCropData = { x: 0, y: 0, w: cw / origW, h: ch / origH };
-                            gifCropInfo.textContent = `裁剪 ${Math.round(gifCropData.w*100)}% × ${Math.round(gifCropData.h*100)}%`;
-                            showToast('✅ 裁剪已应用');
-                        });
-                    };
-                    img.src = canvas.toDataURL();
-                });
-
-                gifResetCropBtn.addEventListener('click', () => {
-                    gifCropData = null;
-                    gifCropInfo.textContent = '未裁剪';
-                    showToast('↺ 已重置裁剪');
                 });
             }
 
@@ -2734,6 +3506,7 @@
             renderWarehouse();
 
             console.log('🌸 表情包证件照修改器已启动 | KIKI');
+            console.log('🔑 密码: 1998 (搜索 CORRECT_PIN 修改)');
             console.log('📌 支持：表情包 · GIF · 证件照 · 仓库');
 
         })();
