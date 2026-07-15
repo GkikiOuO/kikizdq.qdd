@@ -1,0 +1,2743 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>表情包证件照修改器</title>
+    <!-- gif.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
+    <style>
+        /* ===== 全局重置 & 主题 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #ffe8ee 0%, #ffd9e2 50%, #ffc8d4 100%);
+            min-height: 100vh;
+            padding: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        .app-container {
+            max-width: 1360px;
+            width: 100%;
+            background: rgba(255, 245, 247, 0.60);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border-radius: 48px;
+            padding: 24px 28px 28px;
+            box-shadow: 0 20px 60px rgba(255, 150, 180, 0.20);
+            border: 1px solid rgba(255, 255, 255, 0.50);
+            transition: all 0.3s;
+        }
+
+        /* ===== 头部 (全局) ===== */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .header-left .icon {
+            font-size: 32px;
+        }
+        .header-left h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #6b3a4a;
+            background: linear-gradient(135deg, #d45a7a, #b84a6a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.45);
+            padding: 4px 16px 4px 8px;
+            border-radius: 60px;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.50);
+            box-shadow: 0 2px 12px rgba(255, 150, 180, 0.08);
+        }
+        .header-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, 0.70);
+            box-shadow: 0 2px 8px rgba(255, 130, 160, 0.15);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            background: #ffd9e2;
+            flex-shrink: 0;
+        }
+        .header-avatar:hover {
+            transform: scale(1.08);
+            box-shadow: 0 4px 16px rgba(255, 130, 160, 0.30);
+        }
+        .header-avatar-fallback {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffb6c1, #ff8da1);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: #fff;
+            flex-shrink: 0;
+            border: 2px solid rgba(255, 255, 255, 0.70);
+        }
+        .header-right .maker-text {
+            font-size: 15px;
+            color: #7a4e5e;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        .header-right .maker-text span {
+            color: #b45374;
+            font-weight: 600;
+        }
+
+        /* ===== 主页 ===== */
+        #page-home {
+            display: block;
+        }
+        #page-home .home-content {
+            text-align: center;
+            padding: 30px 20px 20px;
+        }
+        #page-home .home-content .home-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #6b3a4a;
+            margin-bottom: 8px;
+        }
+        #page-home .home-content .home-sub {
+            font-size: 16px;
+            color: #9a7a8a;
+            margin-bottom: 28px;
+        }
+        #page-home .home-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 16px 24px;
+            margin-bottom: 36px;
+        }
+        #page-home .home-buttons .home-btn {
+            padding: 14px 40px;
+            border-radius: 60px;
+            border: none;
+            background: rgba(255, 255, 255, 0.55);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            font-size: 18px;
+            font-weight: 600;
+            color: #6b3a4a;
+            cursor: pointer;
+            transition: all 0.25s;
+            box-shadow: 0 4px 16px rgba(255, 130, 160, 0.06);
+            min-width: 140px;
+        }
+        #page-home .home-buttons .home-btn:hover {
+            transform: translateY(-4px) scale(1.02);
+            background: rgba(255, 255, 255, 0.75);
+            box-shadow: 0 8px 28px rgba(255, 130, 160, 0.12);
+            border-color: #ff8da1;
+        }
+        #page-home .home-buttons .home-btn .emoji {
+            margin-right: 8px;
+        }
+        #page-home .home-bubble {
+            max-width: 640px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(8px);
+            border-radius: 40px;
+            padding: 24px 32px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            color: #6b3a4a;
+            font-size: 15px;
+            line-height: 1.8;
+            box-shadow: 0 4px 20px rgba(255, 130, 160, 0.06);
+        }
+        #page-home .home-bubble .bubble-title {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 6px;
+            color: #b45374;
+        }
+        #page-home .home-bubble .bubble-divider {
+            width: 40px;
+            height: 2px;
+            background: #ffb0c0;
+            margin: 8px auto 12px;
+            border-radius: 4px;
+        }
+        #page-home .home-bubble .bubble-footer {
+            margin-top: 12px;
+            font-size: 13px;
+            color: #9a7a8a;
+            border-top: 1px solid rgba(255, 180, 195, 0.25);
+            padding-top: 12px;
+        }
+
+        /* ===== 功能页面 (默认隐藏) ===== */
+        .page-func {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        .page-func.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0.3; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== 功能页顶部导航 ===== */
+        .func-nav {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 180, 195, 0.25);
+        }
+        .func-nav .nav-btn {
+            padding: 8px 24px;
+            border: none;
+            border-radius: 40px;
+            background: rgba(255, 255, 255, 0.30);
+            color: #6b3a4a;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            backdrop-filter: blur(4px);
+        }
+        .func-nav .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.55);
+        }
+        .func-nav .nav-btn.active {
+            background: rgba(255, 255, 255, 0.70);
+            border-color: rgba(255, 140, 170, 0.30);
+            box-shadow: 0 2px 12px rgba(255, 130, 160, 0.08);
+            color: #b45374;
+        }
+
+        /* ===== 通用布局 ===== */
+        .func-layout {
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            gap: 20px;
+        }
+        .func-layout.single {
+            grid-template-columns: 1fr;
+        }
+        .func-layout .preview-area {
+            background: rgba(255, 255, 255, 0.35);
+            border-radius: 28px;
+            padding: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.60);
+            backdrop-filter: blur(4px);
+            position: relative;
+        }
+        .func-layout .preview-area .label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 4px 10px 4px;
+            font-size: 14px;
+            color: #7a4e5e;
+            font-weight: 500;
+        }
+        .canvas-wrapper {
+            position: relative;
+            width: 100%;
+            padding-bottom: 100%;
+            background: rgba(255, 240, 244, 0.30);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 2px dashed rgba(255, 150, 180, 0.30);
+        }
+        .canvas-wrapper canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            border-radius: 18px;
+            background: #fff9fa;
+            cursor: default;
+        }
+        .placeholder-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #b58a9a;
+            font-size: 16px;
+            pointer-events: none;
+            text-align: center;
+            opacity: 0.7;
+        }
+        .placeholder-text .big {
+            font-size: 42px;
+            display: block;
+        }
+
+        /* 侧边栏 (文字列表等) */
+        .sidebar {
+            background: rgba(255, 255, 255, 0.35);
+            border-radius: 28px;
+            padding: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.60);
+            backdrop-filter: blur(4px);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 500px;
+        }
+        .sidebar .sidebar-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #6b3a4a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .sidebar .sidebar-title .badge {
+            background: rgba(255, 255, 255, 0.5);
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #8a5a6a;
+        }
+        .text-list {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            overflow-y: auto;
+            flex: 1;
+            padding-right: 4px;
+        }
+        .text-list::-webkit-scrollbar { width: 4px; }
+        .text-list::-webkit-scrollbar-thumb { background: #ffb0c0; border-radius: 8px; }
+
+        .text-tag {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(255, 180, 195, 0.3);
+            border-radius: 30px;
+            padding: 3px 10px 3px 14px;
+            font-size: 13px;
+            color: #4a2a3a;
+            cursor: pointer;
+            transition: all 0.15s;
+            min-height: 32px;
+        }
+        .text-tag:hover { background: rgba(255, 255, 255, 0.8); border-color: #ff8da1; }
+        .text-tag.active-tag { background: rgba(255, 140, 170, 0.20); border-color: #ff8da1; box-shadow: 0 0 0 2px rgba(255, 140, 170, 0.15); }
+        .text-tag .tag-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .text-tag .tag-del { font-size: 16px; color: #b58a9a; cursor: pointer; padding: 0 2px; }
+        .text-tag .tag-del:hover { color: #d45a7a; }
+        .sidebar .hint { font-size: 11px; color: #b58a9a; text-align: center; padding-top: 2px; }
+
+        /* ===== 面板 ===== */
+        .panel-box {
+            background: rgba(255, 255, 255, 0.30);
+            border-radius: 28px;
+            padding: 16px 20px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.50);
+            backdrop-filter: blur(4px);
+            margin-top: 14px;
+        }
+        .panel-box .panel-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #6b3a4a;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ===== 表单控件 ===== */
+        .row-flex {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 18px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .row-flex label {
+            font-size: 13px;
+            color: #6b3a4a;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .row-flex input[type="text"],
+        .row-flex input[type="number"],
+        .row-flex select {
+            padding: 6px 14px;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 180, 195, 0.4);
+            background: rgba(255, 255, 255, 0.6);
+            font-size: 13px;
+            color: #4a2a3a;
+            outline: none;
+            transition: all 0.2s;
+            min-width: 80px;
+        }
+        .row-flex input:focus {
+            border-color: #ff8da1;
+            box-shadow: 0 0 0 3px rgba(255, 140, 170, 0.15);
+            background: rgba(255, 255, 255, 0.8);
+        }
+        .row-flex .btn-sm {
+            padding: 6px 18px;
+            border-radius: 40px;
+            border: none;
+            background: linear-gradient(135deg, #ff8da1, #f5728a);
+            color: #fff;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .row-flex .btn-sm:hover {
+            transform: scale(1.03);
+            box-shadow: 0 4px 14px rgba(255, 100, 130, 0.25);
+        }
+        .row-flex .btn-sm.outline {
+            background: rgba(255, 255, 255, 0.5);
+            color: #6b3a4a;
+            border: 1px solid rgba(255, 180, 195, 0.3);
+            box-shadow: none;
+        }
+        .row-flex .btn-sm.outline:hover {
+            background: rgba(255, 255, 255, 0.8);
+        }
+        .row-flex .btn-sm.success {
+            background: linear-gradient(135deg, #a8d8ea, #7ac0d4);
+        }
+
+        /* ===== 证件照专用 ===== */
+        .idphoto-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        @media (max-width: 600px) {
+            .idphoto-grid { grid-template-columns: 1fr; }
+        }
+        .idphoto-grid .spec-group {
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 16px;
+            padding: 12px 14px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .idphoto-grid .spec-group .spec-title {
+            font-size: 12px;
+            color: #8a5a6a;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        /* ===== GIF 预览区 ===== */
+        .gif-preview-wrapper {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            background: rgba(0, 0, 0, 0.08);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 180, 195, 0.3);
+        }
+        .gif-preview-wrapper video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            border-radius: 14px;
+            background: #000;
+            object-fit: contain;
+        }
+        .gif-preview-wrapper .gif-placeholder {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #b58a9a;
+            font-size: 14px;
+            text-align: center;
+        }
+        .gif-preview-wrapper .gif-placeholder .big {
+            font-size: 40px;
+            display: block;
+        }
+
+        /* ===== 仓库网格 ===== */
+        .wh-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+            gap: 14px;
+            max-height: 240px;
+            overflow-y: auto;
+            padding: 4px 2px 6px;
+        }
+        .wh-grid::-webkit-scrollbar { width: 4px; }
+        .wh-grid::-webkit-scrollbar-thumb { background: #ffb0c0; border-radius: 8px; }
+        .wh-item {
+            position: relative;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            aspect-ratio: 1/1;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .wh-item:hover { transform: scale(1.03); box-shadow: 0 6px 20px rgba(255, 130, 160, 0.12); }
+        .wh-item img, .wh-item video { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .wh-item .wh-check {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            width: 20px;
+            height: 20px;
+            accent-color: #ff8da1;
+            cursor: pointer;
+            z-index: 2;
+            opacity: 0.8;
+        }
+        .wh-item .wh-del {
+            position: absolute;
+            top: 3px;
+            right: 3px;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(4px);
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 13px;
+            line-height: 20px;
+            text-align: center;
+            color: #b45374;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s;
+            padding: 0;
+            z-index: 2;
+        }
+        .wh-item:hover .wh-del { opacity: 1; }
+        .wh-item .wh-del:hover { background: rgba(255, 200, 210, 0.8); }
+        .wh-item .wh-download {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(4px);
+            border: none;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            font-size: 13px;
+            line-height: 22px;
+            text-align: center;
+            color: #6b3a4a;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s;
+            padding: 0;
+            z-index: 2;
+        }
+        .wh-item:hover .wh-download { opacity: 1; }
+        .wh-item .wh-download:hover { background: rgba(255, 255, 255, 0.9); }
+        .wh-empty { color: #b58a9a; font-size: 14px; text-align: center; padding: 30px 0; grid-column: 1 / -1; }
+
+        /* ===== Toast ===== */
+        .toast {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(60, 30, 40, 0.80);
+            backdrop-filter: blur(12px);
+            color: #fff;
+            padding: 10px 30px;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            pointer-events: none;
+            z-index: 999;
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            max-width: 90vw;
+            text-align: center;
+        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 1024px) {
+            .func-layout { grid-template-columns: 1fr; }
+            .sidebar { max-height: 180px; }
+        }
+        @media (max-width: 600px) {
+            .app-container { padding: 12px; border-radius: 28px; }
+            .header-left h1 { font-size: 20px; }
+            .header-right { padding: 4px 12px 4px 6px; gap: 8px; }
+            .header-avatar { width: 32px; height: 32px; }
+            .header-right .maker-text { font-size: 13px; }
+            .home-buttons .home-btn { padding: 10px 20px; font-size: 15px; min-width: 100px; }
+            .home-bubble { padding: 16px 20px; }
+            .func-nav .nav-btn { padding: 6px 14px; font-size: 13px; }
+            .idphoto-grid { grid-template-columns: 1fr; }
+            .row-flex { gap: 6px; }
+            .row-flex input[type="number"] { min-width: 60px; }
+        }
+
+        /* ===== 编辑器模态框 (复用) ===== */
+        .editor-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(16px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .editor-modal.active { display: flex; }
+        .editor-modal .editor-box {
+            background: rgba(255,245,247,0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 32px;
+            padding: 24px 28px 28px;
+            max-width: 820px;
+            width: 100%;
+            max-height: 92vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        .editor-modal .editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .editor-modal .editor-header .editor-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #6b3a4a;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .editor-modal .editor-header .editor-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .editor-modal .editor-header .editor-actions button {
+            padding: 7px 22px;
+            border: none;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .editor-modal .editor-header .editor-actions .btn-confirm {
+            background: linear-gradient(135deg, #ff8da1, #f5728a);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(255,100,130,0.25);
+        }
+        .editor-modal .editor-header .editor-actions .btn-confirm:hover {
+            transform: scale(1.04);
+        }
+        .editor-modal .editor-header .editor-actions .btn-cancel {
+            background: rgba(255,255,255,0.5);
+            color: #6b3a4a;
+            border: 1px solid rgba(255,180,195,0.3);
+        }
+        .editor-modal .editor-header .editor-actions .btn-cancel:hover {
+            background: rgba(255,255,255,0.8);
+        }
+        .editor-modal .editor-canvas-wrap {
+            position: relative;
+            width: 100%;
+            padding-bottom: 100%;
+            background: rgba(240,240,245,0.5);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 2px solid rgba(255,255,255,0.3);
+            cursor: grab;
+            touch-action: none;
+            user-select: none;
+        }
+        .editor-modal .editor-canvas-wrap:active { cursor: grabbing; }
+        .editor-modal .editor-canvas-wrap canvas {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            display: block;
+            border-radius: 18px;
+            background: #f8f4f6;
+        }
+        .editor-modal .crop-overlay {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 5;
+            border-radius: 18px;
+        }
+        .editor-modal .crop-overlay .crop-box {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 72%; height: 72%;
+            border: 2.5px solid rgba(255,255,255,0.85);
+            border-radius: 12px;
+            box-shadow: 0 0 0 9999px rgba(0,0,0,0.45);
+            pointer-events: none;
+        }
+        .editor-modal .crop-overlay .crop-box .corner {
+            position: absolute;
+            width: 14px; height: 14px;
+            border-color: rgba(255,255,255,0.9);
+            border-style: solid;
+            border-width: 0;
+            pointer-events: none;
+        }
+        .editor-modal .crop-overlay .crop-box .corner.tl { top: -2px; left: -2px; border-top-width: 3px; border-left-width: 3px; border-radius: 3px 0 0 0; }
+        .editor-modal .crop-overlay .crop-box .corner.tr { top: -2px; right: -2px; border-top-width: 3px; border-right-width: 3px; border-radius: 0 3px 0 0; }
+        .editor-modal .crop-overlay .crop-box .corner.bl { bottom: -2px; left: -2px; border-bottom-width: 3px; border-left-width: 3px; border-radius: 0 0 0 3px; }
+        .editor-modal .crop-overlay .crop-box .corner.br { bottom: -2px; right: -2px; border-bottom-width: 3px; border-right-width: 3px; border-radius: 0 0 3px 0; }
+        .editor-modal .editor-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 14px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .editor-modal .editor-footer .zoom-info {
+            font-size: 13px;
+            color: #7a4e5e;
+            background: rgba(255,255,255,0.4);
+            padding: 4px 16px;
+            border-radius: 30px;
+        }
+        .editor-modal .editor-footer .zoom-info span { font-weight: 600; color: #b45374; }
+        .editor-modal .editor-footer .zoom-controls { display: flex; gap: 6px; align-items: center; }
+        .editor-modal .editor-footer .zoom-controls button {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,180,195,0.3);
+            background: rgba(255,255,255,0.5);
+            color: #6b3a4a;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .editor-modal .editor-footer .zoom-controls button:hover {
+            background: rgba(255,255,255,0.8);
+            border-color: #ff8da1;
+        }
+        .editor-modal .editor-footer .zoom-controls .zoom-slider {
+            width: 100px;
+            accent-color: #ff8da1;
+            cursor: pointer;
+        }
+
+        /* ===== 预览模态框 ===== */
+        .preview-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(12px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+        }
+        .preview-modal.active { display: flex; }
+        .preview-modal .modal-content {
+            background: rgba(255,255,255,0.1);
+            border-radius: 24px;
+            padding: 20px;
+            max-width: 90vmin;
+            max-height: 90vh;
+            position: relative;
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+        .preview-modal .modal-content img,
+        .preview-modal .modal-content video {
+            max-width: 100%;
+            max-height: 80vh;
+            border-radius: 16px;
+            display: block;
+            background: #fff9fa;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+        }
+        .preview-modal .modal-close {
+            position: absolute;
+            top: -12px; right: -12px;
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(8px);
+            font-size: 20px;
+            color: #6b3a4a;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .preview-modal .modal-close:hover { transform: scale(1.08); }
+        .preview-modal .modal-hint {
+            color: rgba(255,255,255,0.7);
+            text-align: center;
+            font-size: 14px;
+            margin-top: 12px;
+            padding: 8px 16px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 30px;
+            backdrop-filter: blur(4px);
+        }
+        .preview-modal .modal-hint span { color: #ffb8c8; font-weight: 500; }
+
+        /* 工具类 */
+        .mt-8 { margin-top: 8px; }
+        .mb-8 { margin-bottom: 8px; }
+        .flex-wrap { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+        .gap-4 { gap: 4px; }
+        .text-muted { color: #9a7a8a; font-size: 12px; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <!-- ===== Toast ===== -->
+    <div id="toast" class="toast"></div>
+
+    <!-- ===== 预览模态框 ===== -->
+    <div class="preview-modal" id="previewModal">
+        <div class="modal-content">
+            <button class="modal-close" id="previewModalClose">✕</button>
+            <img id="previewImage" src="" alt="预览" style="display:none;" />
+            <video id="previewVideo" src="" muted loop autoplay playsinline style="display:none;"></video>
+            <div class="modal-hint">📱 长按图片选择 <span>「保存到相册」</span> 或 <span>「添加到表情」</span></div>
+        </div>
+    </div>
+
+    <!-- ===== 编辑器模态框 (通用裁剪) ===== -->
+    <div class="editor-modal" id="editorModal">
+        <div class="editor-box">
+            <div class="editor-header">
+                <div class="editor-title">✂️ 编辑图片</div>
+                <div class="editor-actions">
+                    <button class="btn-cancel" id="editorCancelBtn">取消</button>
+                    <button class="btn-confirm" id="editorConfirmBtn">✅ 确认</button>
+                </div>
+            </div>
+            <div class="editor-canvas-wrap" id="editorCanvasWrap">
+                <canvas id="editorCanvas" width="600" height="600"></canvas>
+                <div class="crop-overlay">
+                    <div class="crop-box" id="cropBox">
+                        <span class="corner tl"></span><span class="corner tr"></span>
+                        <span class="corner bl"></span><span class="corner br"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="editor-footer">
+                <div class="zoom-info">🔍 缩放: <span id="zoomLevelDisplay">100%</span></div>
+                <div class="zoom-controls">
+                    <button id="zoomOutBtn">−</button>
+                    <input type="range" class="zoom-slider" id="zoomSlider" min="30" max="300" value="100" />
+                    <button id="zoomInBtn">+</button>
+                    <button id="resetZoomBtn" style="width:auto; padding:0 12px; border-radius:30px; font-size:12px;">↺ 重置</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ===== 主容器 ===== -->
+    <div class="app-container">
+
+        <!-- ===== 头部 (全局) ===== -->
+        <header class="header">
+            <div class="header-left">
+                <span class="icon">🌸</span>
+                <h1 id="mainTitle">表情包证件照修改器</h1>
+            </div>
+            <div class="header-right">
+                <img class="header-avatar" id="headerAvatar" src="https://bee-reg-ab.imagency.cn/p/2c2d5fa9ab876940740a72da94a8d380.png" alt="头像" referrerpolicy="no-referrer" crossorigin="anonymous" onerror="this.style.display='none'; document.getElementById('avatarFallback').style.display='flex';" />
+                <span class="header-avatar-fallback" id="avatarFallback">🌸</span>
+                <span class="maker-text">✦ 制作人：<span>KIKI</span></span>
+            </div>
+        </header>
+
+        <!-- ========================================================== -->
+        <!-- ===== 主页 ===== -->
+        <div id="page-home">
+            <div class="home-content">
+                <div class="home-title">🌸 表情包证件照修改器</div>
+                <div class="home-sub">一站式创作 · 表情包 · GIF · 证件照</div>
+                <div class="home-buttons">
+                    <button class="home-btn" data-page="emoji">😊 表情包制作</button>
+                    <button class="home-btn" data-page="gif">🎬 GIF制作</button>
+                    <button class="home-btn" data-page="idphoto">📷 证件照制作</button>
+                    <button class="home-btn" data-page="warehouse">📦 仓库</button>
+                </div>
+                <div class="home-bubble">
+                    <div class="bubble-title">💬 作者的话</div>
+                    <div class="bubble-divider"></div>
+                    <p>✨ 欢迎使用「表情包证件照修改器」！<br>
+                    你可以制作专属表情包、将实况转为GIF、还能一键修改证件照尺寸。<br>
+                    所有处理均在本地完成，隐私安全无忧。</p>
+                    <div class="bubble-footer">© KIKI原创 · 禁抄袭，二改需授权</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================== -->
+        <!-- ===== 功能页面：表情包制作 ===== -->
+        <div class="page-func" id="page-emoji">
+            <div class="func-nav">
+                <button class="nav-btn active" data-page="emoji">😊 表情包制作</button>
+                <button class="nav-btn" data-page="gif">🎬 GIF制作</button>
+                <button class="nav-btn" data-page="idphoto">📷 证件照制作</button>
+                <button class="nav-btn" data-page="warehouse">📦 仓库</button>
+                <button class="nav-btn" style="margin-left:auto;" id="backHomeBtn">🏠 主页</button>
+            </div>
+
+            <div class="func-layout">
+                <!-- 预览区 -->
+                <div class="preview-area">
+                    <div class="label-row">
+                        <span>🖼️ 预览区</span>
+                        <span class="badge">点击文字选中 · 拖拽移动</span>
+                    </div>
+                    <div class="canvas-wrapper" id="emojiCanvasWrapper">
+                        <canvas id="emojiCanvas" width="600" height="600"></canvas>
+                        <div class="placeholder-text" id="emojiPlaceholder">
+                            <span class="big">📷</span> 上传图片或添加文字
+                        </div>
+                        <div class="preview-actions" style="position:absolute; bottom:24px; right:24px; display:flex; gap:8px; z-index:10; flex-wrap:wrap; justify-content:flex-end;">
+                            <button class="float-btn" id="emojiUploadBtn">📤 上传图片</button>
+                            <button class="float-btn primary" id="emojiEditBtn" style="display:none;">✂️ 编辑图片</button>
+                            <button class="float-btn danger" id="emojiClearBtn">✕ 清除</button>
+                            <input type="file" id="emojiFileInput" accept="image/*" style="display:none;" />
+                        </div>
+                    </div>
+                </div>
+                <!-- 侧边栏 -->
+                <div class="sidebar">
+                    <div class="sidebar-title"><span>📝 文字列表</span><span class="badge" id="emojiTextCount">0</span></div>
+                    <div class="text-list" id="emojiTextList"></div>
+                    <div class="hint">点击文字选中 · 拖拽预览区移动</div>
+                </div>
+            </div>
+
+            <!-- 贴文字面板 -->
+            <div class="panel-box">
+                <div class="panel-title">✏️ 贴文字</div>
+                <div class="row-flex">
+                    <input type="text" id="emojiTextInput" placeholder="输入文字，按 Enter 添加" maxlength="30" style="flex:1; min-width:120px;" />
+                    <button class="btn-sm" id="emojiAddTextBtn">添加</button>
+                </div>
+                <div class="row-flex">
+                    <label>颜色 <input type="color" id="emojiTextColor" value="#d45a7a" style="width:32px; height:32px; border-radius:50%; padding:0; border:none; cursor:pointer;" /></label>
+                    <label>描边 <input type="color" id="emojiStrokeColor" value="#ffffff" style="width:32px; height:32px; border-radius:50%; padding:0; border:none; cursor:pointer;" /></label>
+                    <label><input type="checkbox" id="emojiBoldCheck" /> 粗体</label>
+                    <label><input type="checkbox" id="emojiStrokeCheck" /> 描边</label>
+                    <label>字号 <input type="range" id="emojiFontSizeSlider" min="16" max="200" value="32" step="1" style="width:100px;" /><span id="emojiFontSizeLabel" style="min-width:36px; font-weight:500; color:#b45374;">32</span></label>
+                </div>
+                <div class="text-muted">💡 选中文字后调整样式，拖拽预览区文字移动位置 · 字号最大 200px</div>
+            </div>
+
+            <!-- 导出面板 -->
+            <div class="panel-box">
+                <div class="panel-title">📐 导出设置</div>
+                <div class="row-flex">
+                    <label>尺寸
+                        <div class="btn-group" id="emojiSizeGroup" style="display:flex; gap:3px; background:rgba(255,255,255,0.3); padding:3px; border-radius:30px; border:1px solid rgba(255,200,210,0.2);">
+                            <button class="opt-btn active" data-value="240">240</button>
+                            <button class="opt-btn" data-value="320">320</button>
+                            <button class="opt-btn" data-value="480">480</button>
+                            <button class="opt-btn" data-value="640">640</button>
+                        </div>
+                    </label>
+                    <label>背景
+                        <div class="btn-group" id="emojiBgGroup" style="display:flex; gap:3px; background:rgba(255,255,255,0.3); padding:3px; border-radius:30px; border:1px solid rgba(255,200,210,0.2);">
+                            <button class="opt-btn active" data-value="transparent">透明</button>
+                            <button class="opt-btn" data-value="white">白色</button>
+                            <button class="opt-btn" data-value="pink">粉色</button>
+                        </div>
+                    </label>
+                    <label>质量
+                        <div class="btn-group" id="emojiQualityGroup" style="display:flex; gap:3px; background:rgba(255,255,255,0.3); padding:3px; border-radius:30px; border:1px solid rgba(255,200,210,0.2);">
+                            <button class="opt-btn active" data-value="lossless">无损</button>
+                            <button class="opt-btn" data-value="compressed">压缩</button>
+                            <button class="opt-btn" data-value="low">渣图</button>
+                        </div>
+                    </label>
+                </div>
+                <div class="flex-wrap">
+                    <button class="btn-sm" id="emojiExportBtn">💾 下载</button>
+                    <button class="btn-sm success" id="emojiPreviewBtn">👁️ 预览保存</button>
+                    <button class="btn-sm outline" id="emojiSaveBtn">📦 存到仓库</button>
+                </div>
+                <div class="text-muted mt-8" id="emojiSizeHint">📏 微信推荐 <strong>240×240</strong> · 静态图 &lt;500KB · GIF &lt;1MB</div>
+            </div>
+        </div>
+
+        <!-- ========================================================== -->
+        <!-- ===== 功能页面：GIF制作 ===== -->
+        <div class="page-func" id="page-gif">
+            <div class="func-nav">
+                <button class="nav-btn" data-page="emoji">😊 表情包制作</button>
+                <button class="nav-btn active" data-page="gif">🎬 GIF制作</button>
+                <button class="nav-btn" data-page="idphoto">📷 证件照制作</button>
+                <button class="nav-btn" data-page="warehouse">📦 仓库</button>
+                <button class="nav-btn" style="margin-left:auto;" id="backHomeBtn2">🏠 主页</button>
+            </div>
+
+            <div class="func-layout single">
+                <!-- GIF 预览区 (视频) -->
+                <div class="preview-area">
+                    <div class="label-row">
+                        <span>🎬 视频预览 & 片段选择</span>
+                        <span class="badge" id="gifClipInfo">未选择片段</span>
+                    </div>
+                    <div class="gif-preview-wrapper" id="gifPreviewWrapper">
+                        <video id="gifPreviewVideo" playsinline></video>
+                        <div class="gif-placeholder" id="gifPlaceholder">
+                            <span class="big">📹</span> 上传视频开始编辑
+                        </div>
+                    </div>
+                    <!-- 控制条 -->
+                    <div class="row-flex" style="margin-top:10px; justify-content:center;">
+                        <button class="btn-sm" id="gifUploadBtn">📤 上传视频</button>
+                        <input type="file" id="gifFileInput" accept="video/*" style="display:none;" />
+                        <span class="text-muted" id="gifStatus">未选择视频</span>
+                    </div>
+                    <!-- 片段选择 -->
+                    <div class="row-flex" style="justify-content:center;">
+                        <label>起始 <input type="number" id="gifStartTime" value="0" step="0.1" min="0" style="width:60px;" /> s</label>
+                        <label>结束 <input type="number" id="gifEndTime" value="1.5" step="0.1" min="0.5" style="width:60px;" /> s</label>
+                        <button class="btn-sm outline" id="gifApplyClipBtn">⏱️ 应用片段</button>
+                        <button class="btn-sm outline" id="gifResetClipBtn">↺ 重置</button>
+                    </div>
+                    <div class="text-muted" style="text-align:center;">📌 拖动下方滑块选择 1-2 秒片段，避免视频太长</div>
+                </div>
+
+                <!-- 裁剪 & 文字编辑 -->
+                <div class="panel-box">
+                    <div class="panel-title">✂️ 裁剪 & 文字</div>
+                    <div class="row-flex">
+                        <button class="btn-sm" id="gifCropBtn">✂️ 裁剪画面</button>
+                        <button class="btn-sm outline" id="gifResetCropBtn">↺ 重置裁剪</button>
+                        <span class="text-muted" id="gifCropInfo">未裁剪</span>
+                    </div>
+                    <div class="row-flex" style="margin-top:6px;">
+                        <input type="text" id="gifTextInput" placeholder="添加文字..." maxlength="20" style="flex:1; min-width:100px;" />
+                        <button class="btn-sm" id="gifAddTextBtn">添加</button>
+                        <label>颜色 <input type="color" id="gifTextColor" value="#d45a7a" style="width:28px; height:28px; border-radius:50%; padding:0; border:none; cursor:pointer;" /></label>
+                        <label><input type="checkbox" id="gifBoldCheck" /> 粗体</label>
+                        <label>字号 <input type="range" id="gifFontSizeSlider" min="16" max="120" value="32" step="1" style="width:80px;" /><span id="gifFontSizeLabel" style="min-width:28px; font-weight:500; color:#b45374;">32</span></label>
+                    </div>
+                    <div class="text-list" id="gifTextList" style="max-height:60px; overflow-y:auto; display:flex; flex-wrap:wrap; gap:4px; padding:4px 0;"></div>
+                </div>
+
+                <!-- 生成 & 导出 -->
+                <div class="panel-box">
+                    <div class="panel-title">⚡ 生成 GIF</div>
+                    <div class="row-flex">
+                        <label>尺寸 <select id="gifSizeSelect"><option value="120">120</option><option value="240" selected>240 (推荐)</option><option value="320">320</option><option value="480">480</option></select></label>
+                        <button class="btn-sm success" id="gifGenBtn">⚡ 生成 GIF</button>
+                        <button class="btn-sm outline" id="gifPreviewGenBtn">👁️ 预览</button>
+                        <button class="btn-sm outline" id="gifSaveBtn">📦 存到仓库</button>
+                    </div>
+                    <div class="text-muted mt-8">📏 微信推荐 240×240 · GIF ≤1MB 可直接播放</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================== -->
+        <!-- ===== 功能页面：证件照制作 ===== -->
+        <div class="page-func" id="page-idphoto">
+            <div class="func-nav">
+                <button class="nav-btn" data-page="emoji">😊 表情包制作</button>
+                <button class="nav-btn" data-page="gif">🎬 GIF制作</button>
+                <button class="nav-btn active" data-page="idphoto">📷 证件照制作</button>
+                <button class="nav-btn" data-page="warehouse">📦 仓库</button>
+                <button class="nav-btn" style="margin-left:auto;" id="backHomeBtn3">🏠 主页</button>
+            </div>
+
+            <div class="func-layout single">
+                <!-- 预览区 -->
+                <div class="preview-area">
+                    <div class="label-row">
+                        <span>🖼️ 证件照预览</span>
+                        <span class="badge" id="idphotoSizeInfo">未设置</span>
+                    </div>
+                    <div class="canvas-wrapper" id="idphotoCanvasWrapper">
+                        <canvas id="idphotoCanvas" width="600" height="600"></canvas>
+                        <div class="placeholder-text" id="idphotoPlaceholder">
+                            <span class="big">📷</span> 上传照片制作证件照
+                        </div>
+                        <div class="preview-actions" style="position:absolute; bottom:24px; right:24px; display:flex; gap:8px; z-index:10; flex-wrap:wrap; justify-content:flex-end;">
+                            <button class="float-btn" id="idphotoUploadBtn">📤 上传照片</button>
+                            <button class="float-btn primary" id="idphotoEditBtn" style="display:none;">✂️ 裁剪</button>
+                            <button class="float-btn danger" id="idphotoClearBtn">✕ 清除</button>
+                            <input type="file" id="idphotoFileInput" accept="image/*" style="display:none;" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 规格面板 -->
+                <div class="panel-box">
+                    <div class="panel-title">📐 证件照规格</div>
+                    <div class="idphoto-grid">
+                        <div class="spec-group">
+                            <div class="spec-title">📏 常用尺寸模板</div>
+                            <div class="flex-wrap">
+                                <button class="btn-sm outline" data-w="25" data-h="35" data-unit="mm">小一寸 (25×35mm)</button>
+                                <button class="btn-sm outline" data-w="33" data-h="48" data-unit="mm">一寸 (33×48mm)</button>
+                                <button class="btn-sm outline" data-w="35" data-h="53" data-unit="mm">二寸 (35×53mm)</button>
+                                <button class="btn-sm outline" data-w="50" data-h="70" data-unit="mm">大二寸 (50×70mm)</button>
+                            </div>
+                        </div>
+                        <div class="spec-group">
+                            <div class="spec-title">📐 自定义尺寸 (mm)</div>
+                            <div class="flex-wrap">
+                                <label>宽 <input type="number" id="idphotoWidth" value="25" step="0.5" min="10" style="width:70px;" /></label>
+                                <label>高 <input type="number" id="idphotoHeight" value="35" step="0.5" min="10" style="width:70px;" /></label>
+                                <button class="btn-sm" id="idphotoApplySizeBtn">应用</button>
+                            </div>
+                        </div>
+                        <div class="spec-group">
+                            <div class="spec-title">📱 导出像素 (px)</div>
+                            <div class="flex-wrap">
+                                <label>宽 <input type="number" id="idphotoPxWidth" value="295" step="1" min="100" style="width:70px;" /></label>
+                                <label>高 <input type="number" id="idphotoPxHeight" value="413" step="1" min="100" style="width:70px;" /></label>
+                                <button class="btn-sm" id="idphotoApplyPxBtn">应用</button>
+                            </div>
+                        </div>
+                        <div class="spec-group">
+                            <div class="spec-title">📦 文件大小控制</div>
+                            <div class="flex-wrap">
+                                <label>最小 <input type="number" id="idphotoMinKB" value="0" step="10" min="0" style="width:70px;" /> KB</label>
+                                <label>最大 <input type="number" id="idphotoMaxKB" value="200" step="10" min="10" style="width:70px;" /> KB</label>
+                                <button class="btn-sm" id="idphotoApplySizeBtn2">应用</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row-flex" style="margin-top:10px;">
+                        <label>导出格式 <select id="idphotoFormat"><option value="image/jpeg">JPEG</option><option value="image/jpg">JPG</option><option value="image/png">PNG</option></select></label>
+                        <button class="btn-sm" id="idphotoExportBtn">💾 导出证件照</button>
+                        <button class="btn-sm success" id="idphotoPreviewBtn">👁️ 预览</button>
+                        <button class="btn-sm outline" id="idphotoSaveBtn">📦 存到仓库</button>
+                    </div>
+                    <div class="text-muted mt-8" id="idphotoHint">💡 点击模板快速设置尺寸，或手动输入自定义数值</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================== -->
+        <!-- ===== 功能页面：仓库 ===== -->
+        <div class="page-func" id="page-warehouse">
+            <div class="func-nav">
+                <button class="nav-btn" data-page="emoji">😊 表情包制作</button>
+                <button class="nav-btn" data-page="gif">🎬 GIF制作</button>
+                <button class="nav-btn" data-page="idphoto">📷 证件照制作</button>
+                <button class="nav-btn active" data-page="warehouse">📦 仓库</button>
+                <button class="nav-btn" style="margin-left:auto;" id="backHomeBtn4">🏠 主页</button>
+            </div>
+
+            <div class="panel-box">
+                <div class="panel-title">📦 表情仓库</div>
+                <div class="row-flex" style="justify-content:space-between;">
+                    <span class="text-muted" id="whCount">共 0 个</span>
+                    <div class="flex-wrap">
+                        <button class="btn-sm outline" id="whDownloadSelected">⬇️ 下载选中</button>
+                        <button class="btn-sm outline" id="whDeleteSelected">🗑️ 删除选中</button>
+                        <button class="btn-sm outline" id="whClearAll">清空全部</button>
+                    </div>
+                </div>
+                <div class="wh-grid" id="whGrid">
+                    <div class="wh-empty">✨ 还没有内容，制作后存到这里吧</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ================================================================
+        //  主应用
+        // ================================================================
+        (function() {
+            'use strict';
+
+            // ----- DOM 引用 (全局) -----
+            const pages = {
+                home: document.getElementById('page-home'),
+                emoji: document.getElementById('page-emoji'),
+                gif: document.getElementById('page-gif'),
+                idphoto: document.getElementById('page-idphoto'),
+                warehouse: document.getElementById('page-warehouse'),
+            };
+            const homeBtns = document.querySelectorAll('.home-btn');
+            const navBtns = document.querySelectorAll('.func-nav .nav-btn');
+            const backBtns = document.querySelectorAll('[id^="backHomeBtn"]');
+            const mainTitle = document.getElementById('mainTitle');
+
+            const toastEl = document.getElementById('toast');
+            function showToast(msg, duration = 2600) {
+                toastEl.textContent = msg;
+                toastEl.classList.add('show');
+                clearTimeout(toastEl._timer);
+                toastEl._timer = setTimeout(() => { toastEl.classList.remove('show'); }, duration);
+            }
+
+            // ----- 页面切换 -----
+            function showPage(pageId) {
+                // 隐藏所有
+                Object.keys(pages).forEach(k => {
+                    pages[k].style.display = 'none';
+                    pages[k].classList.remove('active');
+                });
+                // 显示目标
+                if (pageId === 'home') {
+                    pages.home.style.display = 'block';
+                    pages.home.classList.add('active');
+                    mainTitle.textContent = '表情包证件照修改器';
+                } else {
+                    const target = pages[pageId];
+                    if (target) {
+                        target.style.display = 'block';
+                        target.classList.add('active');
+                        // 更新标题
+                        const names = { emoji: '表情包制作', gif: 'GIF制作', idphoto: '证件照制作', warehouse: '仓库' };
+                        mainTitle.textContent = '表情包证件照修改器 · ' + (names[pageId] || '');
+                        // 更新导航高亮
+                        document.querySelectorAll('.func-nav .nav-btn').forEach(b => {
+                            b.classList.toggle('active', b.dataset.page === pageId);
+                        });
+                        // 触发对应模块的渲染
+                        if (pageId === 'warehouse') renderWarehouse();
+                        if (pageId === 'emoji') { drawEmojiScene(); }
+                    }
+                }
+            }
+
+            // 主页按钮
+            homeBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const page = btn.dataset.page;
+                    if (page) showPage(page);
+                });
+            });
+            // 导航按钮
+            navBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const page = btn.dataset.page;
+                    if (page) showPage(page);
+                });
+            });
+            // 返回主页
+            backBtns.forEach(btn => {
+                btn.addEventListener('click', () => showPage('home'));
+            });
+
+            // 默认显示主页
+            showPage('home');
+
+            // ================================================================
+            //  全局状态
+            // ================================================================
+            const state = {
+                // 表情包
+                emoji: { image: null, texts: [], nextId: 1, selectedId: null, canvasSize: 600 },
+                // GIF
+                gif: { videoFile: null, videoURL: null, videoElement: null, clips: [], texts: [], nextId: 1,
+                cropData: null },
+                // 证件照
+                idphoto: { image: null, width: 25, height: 35, pxWidth: 295, pxHeight: 413, minKB: 0, maxKB: 200,
+                    format: 'image/jpeg' },
+                // 仓库
+                warehouse: [],
+            };
+
+            // ================================================================
+            //  表情包模块
+            // ================================================================
+            const emojiCanvas = document.getElementById('emojiCanvas');
+            const emojiCtx = emojiCanvas.getContext('2d');
+            const emojiWrapper = document.getElementById('emojiCanvasWrapper');
+            const emojiPlaceholder = document.getElementById('emojiPlaceholder');
+
+            const emojiUploadBtn = document.getElementById('emojiUploadBtn');
+            const emojiFileInput = document.getElementById('emojiFileInput');
+            const emojiEditBtn = document.getElementById('emojiEditBtn');
+            const emojiClearBtn = document.getElementById('emojiClearBtn');
+
+            const emojiTextInput = document.getElementById('emojiTextInput');
+            const emojiAddTextBtn = document.getElementById('emojiAddTextBtn');
+            const emojiTextColor = document.getElementById('emojiTextColor');
+            const emojiStrokeColor = document.getElementById('emojiStrokeColor');
+            const emojiBoldCheck = document.getElementById('emojiBoldCheck');
+            const emojiStrokeCheck = document.getElementById('emojiStrokeCheck');
+            const emojiFontSizeSlider = document.getElementById('emojiFontSizeSlider');
+            const emojiFontSizeLabel = document.getElementById('emojiFontSizeLabel');
+            const emojiTextList = document.getElementById('emojiTextList');
+            const emojiTextCount = document.getElementById('emojiTextCount');
+
+            const emojiSizeGroup = document.getElementById('emojiSizeGroup');
+            const emojiBgGroup = document.getElementById('emojiBgGroup');
+            const emojiQualityGroup = document.getElementById('emojiQualityGroup');
+            const emojiExportBtn = document.getElementById('emojiExportBtn');
+            const emojiPreviewBtn = document.getElementById('emojiPreviewBtn');
+            const emojiSaveBtn = document.getElementById('emojiSaveBtn');
+            const emojiSizeHint = document.getElementById('emojiSizeHint');
+
+            let emojiDragging = false;
+            let emojiDragTarget = null;
+            let emojiDragOffX = 0,
+                emojiDragOffY = 0;
+
+            // ----- 绘图 -----
+            function drawEmojiScene() {
+                const w = state.emoji.canvasSize;
+                const h = w;
+                emojiCtx.clearRect(0, 0, w, h);
+                drawCheckerboard(emojiCtx, w, h);
+
+                if (state.emoji.image) {
+                    const img = state.emoji.image;
+                    const s = Math.min(w / img.width, h / img.height);
+                    const dw = img.width * s,
+                        dh = img.height * s;
+                    emojiCtx.drawImage(img, (w - dw) / 2, (h - dh) / 2, dw, dh);
+                }
+
+                for (const t of state.emoji.texts) {
+                    drawEmojiText(t);
+                }
+
+                emojiPlaceholder.style.display = (state.emoji.image || state.emoji.texts.length > 0) ? 'none' : 'block';
+                emojiEditBtn.style.display = state.emoji.image ? 'inline-block' : 'none';
+            }
+
+            function drawCheckerboard(ctx, w, h) {
+                const s = 20;
+                for (let x = 0; x < w; x += s) {
+                    for (let y = 0; y < h; y += s) {
+                        const isEven = (Math.floor(x / s) + Math.floor(y / s)) % 2 === 0;
+                        ctx.fillStyle = isEven ? 'rgba(200,200,200,0.15)' : 'rgba(240,240,240,0.15)';
+                        ctx.fillRect(x, y, s, s);
+                    }
+                }
+            }
+
+            function drawEmojiText(t) {
+                const fs = t.fontSize || 32;
+                emojiCtx.save();
+                emojiCtx.textAlign = 'center';
+                emojiCtx.textBaseline = 'middle';
+                let font = (t.bold ? 'bold ' : '') + fs + 'px "PingFang SC","Microsoft YaHei","Segoe UI",sans-serif';
+                emojiCtx.font = font;
+                if (t.stroke) {
+                    emojiCtx.lineWidth = Math.max(2, fs / 14);
+                    emojiCtx.strokeStyle = t.strokeColor || '#ffffff';
+                    emojiCtx.lineJoin = 'round';
+                    emojiCtx.strokeText(t.text, t.x, t.y);
+                }
+                emojiCtx.fillStyle = t.color || '#d45a7a';
+                emojiCtx.fillText(t.text, t.x, t.y);
+                if (state.emoji.selectedId === t.id) {
+                    const m = emojiCtx.measureText(t.text);
+                    const tw = m.width,
+                        th = fs * 1.2,
+                        pad = 8;
+                    emojiCtx.save();
+                    emojiCtx.strokeStyle = '#ff8da1';
+                    emojiCtx.lineWidth = 2;
+                    emojiCtx.setLineDash([4, 6]);
+                    emojiCtx.strokeRect(t.x - tw / 2 - pad, t.y - th / 2 - pad, tw + pad * 2, th + pad * 2);
+                    emojiCtx.restore();
+                }
+                emojiCtx.restore();
+            }
+
+            function measureEmojiText(t) {
+                const fs = t.fontSize || 32;
+                emojiCtx.save();
+                emojiCtx.font = (t.bold ? 'bold ' : '') + fs + 'px "PingFang SC","Microsoft YaHei","Segoe UI",sans-serif';
+                emojiCtx.textAlign = 'center';
+                emojiCtx.textBaseline = 'middle';
+                const m = emojiCtx.measureText(t.text);
+                emojiCtx.restore();
+                return { width: m.width, height: fs * 1.2 };
+            }
+
+            function hitEmojiText(mx, my) {
+                for (let i = state.emoji.texts.length - 1; i >= 0; i--) {
+                    const t = state.emoji.texts[i];
+                    const s = measureEmojiText(t);
+                    const hw = s.width / 2 + 12,
+                        hh = s.height / 2 + 12;
+                    if (mx >= t.x - hw && mx <= t.x + hw && my >= t.y - hh && my <= t.y + hh) return t.id;
+                }
+                return null;
+            }
+
+            // ----- 文字管理 -----
+            function renderEmojiTextList() {
+                emojiTextList.innerHTML = '';
+                for (const t of state.emoji.texts) {
+                    const tag = document.createElement('div');
+                    tag.className = 'text-tag' + (state.emoji.selectedId === t.id ? ' active-tag' : '');
+                    const span = document.createElement('span');
+                    span.className = 'tag-text';
+                    span.textContent = t.text;
+                    tag.appendChild(span);
+                    const del = document.createElement('span');
+                    del.className = 'tag-del';
+                    del.textContent = '×';
+                    del.addEventListener('click', (e) => { e.stopPropagation();
+                        deleteEmojiText(t.id); });
+                    tag.appendChild(del);
+                    tag.addEventListener('click', () => selectEmojiText(t.id));
+                    emojiTextList.appendChild(tag);
+                }
+                emojiTextCount.textContent = state.emoji.texts.length;
+            }
+
+            function addEmojiText(text) {
+                if (!text || text.trim() === '') { showToast('请输入文字'); return; }
+                const w = state.emoji.canvasSize;
+                const nt = {
+                    id: state.emoji.nextId++,
+                    text: text.trim(),
+                    x: w / 2 + (Math.random() - 0.5) * 80,
+                    y: w / 2 + (Math.random() - 0.5) * 80,
+                    color: emojiTextColor.value,
+                    stroke: emojiStrokeCheck.checked,
+                    strokeColor: emojiStrokeColor.value,
+                    bold: emojiBoldCheck.checked,
+                    fontSize: parseInt(emojiFontSizeSlider.value, 10) || 32,
+                };
+                state.emoji.texts.push(nt);
+                selectEmojiText(nt.id);
+                renderEmojiTextList();
+                drawEmojiScene();
+                showToast('✅ 已添加文字');
+                emojiTextInput.value = '';
+                emojiTextInput.focus();
+            }
+
+            function deleteEmojiText(id) {
+                const idx = state.emoji.texts.findIndex(t => t.id === id);
+                if (idx === -1) return;
+                state.emoji.texts.splice(idx, 1);
+                if (state.emoji.selectedId === id) {
+                    state.emoji.selectedId = state.emoji.texts.length > 0 ? state.emoji.texts[state.emoji.texts.length - 1]
+                        .id : null;
+                }
+                renderEmojiTextList();
+                drawEmojiScene();
+            }
+
+            function selectEmojiText(id) {
+                state.emoji.selectedId = id;
+                const t = state.emoji.texts.find(t => t.id === id);
+                if (t) {
+                    emojiTextColor.value = t.color || '#d45a7a';
+                    emojiStrokeColor.value = t.strokeColor || '#ffffff';
+                    emojiBoldCheck.checked = t.bold || false;
+                    emojiStrokeCheck.checked = t.stroke || false;
+                    emojiFontSizeSlider.value = t.fontSize || 32;
+                    emojiFontSizeLabel.textContent = t.fontSize || 32;
+                }
+                renderEmojiTextList();
+                drawEmojiScene();
+            }
+
+            function updateEmojiStyle() {
+                const t = state.emoji.texts.find(t => t.id === state.emoji.selectedId);
+                if (!t) return;
+                t.color = emojiTextColor.value;
+                t.strokeColor = emojiStrokeColor.value;
+                t.bold = emojiBoldCheck.checked;
+                t.stroke = emojiStrokeCheck.checked;
+                t.fontSize = parseInt(emojiFontSizeSlider.value, 10) || 32;
+                emojiFontSizeLabel.textContent = t.fontSize;
+                renderEmojiTextList();
+                drawEmojiScene();
+            }
+
+            // ----- 图片 -----
+            function loadEmojiImage(file) {
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        state.emoji.image = img;
+                        drawEmojiScene();
+                        showToast('✅ 图片已上传');
+                        emojiEditBtn.style.display = 'inline-block';
+                    };
+                    img.onerror = () => showToast('❌ 图片加载失败');
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function clearEmojiImage() {
+                state.emoji.image = null;
+                drawEmojiScene();
+                showToast('已清除图片');
+                emojiFileInput.value = '';
+                emojiEditBtn.style.display = 'none';
+            }
+
+            // ----- 导出 -----
+            function getEmojiSettings() {
+                const size = parseInt(emojiSizeGroup.querySelector('.opt-btn.active')?.dataset.value || '240', 10);
+                const bg = emojiBgGroup.querySelector('.opt-btn.active')?.dataset.value || 'transparent';
+                const quality = emojiQualityGroup.querySelector('.opt-btn.active')?.dataset.value || 'lossless';
+                return { size, bg, quality };
+            }
+
+            function renderEmojiExport(size, bg) {
+                const off = document.createElement('canvas');
+                off.width = size;
+                off.height = size;
+                const oc = off.getContext('2d');
+                const scale = size / state.emoji.canvasSize;
+                if (bg !== 'transparent') {
+                    oc.fillStyle = bg === 'pink' ? '#fce8ee' : '#ffffff';
+                    oc.fillRect(0, 0, size, size);
+                }
+                if (state.emoji.image) {
+                    const img = state.emoji.image;
+                    const s = Math.min(size / img.width, size / img.height);
+                    oc.drawImage(img, (size - img.width * s) / 2, (size - img.height * s) / 2, img.width * s, img.height *
+                    s);
+                }
+                for (const t of state.emoji.texts) {
+                    const fs = Math.max(10, Math.round((t.fontSize || 32) * scale));
+                    oc.save();
+                    oc.textAlign = 'center';
+                    oc.textBaseline = 'middle';
+                    oc.font = (t.bold ? 'bold ' : '') + fs + 'px "PingFang SC","Microsoft YaHei","Segoe UI",sans-serif';
+                    const tx = t.x * scale,
+                        ty = t.y * scale;
+                    if (t.stroke) {
+                        oc.lineWidth = Math.max(1.5, fs / 14);
+                        oc.strokeStyle = t.strokeColor || '#ffffff';
+                        oc.lineJoin = 'round';
+                        oc.strokeText(t.text, tx, ty);
+                    }
+                    oc.fillStyle = t.color || '#d45a7a';
+                    oc.fillText(t.text, tx, ty);
+                    oc.restore();
+                }
+                return off;
+            }
+
+            function exportEmoji() {
+                const { size, bg, quality } = getEmojiSettings();
+                const off = renderEmojiExport(size, bg);
+                let mime = 'image/png',
+                    ext = 'png',
+                    q = undefined;
+                if (quality === 'lossless') { mime = 'image/png';
+                    ext = 'png'; } else if (quality === 'compressed') {
+                    if (bg === 'transparent') { mime = 'image/png';
+                        ext = 'png'; } else { mime = 'image/jpeg';
+                        q = 0.75;
+                        ext = 'jpg'; }
+                } else {
+                    if (bg === 'transparent') { mime = 'image/png';
+                        ext = 'png'; } else { mime = 'image/jpeg';
+                        q = 0.30;
+                        ext = 'jpg'; }
+                }
+                off.toBlob((blob) => {
+                    if (!blob) { showToast('❌ 导出失败'); return; }
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download =
+                        `表情_${size}x${size}.${ext}`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    setTimeout(() => URL.revokeObjectURL(url), 5000);
+                    showToast(`✅ 已下载 ${size}x${size}`);
+                }, mime, q);
+            }
+
+            function previewEmoji() {
+                const { size, bg } = getEmojiSettings();
+                const off = renderEmojiExport(size, bg);
+                off.toBlob((blob) => {
+                    if (!blob) { showToast('❌ 预览失败'); return; }
+                    const url = URL.createObjectURL(blob);
+                    const modal = document.getElementById('previewModal');
+                    const img = document.getElementById('previewImage');
+                    const video = document.getElementById('previewVideo');
+                    img.src = url;
+                    img.style.display = 'block';
+                    video.style.display = 'none';
+                    video.pause();
+                    modal.classList.add('active');
+                    modal.onclick = (e) => { if (e.target === modal) closePreviewModal(); };
+                }, 'image/png');
+            }
+
+            function saveEmojiToWarehouse() {
+                const { size, bg } = getEmojiSettings();
+                const off = renderEmojiExport(size, bg);
+                off.toBlob((blob) => {
+                    if (!blob) { showToast('❌ 保存失败'); return; }
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const items = getWarehouseItems();
+                        items.push({ type: 'image', data: e.target.result, size: size, time: Date.now() });
+                        saveWarehouseItems(items);
+                        renderWarehouse();
+                        showToast('📦 已存入仓库');
+                    };
+                    reader.readAsDataURL(blob);
+                }, 'image/png');
+            }
+
+            // ----- 交互 (拖拽) -----
+            function setupEmojiInteraction() {
+                function getPos(e) {
+                    const rect = emojiCanvas.getBoundingClientRect();
+                    const sx = state.emoji.canvasSize / rect.width;
+                    const sy = state.emoji.canvasSize / rect.height;
+                    const cx = e.clientX || (e.touches && e.touches[0].clientX);
+                    const cy = e.clientY || (e.touches && e.touches[0].clientY);
+                    if (cx == null) return { x: 0, y: 0 };
+                    return { x: (cx - rect.left) * sx, y: (cy - rect.top) * sy };
+                }
+
+                function onDown(e) {
+                    e.preventDefault();
+                    const p = getPos(e);
+                    const hit = hitEmojiText(p.x, p.y);
+                    if (hit !== null) {
+                        selectEmojiText(hit);
+                        emojiDragging = true;
+                        emojiDragTarget = hit;
+                        const t = state.emoji.texts.find(t => t.id === hit);
+                        if (t) { emojiDragOffX = p.x - t.x;
+                            emojiDragOffY = p.y - t.y; }
+                        emojiCanvas.style.cursor = 'grabbing';
+                    } else {
+                        state.emoji.selectedId = null;
+                        renderEmojiTextList();
+                        drawEmojiScene();
+                    }
+                }
+
+                function onMove(e) {
+                    e.preventDefault();
+                    const p = getPos(e);
+                    if (emojiDragging && emojiDragTarget !== null) {
+                        const t = state.emoji.texts.find(t => t.id === emojiDragTarget);
+                        if (t) {
+                            t.x = Math.max(10, Math.min(state.emoji.canvasSize - 10, p.x - emojiDragOffX));
+                            t.y = Math.max(10, Math.min(state.emoji.canvasSize - 10, p.y - emojiDragOffY));
+                            drawEmojiScene();
+                        }
+                    } else {
+                        const hit = hitEmojiText(p.x, p.y);
+                        emojiCanvas.style.cursor = hit !== null ? 'grab' : 'default';
+                    }
+                }
+
+                function onUp(e) {
+                    if (emojiDragging) {
+                        emojiDragging = false;
+                        emojiDragTarget = null;
+                        emojiCanvas.style.cursor = 'default';
+                        drawEmojiScene();
+                    }
+                }
+
+                emojiCanvas.addEventListener('mousedown', onDown);
+                window.addEventListener('mousemove', onMove);
+                window.addEventListener('mouseup', onUp);
+                emojiCanvas.addEventListener('touchstart', (e) => { e.preventDefault();
+                    onDown(e); }, { passive: false });
+                window.addEventListener('touchmove', (e) => { if (emojiDragging) { e.preventDefault();
+                        onMove(e); } }, { passive: false });
+                window.addEventListener('touchend', onUp);
+            }
+
+            // ----- 初始化表情包 -----
+            function initEmoji() {
+                emojiCanvas.width = 600;
+                emojiCanvas.height = 600;
+
+                emojiUploadBtn.addEventListener('click', () => emojiFileInput.click());
+                emojiFileInput.addEventListener('change', (e) => {
+                    if (e.target.files && e.target.files[0]) loadEmojiImage(e.target.files[0]);
+                });
+                emojiClearBtn.addEventListener('click', clearEmojiImage);
+                emojiEditBtn.addEventListener('click', () => {
+                    if (state.emoji.image) openEditorForImage(state.emoji.image, (cropped) => {
+                        state.emoji.image = cropped;
+                        drawEmojiScene();
+                        showToast('✅ 图片已裁剪');
+                    });
+                });
+
+                emojiAddTextBtn.addEventListener('click', () => addEmojiText(emojiTextInput.value));
+                emojiTextInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') { e.preventDefault();
+                        addEmojiText(emojiTextInput.value); }
+                });
+
+                emojiTextColor.addEventListener('input', updateEmojiStyle);
+                emojiStrokeColor.addEventListener('input', updateEmojiStyle);
+                emojiBoldCheck.addEventListener('change', updateEmojiStyle);
+                emojiStrokeCheck.addEventListener('change', updateEmojiStyle);
+                emojiFontSizeSlider.addEventListener('input', () => {
+                    emojiFontSizeLabel.textContent = emojiFontSizeSlider.value;
+                    updateEmojiStyle();
+                });
+
+                emojiSizeGroup.querySelectorAll('.opt-btn').forEach(b => {
+                    b.addEventListener('click', () => {
+                        emojiSizeGroup.querySelectorAll('.opt-btn').forEach(x => x.classList.remove('active'));
+                        b.classList.add('active');
+                        updateEmojiSizeHint();
+                    });
+                });
+                emojiBgGroup.querySelectorAll('.opt-btn').forEach(b => {
+                    b.addEventListener('click', () => {
+                        emojiBgGroup.querySelectorAll('.opt-btn').forEach(x => x.classList.remove('active'));
+                        b.classList.add('active');
+                    });
+                });
+                emojiQualityGroup.querySelectorAll('.opt-btn').forEach(b => {
+                    b.addEventListener('click', () => {
+                        emojiQualityGroup.querySelectorAll('.opt-btn').forEach(x => x.classList.remove(
+                        'active'));
+                        b.classList.add('active');
+                    });
+                });
+
+                emojiExportBtn.addEventListener('click', exportEmoji);
+                emojiPreviewBtn.addEventListener('click', previewEmoji);
+                emojiSaveBtn.addEventListener('click', saveEmojiToWarehouse);
+
+                setupEmojiInteraction();
+                updateEmojiSizeHint();
+                drawEmojiScene();
+
+                // 示例文字
+                setTimeout(() => {
+                    if (state.emoji.texts.length === 0) {
+                        addEmojiText('✨ 你好呀');
+                    }
+                }, 500);
+            }
+
+            function updateEmojiSizeHint() {
+                const size = parseInt(emojiSizeGroup.querySelector('.opt-btn.active')?.dataset.value || '240', 10);
+                emojiSizeHint.innerHTML = `📏 微信推荐 <strong>240×240</strong> · 当前 ${size}×${size}`;
+            }
+
+            // ================================================================
+            //  通用编辑器 (裁剪)
+            // ================================================================
+            let editorCallback = null;
+            let editorImage = null;
+            let editorScale = 1,
+                editorOffsetX = 300,
+                editorOffsetY = 300;
+            let editorIsDragging = false,
+                editorStartX = 0,
+                editorStartY = 0,
+                editorStartOffX = 0,
+                editorStartOffY = 0;
+            const editorCanvas = document.getElementById('editorCanvas');
+            const editorCtx = editorCanvas.getContext('2d');
+            const editorWrap = document.getElementById('editorCanvasWrap');
+            const editorModal = document.getElementById('editorModal');
+            const editorConfirmBtn = document.getElementById('editorConfirmBtn');
+            const editorCancelBtn = document.getElementById('editorCancelBtn');
+            const zoomSlider = document.getElementById('zoomSlider');
+            const zoomLevelDisplay = document.getElementById('zoomLevelDisplay');
+            const zoomInBtn = document.getElementById('zoomInBtn');
+            const zoomOutBtn = document.getElementById('zoomOutBtn');
+            const resetZoomBtn = document.getElementById('resetZoomBtn');
+
+            function openEditorForImage(img, callback) {
+                editorImage = img;
+                editorCallback = callback;
+                const size = 600;
+                editorCanvas.width = size;
+                editorCanvas.height = size;
+                editorScale = Math.min(size * 0.72 / img.width, size * 0.72 / img.height) * 1.0;
+                editorOffsetX = size / 2;
+                editorOffsetY = size / 2;
+                zoomSlider.value = 100;
+                zoomLevelDisplay.textContent = '100%';
+                editorModal.classList.add('active');
+                renderEditorCanvas();
+            }
+
+            function renderEditorCanvas() {
+                const size = 600;
+                editorCtx.clearRect(0, 0, size, size);
+                editorCtx.fillStyle = '#f8f4f6';
+                editorCtx.fillRect(0, 0, size, size);
+                // 棋盘格
+                const s = 18;
+                for (let x = 0; x < size; x += s) {
+                    for (let y = 0; y < size; y += s) {
+                        const isEven = (Math.floor(x / s) + Math.floor(y / s)) % 2 === 0;
+                        editorCtx.fillStyle = isEven ? 'rgba(200,200,200,0.20)' : 'rgba(235,235,235,0.20)';
+                        editorCtx.fillRect(x, y, s, s);
+                    }
+                }
+                if (editorImage) {
+                    const iw = editorImage.width * editorScale;
+                    const ih = editorImage.height * editorScale;
+                    editorCtx.drawImage(editorImage, editorOffsetX - iw / 2, editorOffsetY - ih / 2, iw, ih);
+                }
+            }
+
+            function setupEditorInteraction() {
+                function getPos(e) {
+                    const rect = editorCanvas.getBoundingClientRect();
+                    const sx = 600 / rect.width,
+                        sy = 600 / rect.height;
+                    const cx = e.clientX || (e.touches && e.touches[0].clientX);
+                    const cy = e.clientY || (e.touches && e.touches[0].clientY);
+                    if (cx == null) return { x: 0, y: 0 };
+                    return { x: (cx - rect.left) * sx, y: (cy - rect.top) * sy };
+                }
+
+                function onDown(e) {
+                    e.preventDefault();
+                    const p = getPos(e);
+                    editorIsDragging = true;
+                    editorStartX = p.x;
+                    editorStartY = p.y;
+                    editorStartOffX = editorOffsetX;
+                    editorStartOffY = editorOffsetY;
+                    editorWrap.style.cursor = 'grabbing';
+                }
+
+                function onMove(e) {
+                    e.preventDefault();
+                    if (!editorIsDragging) return;
+                    const p = getPos(e);
+                    editorOffsetX = editorStartOffX + (p.x - editorStartX);
+                    editorOffsetY = editorStartOffY + (p.y - editorStartY);
+                    renderEditorCanvas();
+                }
+
+                function onUp(e) {
+                    if (editorIsDragging) {
+                        editorIsDragging = false;
+                        editorWrap.style.cursor = 'grab';
+                    }
+                }
+
+                editorCanvas.addEventListener('mousedown', onDown);
+                window.addEventListener('mousemove', onMove);
+                window.addEventListener('mouseup', onUp);
+                editorCanvas.addEventListener('touchstart', (e) => { e.preventDefault();
+                    onDown(e); }, { passive: false });
+                window.addEventListener('touchmove', (e) => { if (editorIsDragging) { e.preventDefault();
+                        onMove(e); } }, { passive: false });
+                window.addEventListener('touchend', onUp);
+
+                // 滚轮缩放
+                editorWrap.addEventListener('wheel', (e) => {
+                    e.preventDefault();
+                    const delta = e.deltaY > 0 ? -0.08 : 0.08;
+                    const ns = editorScale * (1 + delta);
+                    if (ns < 0.1 || ns > 5) return;
+                    const rect = editorCanvas.getBoundingClientRect();
+                    const sx = 600 / rect.width,
+                        sy = 600 / rect.height;
+                    const mx = (e.clientX - rect.left) * sx;
+                    const my = (e.clientY - rect.top) * sy;
+                    const ratio = ns / editorScale;
+                    editorOffsetX = mx + (editorOffsetX - mx) * ratio;
+                    editorOffsetY = my + (editorOffsetY - my) * ratio;
+                    editorScale = ns;
+                    const fitScale = Math.min(600 * 0.72 / (editorImage ? editorImage.width : 1), 600 * 0.72 / (editorImage ?
+                        editorImage.height : 1));
+                    const zp = Math.round(editorScale / fitScale * 100);
+                    zoomSlider.value = Math.min(300, Math.max(30, zp));
+                    zoomLevelDisplay.textContent = Math.round(zp) + '%';
+                    renderEditorCanvas();
+                }, { passive: false });
+
+                zoomSlider.addEventListener('input', () => {
+                    const val = parseInt(zoomSlider.value, 10);
+                    const fitScale = Math.min(600 * 0.72 / (editorImage ? editorImage.width : 1), 600 * 0.72 / (editorImage ?
+                        editorImage.height : 1));
+                    editorScale = fitScale * (val / 100);
+                    zoomLevelDisplay.textContent = val + '%';
+                    renderEditorCanvas();
+                });
+                zoomInBtn.addEventListener('click', () => {
+                    zoomSlider.value = Math.min(300, parseInt(zoomSlider.value, 10) + 10);
+                    zoomSlider.dispatchEvent(new Event('input'));
+                });
+                zoomOutBtn.addEventListener('click', () => {
+                    zoomSlider.value = Math.max(30, parseInt(zoomSlider.value, 10) - 10);
+                    zoomSlider.dispatchEvent(new Event('input'));
+                });
+                resetZoomBtn.addEventListener('click', () => {
+                    zoomSlider.value = 100;
+                    const fitScale = Math.min(600 * 0.72 / (editorImage ? editorImage.width : 1), 600 * 0.72 / (
+                        editorImage ? editorImage.height : 1));
+                    editorScale = fitScale;
+                    editorOffsetX = 300;
+                    editorOffsetY = 300;
+                    zoomLevelDisplay.textContent = '100%';
+                    renderEditorCanvas();
+                });
+            }
+
+            function applyEditorCrop() {
+                if (!editorImage) return;
+                const size = 600;
+                const cropSize = size * 0.72;
+                const cropX = (size - cropSize) / 2,
+                    cropY = (size - cropSize) / 2;
+                const temp = document.createElement('canvas');
+                temp.width = cropSize;
+                temp.height = cropSize;
+                const tc = temp.getContext('2d');
+                // 从 editorImage 中裁剪
+                const s = editorScale;
+                const cx = editorOffsetX,
+                    cy = editorOffsetY;
+                const srcX = (cropX - (cx - editorImage.width * s / 2)) / s;
+                const srcY = (cropY - (cy - editorImage.height * s / 2)) / s;
+                const srcW = cropSize / s,
+                    srcH = cropSize / s;
+                tc.drawImage(editorImage, srcX, srcY, srcW, srcH, 0, 0, cropSize, cropSize);
+                const dataURL = temp.toDataURL('image/png');
+                const cropped = new Image();
+                cropped.onload = () => {
+                    if (editorCallback) editorCallback(cropped);
+                    editorModal.classList.remove('active');
+                    showToast('✅ 裁剪完成');
+                };
+                cropped.onerror = () => showToast('❌ 裁剪失败');
+                cropped.src = dataURL;
+            }
+
+            function closeEditorModal() {
+                editorModal.classList.remove('active');
+                editorCallback = null;
+                editorImage = null;
+            }
+
+            editorConfirmBtn.addEventListener('click', applyEditorCrop);
+            editorCancelBtn.addEventListener('click', closeEditorModal);
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && editorModal.classList.contains('active')) closeEditorModal();
+            });
+            setupEditorInteraction();
+
+            // ----- 预览模态框 -----
+            function closePreviewModal() {
+                const modal = document.getElementById('previewModal');
+                modal.classList.remove('active');
+                document.getElementById('previewImage').style.display = 'none';
+                document.getElementById('previewImage').src = '';
+                document.getElementById('previewVideo').style.display = 'none';
+                document.getElementById('previewVideo').src = '';
+                document.getElementById('previewVideo').pause();
+            }
+            document.getElementById('previewModalClose').addEventListener('click', closePreviewModal);
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closePreviewModal();
+            });
+
+            // ================================================================
+            //  仓库
+            // ================================================================
+            function getWarehouseItems() {
+                try { return JSON.parse(localStorage.getItem('emoji_warehouse_v2') || '[]'); } catch { return []; }
+            }
+
+            function saveWarehouseItems(items) {
+                localStorage.setItem('emoji_warehouse_v2', JSON.stringify(items));
+            }
+
+            function renderWarehouse() {
+                const items = getWarehouseItems();
+                const grid = document.getElementById('whGrid');
+                const count = document.getElementById('whCount');
+                grid.innerHTML = '';
+                count.textContent = `共 ${items.length} 个`;
+                if (items.length === 0) {
+                    const empty = document.createElement('div');
+                    empty.className = 'wh-empty';
+                    empty.textContent = '✨ 还没有内容，制作后存到这里吧';
+                    grid.appendChild(empty);
+                    return;
+                }
+                const sorted = [...items].reverse();
+                for (const item of sorted) {
+                    const div = document.createElement('div');
+                    div.className = 'wh-item';
+                    const check = document.createElement('input');
+                    check.type = 'checkbox';
+                    check.className = 'wh-check';
+                    check.dataset.index = items.indexOf(item);
+                    div.appendChild(check);
+                    if (item.type === 'gif') {
+                        const v = document.createElement('video');
+                        v.src = item.data;
+                        v.muted = true;
+                        v.loop = true;
+                        v.autoplay = true;
+                        v.playsInline = true;
+                        v.onmouseenter = () => v.play();
+                        v.onmouseleave = () => v.pause();
+                        div.appendChild(v);
+                    } else {
+                        const img = document.createElement('img');
+                        img.src = item.data;
+                        img.loading = 'lazy';
+                        div.appendChild(img);
+                    }
+                    const sizeBadge = document.createElement('span');
+                    sizeBadge.className = 'wh-size-badge';
+                    sizeBadge.textContent = `${item.size || 240}px`;
+                    div.appendChild(sizeBadge);
+
+                    const dl = document.createElement('button');
+                    dl.className = 'wh-download';
+                    dl.textContent = '⬇️';
+                    dl.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const link = document.createElement('a');
+                        link.href = item.data;
+                        link.download = `表情_${item.size || 240}.${item.type === 'gif' ? 'gif' : 'png'}`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        showToast('⬇️ 已下载');
+                    });
+                    div.appendChild(dl);
+
+                    const del = document.createElement('button');
+                    del.className = 'wh-del';
+                    del.textContent = '×';
+                    del.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const idx = items.indexOf(item);
+                        if (idx !== -1) { items.splice(idx, 1);
+                            saveWarehouseItems(items);
+                            renderWarehouse();
+                            showToast('已删除'); }
+                    });
+                    div.appendChild(del);
+
+                    div.addEventListener('click', () => {
+                        const modal = document.getElementById('previewModal');
+                        const img = document.getElementById('previewImage');
+                        const vid = document.getElementById('previewVideo');
+                        if (item.type === 'gif') {
+                            vid.src = item.data;
+                            vid.style.display = 'block';
+                            img.style.display = 'none';
+                            vid.play();
+                            modal.classList.add('active');
+                            modal.onclick = (e) => { if (e.target === modal) closePreviewModal(); };
+                        } else {
+                            img.src = item.data;
+                            img.style.display = 'block';
+                            vid.style.display = 'none';
+                            vid.pause();
+                            modal.classList.add('active');
+                            modal.onclick = (e) => { if (e.target === modal) closePreviewModal(); };
+                        }
+                    });
+                    grid.appendChild(div);
+                }
+            }
+
+            // 仓库操作
+            document.getElementById('whDownloadSelected').addEventListener('click', () => {
+                const items = getWarehouseItems();
+                const checks = document.querySelectorAll('#whGrid .wh-check:checked');
+                if (checks.length === 0) { showToast('请先勾选'); return; }
+                checks.forEach(ch => {
+                    const idx = parseInt(ch.dataset.index, 10);
+                    const item = items[idx];
+                    if (item) {
+                        const link = document.createElement('a');
+                        link.href = item.data;
+                        link.download =
+                        `表情_${item.size || 240}.${item.type === 'gif' ? 'gif' : 'png'}`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }
+                });
+                showToast(`⬇️ 已下载 ${checks.length} 个`);
+            });
+
+            document.getElementById('whDeleteSelected').addEventListener('click', () => {
+                const items = getWarehouseItems();
+                const checks = document.querySelectorAll('#whGrid .wh-check:checked');
+                if (checks.length === 0) { showToast('请先勾选'); return; }
+                if (!confirm(`删除 ${checks.length} 个？`)) return;
+                const indices = [];
+                checks.forEach(ch => indices.push(parseInt(ch.dataset.index, 10)));
+                indices.sort((a, b) => b - a);
+                for (const idx of indices) items.splice(idx, 1);
+                saveWarehouseItems(items);
+                renderWarehouse();
+                showToast(`🗑️ 已删除 ${indices.length} 个`);
+            });
+
+            document.getElementById('whClearAll').addEventListener('click', () => {
+                if (getWarehouseItems().length === 0) { showToast('仓库已空'); return; }
+                if (confirm('确定清空全部？')) {
+                    saveWarehouseItems([]);
+                    renderWarehouse();
+                    showToast('🗑️ 已清空');
+                }
+            });
+
+            // ================================================================
+            //  证件照模块
+            // ================================================================
+            const idphotoCanvas = document.getElementById('idphotoCanvas');
+            const idphotoCtx = idphotoCanvas.getContext('2d');
+            const idphotoWrapper = document.getElementById('idphotoCanvasWrapper');
+            const idphotoPlaceholder = document.getElementById('idphotoPlaceholder');
+            const idphotoUploadBtn = document.getElementById('idphotoUploadBtn');
+            const idphotoFileInput = document.getElementById('idphotoFileInput');
+            const idphotoEditBtn = document.getElementById('idphotoEditBtn');
+            const idphotoClearBtn = document.getElementById('idphotoClearBtn');
+            const idphotoWidth = document.getElementById('idphotoWidth');
+            const idphotoHeight = document.getElementById('idphotoHeight');
+            const idphotoPxWidth = document.getElementById('idphotoPxWidth');
+            const idphotoPxHeight = document.getElementById('idphotoPxHeight');
+            const idphotoMinKB = document.getElementById('idphotoMinKB');
+            const idphotoMaxKB = document.getElementById('idphotoMaxKB');
+            const idphotoFormat = document.getElementById('idphotoFormat');
+            const idphotoSizeInfo = document.getElementById('idphotoSizeInfo');
+            const idphotoHint = document.getElementById('idphotoHint');
+
+            function drawIdphotoScene() {
+                const w = 600,
+                    h = 600;
+                idphotoCtx.clearRect(0, 0, w, h);
+                drawCheckerboard(idphotoCtx, w, h);
+                if (state.idphoto.image) {
+                    const img = state.idphoto.image;
+                    const s = Math.min(w / img.width, h / img.height);
+                    idphotoCtx.drawImage(img, (w - img.width * s) / 2, (h - img.height * s) / 2, img.width * s, img.height *
+                    s);
+                }
+                idphotoPlaceholder.style.display = state.idphoto.image ? 'none' : 'block';
+                idphotoEditBtn.style.display = state.idphoto.image ? 'inline-block' : 'none';
+                const mm = state.idphoto.width + '×' + state.idphoto.height + 'mm';
+                const px = state.idphoto.pxWidth + '×' + state.idphoto.pxHeight + 'px';
+                idphotoSizeInfo.textContent = mm + ' · ' + px;
+            }
+
+            function loadIdphotoImage(file) {
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        state.idphoto.image = img;
+                        drawIdphotoScene();
+                        showToast('✅ 照片已上传');
+                        idphotoEditBtn.style.display = 'inline-block';
+                    };
+                    img.onerror = () => showToast('❌ 加载失败');
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function clearIdphotoImage() {
+                state.idphoto.image = null;
+                drawIdphotoScene();
+                idphotoFileInput.value = '';
+                idphotoEditBtn.style.display = 'none';
+            }
+
+            // 模板尺寸
+            document.querySelectorAll('.spec-group .btn-sm[data-w]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const w = parseFloat(btn.dataset.w);
+                    const h = parseFloat(btn.dataset.h);
+                    const unit = btn.dataset.unit || 'mm';
+                    idphotoWidth.value = w;
+                    idphotoHeight.value = h;
+                    // 根据 mm 换算 px (1mm ≈ 3.78px @ 96dpi)
+                    const dpi = 96;
+                    const pxW = Math.round(w / 25.4 * dpi);
+                    const pxH = Math.round(h / 25.4 * dpi);
+                    idphotoPxWidth.value = pxW;
+                    idphotoPxHeight.value = pxH;
+                    state.idphoto.width = w;
+                    state.idphoto.height = h;
+                    state.idphoto.pxWidth = pxW;
+                    state.idphoto.pxHeight = pxH;
+                    drawIdphotoScene();
+                    showToast(`✅ 已应用 ${w}×${h}${unit} (${pxW}×${pxH}px)`);
+                });
+            });
+
+            idphotoApplySizeBtn.addEventListener('click', () => {
+                const w = parseFloat(idphotoWidth.value) || 25;
+                const h = parseFloat(idphotoHeight.value) || 35;
+                state.idphoto.width = w;
+                state.idphoto.height = h;
+                drawIdphotoScene();
+                showToast(`✅ 已设置 ${w}×${h}mm`);
+            });
+
+            idphotoApplyPxBtn.addEventListener('click', () => {
+                const w = parseInt(idphotoPxWidth.value, 10) || 295;
+                const h = parseInt(idphotoPxHeight.value, 10) || 413;
+                state.idphoto.pxWidth = w;
+                state.idphoto.pxHeight = h;
+                drawIdphotoScene();
+                showToast(`✅ 已设置 ${w}×${h}px`);
+            });
+
+            idphotoApplySizeBtn2.addEventListener('click', () => {
+                state.idphoto.minKB = parseInt(idphotoMinKB.value, 10) || 0;
+                state.idphoto.maxKB = parseInt(idphotoMaxKB.value, 10) || 200;
+                showToast(`✅ 文件大小 ${state.idphoto.minKB}-${state.idphoto.maxKB}KB`);
+            });
+
+            function exportIdphoto() {
+                if (!state.idphoto.image) { showToast('请先上传照片'); return; }
+                const pw = state.idphoto.pxWidth || 295;
+                const ph = state.idphoto.pxHeight || 413;
+                const format = idphotoFormat.value;
+                const off = document.createElement('canvas');
+                off.width = pw;
+                off.height = ph;
+                const oc = off.getContext('2d');
+                // 白色背景
+                oc.fillStyle = '#ffffff';
+                oc.fillRect(0, 0, pw, ph);
+                const img = state.idphoto.image;
+                const s = Math.min(pw / img.width, ph / img.height);
+                oc.drawImage(img, (pw - img.width * s) / 2, (ph - img.height * s) / 2, img.width * s, img.height * s);
+
+                // 文件大小控制 (通过 quality 参数)
+                let quality = 0.92;
+                let mime = format;
+                let ext = 'jpg';
+                if (format === 'image/png') { mime = 'image/png';
+                    ext = 'png';
+                    quality = undefined; }
+
+                // 尝试调整质量以满足大小要求
+                function tryExport(q) {
+                    off.toBlob((blob) => {
+                        if (!blob) { showToast('❌ 导出失败'); return; }
+                        const sizeKB = blob.size / 1024;
+                        const minKB = state.idphoto.minKB || 0;
+                        const maxKB = state.idphoto.maxKB || 200;
+                        if (sizeKB > maxKB && q > 0.1) {
+                            // 降低质量重试
+                            tryExport(q - 0.08);
+                            return;
+                        }
+                        if (sizeKB < minKB && q < 0.98) {
+                            // 提高质量重试
+                            tryExport(q + 0.05);
+                            return;
+                        }
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `证件照_${pw}x${ph}.${ext}`;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        setTimeout(() => URL.revokeObjectURL(url), 5000);
+                        showToast(`✅ 已导出 ${pw}×${ph} (${Math.round(sizeKB)}KB)`);
+                    }, mime, q);
+                }
+                tryExport(quality);
+            }
+
+            function previewIdphoto() {
+                if (!state.idphoto.image) { showToast('请先上传照片'); return; }
+                const pw = state.idphoto.pxWidth || 295;
+                const ph = state.idphoto.pxHeight || 413;
+                const off = document.createElement('canvas');
+                off.width = pw;
+                off.height = ph;
+                const oc = off.getContext('2d');
+                oc.fillStyle = '#ffffff';
+                oc.fillRect(0, 0, pw, ph);
+                const img = state.idphoto.image;
+                const s = Math.min(pw / img.width, ph / img.height);
+                oc.drawImage(img, (pw - img.width * s) / 2, (ph - img.height * s) / 2, img.width * s, img.height * s);
+                off.toBlob((blob) => {
+                    if (!blob) { showToast('❌ 预览失败'); return; }
+                    const url = URL.createObjectURL(blob);
+                    const modal = document.getElementById('previewModal');
+                    const imgEl = document.getElementById('previewImage');
+                    const vid = document.getElementById('previewVideo');
+                    imgEl.src = url;
+                    imgEl.style.display = 'block';
+                    vid.style.display = 'none';
+                    vid.pause();
+                    modal.classList.add('active');
+                    modal.onclick = (e) => { if (e.target === modal) closePreviewModal(); };
+                }, 'image/png');
+            }
+
+            function saveIdphotoToWarehouse() {
+                if (!state.idphoto.image) { showToast('请先上传照片'); return; }
+                const pw = state.idphoto.pxWidth || 295;
+                const ph = state.idphoto.pxHeight || 413;
+                const off = document.createElement('canvas');
+                off.width = pw;
+                off.height = ph;
+                const oc = off.getContext('2d');
+                oc.fillStyle = '#ffffff';
+                oc.fillRect(0, 0, pw, ph);
+                const img = state.idphoto.image;
+                const s = Math.min(pw / img.width, ph / img.height);
+                oc.drawImage(img, (pw - img.width * s) / 2, (ph - img.height * s) / 2, img.width * s, img.height * s);
+                off.toBlob((blob) => {
+                    if (!blob) { showToast('❌ 保存失败'); return; }
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const items = getWarehouseItems();
+                        items.push({ type: 'image', data: e.target.result, size: pw, time: Date.now() });
+                        saveWarehouseItems(items);
+                        renderWarehouse();
+                        showToast('📦 已存入仓库');
+                    };
+                    reader.readAsDataURL(blob);
+                }, 'image/png');
+            }
+
+            function initIdphoto() {
+                idphotoCanvas.width = 600;
+                idphotoCanvas.height = 600;
+                idphotoUploadBtn.addEventListener('click', () => idphotoFileInput.click());
+                idphotoFileInput.addEventListener('change', (e) => {
+                    if (e.target.files && e.target.files[0]) loadIdphotoImage(e.target.files[0]);
+                });
+                idphotoClearBtn.addEventListener('click', clearIdphotoImage);
+                idphotoEditBtn.addEventListener('click', () => {
+                    if (state.idphoto.image) {
+                        openEditorForImage(state.idphoto.image, (cropped) => {
+                            state.idphoto.image = cropped;
+                            drawIdphotoScene();
+                            showToast('✅ 裁剪完成');
+                        });
+                    }
+                });
+                document.getElementById('idphotoExportBtn').addEventListener('click', exportIdphoto);
+                document.getElementById('idphotoPreviewBtn').addEventListener('click', previewIdphoto);
+                document.getElementById('idphotoSaveBtn').addEventListener('click', saveIdphotoToWarehouse);
+
+                // 默认值
+                const dpi = 96;
+                const w = 25,
+                    h = 35;
+                idphotoWidth.value = w;
+                idphotoHeight.value = h;
+                idphotoPxWidth.value = Math.round(w / 25.4 * dpi);
+                idphotoPxHeight.value = Math.round(h / 25.4 * dpi);
+                state.idphoto.width = w;
+                state.idphoto.height = h;
+                state.idphoto.pxWidth = Math.round(w / 25.4 * dpi);
+                state.idphoto.pxHeight = Math.round(h / 25.4 * dpi);
+                drawIdphotoScene();
+            }
+
+            // ================================================================
+            //  GIF 模块 (简化版)
+            // ================================================================
+            const gifVideo = document.getElementById('gifPreviewVideo');
+            const gifPlaceholder = document.getElementById('gifPlaceholder');
+            const gifUploadBtn = document.getElementById('gifUploadBtn');
+            const gifFileInput = document.getElementById('gifFileInput');
+            const gifStatus = document.getElementById('gifStatus');
+            const gifClipInfo = document.getElementById('gifClipInfo');
+            const gifStartTime = document.getElementById('gifStartTime');
+            const gifEndTime = document.getElementById('gifEndTime');
+            const gifApplyClipBtn = document.getElementById('gifApplyClipBtn');
+            const gifResetClipBtn = document.getElementById('gifResetClipBtn');
+            const gifCropBtn = document.getElementById('gifCropBtn');
+            const gifResetCropBtn = document.getElementById('gifResetCropBtn');
+            const gifCropInfo = document.getElementById('gifCropInfo');
+            const gifTextInput = document.getElementById('gifTextInput');
+            const gifAddTextBtn = document.getElementById('gifAddTextBtn');
+            const gifTextColor = document.getElementById('gifTextColor');
+            const gifBoldCheck = document.getElementById('gifBoldCheck');
+            const gifFontSizeSlider = document.getElementById('gifFontSizeSlider');
+            const gifFontSizeLabel = document.getElementById('gifFontSizeLabel');
+            const gifTextList = document.getElementById('gifTextList');
+            const gifSizeSelect = document.getElementById('gifSizeSelect');
+            const gifGenBtn = document.getElementById('gifGenBtn');
+            const gifPreviewGenBtn = document.getElementById('gifPreviewGenBtn');
+            const gifSaveBtn = document.getElementById('gifSaveBtn');
+
+            let gifTexts = [];
+            let gifNextId = 1;
+            let gifSelectedTextId = null;
+            let gifCropData = null; // { x, y, w, h } 归一化
+
+            function loadGifVideo(file) {
+                if (!file) return;
+                const url = URL.createObjectURL(file);
+                gifVideo.src = url;
+                gifVideo.load();
+                gifVideo.onloadeddata = () => {
+                    gifPlaceholder.style.display = 'none';
+                    gifStatus.textContent = '✅ ' + file.name;
+                    state.gif.videoElement = gifVideo;
+                    state.gif.videoFile = file;
+                    // 设置默认时间
+                    const dur = Math.min(gifVideo.duration || 3, 3);
+                    gifStartTime.value = 0;
+                    gifEndTime.value = Math.min(1.5, dur);
+                    gifClipInfo.textContent = '0 - ' + Math.min(1.5, dur).toFixed(1) + 's';
+                    showToast('✅ 视频已加载，请选择片段');
+                };
+                gifVideo.onerror = () => { showToast('❌ 视频加载失败');
+                    gifStatus.textContent = '❌ 加载失败'; };
+            }
+
+            function applyGifClip() {
+                const start = parseFloat(gifStartTime.value) || 0;
+                let end = parseFloat(gifEndTime.value) || 1.5;
+                const dur = gifVideo.duration || 3;
+                if (end > dur) end = dur;
+                if (start >= end) { showToast('⚠️ 起始时间必须小于结束时间'); return; }
+                if (end - start > 2.5) { showToast('⚠️ 片段最长 2.5 秒'); return; }
+                gifVideo.currentTime = start;
+                gifVideo.play();
+                setTimeout(() => gifVideo.pause(), 100);
+                gifClipInfo.textContent = start.toFixed(1) + ' - ' + end.toFixed(1) + 's';
+                showToast(`✅ 片段已应用: ${start.toFixed(1)}-${end.toFixed(1)}s`);
+            }
+
+            function resetGifClip() {
+                const dur = gifVideo.duration || 3;
+                gifStartTime.value = 0;
+                gifEndTime.value = Math.min(1.5, dur);
+                gifClipInfo.textContent = '0 - ' + Math.min(1.5, dur).toFixed(1) + 's';
+                gifVideo.currentTime = 0;
+                showToast('↺ 已重置片段');
+            }
+
+            // GIF 文字
+            function renderGifTextList() {
+                gifTextList.innerHTML = '';
+                for (const t of gifTexts) {
+                    const tag = document.createElement('span');
+                    tag.className = 'text-tag' + (gifSelectedTextId === t.id ? ' active-tag' : '');
+                    tag.style.fontSize = '12px';
+                    const span = document.createElement('span');
+                    span.className = 'tag-text';
+                    span.textContent = t.text;
+                    tag.appendChild(span);
+                    const del = document.createElement('span');
+                    del.className = 'tag-del';
+                    del.textContent = '×';
+                    del.addEventListener('click', (e) => { e.stopPropagation();
+                        gifTexts = gifTexts.filter(x => x.id !== t.id); if (gifSelectedTextId === t.id) gifSelectedTextId =
+                            null;
+                        renderGifTextList(); });
+                    tag.appendChild(del);
+                    tag.addEventListener('click', () => { gifSelectedTextId = t.id;
+                        renderGifTextList(); });
+                    gifTextList.appendChild(tag);
+                }
+            }
+
+            function addGifText() {
+                const txt = gifTextInput.value.trim();
+                if (!txt) { showToast('请输入文字'); return; }
+                gifTexts.push({ id: gifNextId++, text: txt, color: gifTextColor.value, bold: gifBoldCheck.checked,
+                    fontSize: parseInt(gifFontSizeSlider.value, 10) || 32 });
+                gifTextInput.value = '';
+                renderGifTextList();
+                showToast('✅ 已添加文字');
+            }
+
+            // 生成 GIF
+            function generateGifFromVideo() {
+                if (!state.gif.videoElement) { showToast('请先上传视频'); return; }
+                const video = state.gif.videoElement;
+                const start = parseFloat(gifStartTime.value) || 0;
+                let end = parseFloat(gifEndTime.value) || 1.5;
+                const dur = video.duration || 3;
+                if (end > dur) end = dur;
+                if (start >= end) { showToast('⚠️ 请设置有效的片段'); return; }
+                const duration = end - start;
+                if (duration > 2.5) { showToast('⚠️ 片段最长 2.5 秒'); return; }
+
+                const size = parseInt(gifSizeSelect.value, 10);
+                const maxFrames = 40;
+                const interval = 0.06;
+                const totalFrames = Math.min(Math.floor(duration / interval), maxFrames);
+                if (totalFrames < 2) { showToast('⏱️ 片段太短'); return; }
+
+                gifGenBtn.disabled = true;
+                gifGenBtn.textContent = '⏳ 生成中...';
+
+                const gif = new GIF({
+                    workers: 2,
+                    quality: 15,
+                    width: size,
+                    height: size,
+                    workerURL: 'https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js',
+                });
+
+                const off = document.createElement('canvas');
+                off.width = size;
+                off.height = size;
+                const oc = off.getContext('2d');
+
+                let frameCount = 0;
+                let currentTime = start;
+
+                function addFrame() {
+                    if (frameCount >= totalFrames || currentTime >= end) {
+                        gif.render();
+                        return;
+                    }
+                    video.currentTime = currentTime;
+                    video.addEventListener('seeked', function onSeek() {
+                        video.removeEventListener('seeked', onSeek);
+                        oc.clearRect(0, 0, size, size);
+                        oc.fillStyle = '#ffffff';
+                        oc.fillRect(0, 0, size, size);
+                        const vw = video.videoWidth || 640,
+                            vh = video.videoHeight || 480;
+                        const s = Math.min(size / vw, size / vh);
+                        // 应用裁剪
+                        let sx = 0,
+                            sy = 0,
+                            sw = vw,
+                            sh = vh;
+                        if (gifCropData) {
+                            sx = gifCropData.x * vw;
+                            sy = gifCropData.y * vh;
+                            sw = gifCropData.w * vw;
+                            sh = gifCropData.h * vh;
+                        }
+                        const dw = sw * s,
+                            dh = sh * s;
+                        oc.drawImage(video, sx, sy, sw, sh, (size - dw) / 2, (size - dh) / 2, dw, dh);
+
+                        // 文字
+                        for (const t of gifTexts) {
+                            const fs = Math.max(10, Math.round((t.fontSize || 32) * (size / 600)));
+                            oc.save();
+                            oc.textAlign = 'center';
+                            oc.textBaseline = 'middle';
+                            oc.font = (t.bold ? 'bold ' : '') + fs + 'px "PingFang SC","Microsoft YaHei","Segoe UI",sans-serif';
+                            oc.fillStyle = t.color || '#d45a7a';
+                            oc.fillText(t.text, size / 2, size / 2);
+                            oc.restore();
+                        }
+
+                        gif.addFrame(off, { copy: true, delay: Math.round(interval * 1000) });
+                        frameCount++;
+                        currentTime += interval;
+                        gifGenBtn.textContent = `⏳ ${Math.round((frameCount/totalFrames)*50)}%`;
+                        setTimeout(addFrame, 30);
+                    });
+                    const timeout = setTimeout(() => {
+                        if (frameCount < totalFrames) { frameCount++;
+                            currentTime += interval;
+                            setTimeout(addFrame, 30); }
+                    }, 500);
+                    video.addEventListener('seeked', () => clearTimeout(timeout), { once: true });
+                }
+
+                gif.on('progress', (p) => {
+                    gifGenBtn.textContent = `⏳ ${Math.round(p * 100)}%`;
+                });
+
+                gif.on('finished', (blob) => {
+                    gifGenBtn.disabled = false;
+                    gifGenBtn.textContent = '⚡ 生成 GIF';
+                    if (!blob || blob.size === 0) { showToast('❌ 生成失败'); return; }
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `表情_${size}x${size}.gif`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    setTimeout(() => URL.revokeObjectURL(url), 5000);
+                    showToast(`✅ GIF 已生成 (${(blob.size/1024).toFixed(1)}KB)`);
+
+                    // 存入仓库
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const items = getWarehouseItems();
+                        items.push({ type: 'gif', data: e.target.result, size: size, time: Date.now() });
+                        saveWarehouseItems(items);
+                        renderWarehouse();
+                    };
+                    reader.readAsDataURL(blob);
+                });
+
+                setTimeout(addFrame, 300);
+
+                const globalTimeout = setTimeout(() => {
+                    if (gifGenBtn.disabled) {
+                        gifGenBtn.disabled = false;
+                        gifGenBtn.textContent = '⚡ 生成 GIF';
+                        showToast('⏱️ 生成超时');
+                    }
+                }, 45000);
+                gif.on('finished', () => clearTimeout(globalTimeout));
+            }
+
+            function initGif() {
+                gifUploadBtn.addEventListener('click', () => gifFileInput.click());
+                gifFileInput.addEventListener('change', (e) => {
+                    if (e.target.files && e.target.files[0]) loadGifVideo(e.target.files[0]);
+                });
+                gifApplyClipBtn.addEventListener('click', applyGifClip);
+                gifResetClipBtn.addEventListener('click', resetGifClip);
+                gifAddTextBtn.addEventListener('click', addGifText);
+                gifTextInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault();
+                        addGifText(); } });
+                gifFontSizeSlider.addEventListener('input', () => { gifFontSizeLabel.textContent = gifFontSizeSlider.value; });
+                gifGenBtn.addEventListener('click', generateGifFromVideo);
+                gifPreviewGenBtn.addEventListener('click', () => {
+                    // 预览：生成后展示
+                    generateGifFromVideo();
+                });
+                gifSaveBtn.addEventListener('click', () => {
+                    showToast('💡 请先生成 GIF，会自动存入仓库');
+                });
+
+                // 裁剪 - 使用通用编辑器
+                gifCropBtn.addEventListener('click', () => {
+                    if (!state.gif.videoElement) { showToast('请先上传视频'); return; }
+                    // 截取当前帧作为裁剪参考
+                    const video = state.gif.videoElement;
+                    const canvas = document.createElement('canvas');
+                    canvas.width = video.videoWidth || 640;
+                    canvas.height = video.videoHeight || 480;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(video, 0, 0);
+                    const img = new Image();
+                    img.onload = () => {
+                        openEditorForImage(img, (cropped) => {
+                            // 计算裁剪比例
+                            const origW = img.width,
+                                origH = img.height;
+                            const cw = cropped.width,
+                                ch = cropped.height;
+                            // 模拟裁剪数据 (归一化)
+                            // 由于编辑器返回的是裁剪后的图片，我们记录比例
+                            gifCropData = { x: 0, y: 0, w: cw / origW, h: ch / origH };
+                            gifCropInfo.textContent = `裁剪 ${Math.round(gifCropData.w*100)}% × ${Math.round(gifCropData.h*100)}%`;
+                            showToast('✅ 裁剪已应用');
+                        });
+                    };
+                    img.src = canvas.toDataURL();
+                });
+
+                gifResetCropBtn.addEventListener('click', () => {
+                    gifCropData = null;
+                    gifCropInfo.textContent = '未裁剪';
+                    showToast('↺ 已重置裁剪');
+                });
+            }
+
+            // ================================================================
+            //  初始化
+            // ================================================================
+            initEmoji();
+            initIdphoto();
+            initGif();
+            renderWarehouse();
+
+            console.log('🌸 表情包证件照修改器已启动 | KIKI');
+            console.log('📌 支持：表情包 · GIF · 证件照 · 仓库');
+
+        })();
+    </script>
+
+</body>
+</html>
