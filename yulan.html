@@ -1169,6 +1169,18 @@
             background: rgba(255, 255, 255, 0.3);
         }
 
+        /* ===== 裁剪预设按钮选中状态 ===== */
+        .size-preset.active-preset {
+            background: rgba(255, 140, 170, 0.35) !important;
+            border-color: #ff8da1 !important;
+            color: #b45374 !important;
+            font-weight: 600 !important;
+            box-shadow: 0 0 0 2px rgba(255, 140, 170, 0.25);
+        }
+        .size-preset.active-preset:hover {
+            background: rgba(255, 140, 170, 0.45) !important;
+        }
+
         /* ===== 响应式 ===== */
         @media (max-width: 1024px) {
             .func-layout {
@@ -1435,23 +1447,24 @@
 
                     <div class="panel-box">
                         <div class="panel-title">📐 裁剪尺寸</div>
-                        <div class="row-flex">
-                            <button class="btn-sm outline size-preset" data-w="295" data-h="413">一寸 (295×413)</button>
-                            <button class="btn-sm outline size-preset" data-w="413" data-h="579">二寸 (413×579)</button>
-                            <button class="btn-sm outline size-preset" data-w="500" data-h="700">小 (500×700)</button>
-                            <button class="btn-sm outline size-preset" data-w="260" data-h="360">自定义小</button>
+                        <!-- 预设尺寸按钮组（已修改：加px、删除小尺寸、添加自定义） -->
+                        <div class="row-flex" id="cropPresetGroup">
+                            <button class="btn-sm outline size-preset active-preset" data-w="295" data-h="413" data-preset="inch1">一寸 (295×413px)</button>
+                            <button class="btn-sm outline size-preset" data-w="413" data-h="579" data-preset="inch2">二寸 (413×579px)</button>
+                            <button class="btn-sm outline size-preset" data-w="260" data-h="360" data-preset="custom">自定义</button>
                         </div>
                         <div class="row-flex">
                             <label>自定义宽 <input type="number" id="cropWidth" value="295" step="1" min="10" style="width:80px;" /> px</label>
                             <label>高 <input type="number" id="cropHeight" value="413" step="1" min="10" style="width:80px;" /> px</label>
                             <button class="btn-sm" id="cropApplyCustomBtn">应用</button>
+                            <button class="btn-sm outline" id="cropResetBtn">🔄 重置</button>
                         </div>
                         <div class="row-flex">
                             <label>导出格式 <select id="cropFormat"><option value="image/jpeg">JPEG</option><option value="image/png">PNG</option></select></label>
                             <button class="btn-sm success" id="cropExportBtn">💾 导出裁剪图片</button>
                             <button class="btn-sm outline" id="cropSaveBtn">📦 存到仓库</button>
                         </div>
-                        <div class="text-muted mt-8">💡 点击预设尺寸自动裁剪，可拖动图片调整位置</div>
+                        <div class="text-muted mt-8">💡 点击预设尺寸自动应用 · 可拖动图片调整位置 · 点击「重置」恢复初始</div>
                     </div>
                 </div>
             </div>
@@ -1479,7 +1492,11 @@
                             <label>尺寸缩放 <input type="range" id="compressScale" min="10" max="100" value="95" style="width:160px;" /> <span id="scaleDisplay">95</span>%</label>
                         </div>
                         <div class="row-flex">
-                            <button class="btn-sm success" id="compressBtn">⚡ 开始压缩</button>
+                            <!-- "开始压缩" → "预览压缩" -->
+                            <button class="btn-sm success" id="compressBtn">👁️ 预览压缩</button>
+                            <!-- 新增导出下载 -->
+                            <label>导出格式 <select id="compressExportFormat"><option value="image/jpeg">JPEG</option><option value="image/png">PNG</option><option value="image/webp">WebP</option></select></label>
+                            <button class="btn-sm" id="compressDownloadBtn">💾 导出下载</button>
                             <button class="btn-sm outline" id="compressSaveBtn">📦 存到仓库</button>
                         </div>
                         <div class="compress-info" id="compressInfo" style="display:none;">
@@ -1488,7 +1505,7 @@
                             <div class="info-card"><div class="label">压缩前尺寸</div><div class="value" id="beforeDim">—</div></div>
                             <div class="info-card"><div class="label">压缩后尺寸</div><div class="value" id="afterDim">—</div></div>
                         </div>
-                        <div class="text-muted mt-8">💡 调整滑块控制压缩程度，实时查看对比</div>
+                        <div class="text-muted mt-8">💡 调整滑块后点击「预览压缩」查看效果，再「导出下载」保存</div>
                     </div>
                 </div>
             </div>
@@ -2469,7 +2486,7 @@
             });
 
             // ================================================================
-            // 证件照 - 裁剪
+            // 证件照 - 裁剪（增强版）
             // ================================================================
             const cropCanvas = document.getElementById('idphotoCropCanvas');
             const cropCtx = cropCanvas.getContext('2d');
@@ -2480,6 +2497,7 @@
             const cropWidth = document.getElementById('cropWidth');
             const cropHeight = document.getElementById('cropHeight');
             const cropApplyCustomBtn = document.getElementById('cropApplyCustomBtn');
+            const cropResetBtn = document.getElementById('cropResetBtn');
             const cropFormat = document.getElementById('cropFormat');
             const cropExportBtn = document.getElementById('cropExportBtn');
             const cropSaveBtn = document.getElementById('cropSaveBtn');
@@ -2496,6 +2514,82 @@
                 cropDragStartY = 0,
                 cropDragStartOffX = 0,
                 cropDragStartOffY = 0;
+
+            // 存储初始状态（用于重置）
+            let cropInitialScale = 1,
+                cropInitialOffsetX = 300,
+                cropInitialOffsetY = 300;
+            let cropInitialWidth = 295,
+                cropInitialHeight = 413;
+
+            // 当前选中的预设
+            let selectedPreset = 'inch1';
+
+            // 预设按钮组
+            const presetBtns = document.querySelectorAll('.size-preset');
+
+            // 高亮预设按钮
+            function highlightPreset(presetId) {
+                presetBtns.forEach(btn => {
+                    btn.classList.toggle('active-preset', btn.dataset.preset === presetId);
+                });
+                selectedPreset = presetId;
+            }
+
+            // 默认高亮"一寸"
+            highlightPreset('inch1');
+
+            // 核心：使图片适应裁剪框（覆盖方式）
+            function fitImageToCropBox() {
+                if (!cropImage) return;
+                const w = 600,
+                    h = 600;
+                const cw = state.crop.width;
+                const ch = state.crop.height;
+                if (cw <= 0 || ch <= 0) return;
+
+                // 计算裁剪框在画布上的像素大小（最大500px，保持比例）
+                const ratio = ch / cw;
+                let boxW = 500,
+                    boxH = boxW * ratio;
+                if (boxH > 500) { boxH = 500;
+                    boxW = boxH / ratio; }
+
+                // 覆盖方式：图片完全覆盖裁剪框
+                const scaleX = boxW / cropImage.width;
+                const scaleY = boxH / cropImage.height;
+                cropImageScale = Math.max(scaleX, scaleY);
+
+                // 居中
+                cropImageOffsetX = 300;
+                cropImageOffsetY = 300;
+
+                drawCropScene();
+            }
+
+            // 重置到初始状态
+            function resetCrop() {
+                if (!cropImage) {
+                    showToast('请先上传照片');
+                    return;
+                }
+                // 恢复到刚上传时的状态
+                cropImageScale = cropInitialScale;
+                cropImageOffsetX = cropInitialOffsetX;
+                cropImageOffsetY = cropInitialOffsetY;
+
+                // 重置尺寸为默认（一寸）
+                state.crop.width = cropInitialWidth;
+                state.crop.height = cropInitialHeight;
+                cropWidth.value = cropInitialWidth;
+                cropHeight.value = cropInitialHeight;
+
+                // 高亮一寸
+                highlightPreset('inch1');
+
+                drawCropScene();
+                showToast('🔄 已重置');
+            }
 
             function drawCropScene() {
                 const w = 600,
@@ -2539,11 +2633,24 @@
                     const img = new Image();
                     img.onload = () => {
                         cropImage = img;
-                        cropImageScale = Math.min(600 / img.width, 600 / img.height) * 0.8;
+                        // 初始缩放：图片适应画布（留边距）
+                        cropImageScale = Math.min(600 / img.width, 600 / img.height) * 0.75;
                         cropImageOffsetX = 300;
                         cropImageOffsetY = 300;
-                        drawCropScene();
-                        showToast('✅ 照片已上传，请选择尺寸');
+                        // 保存初始状态
+                        cropInitialScale = cropImageScale;
+                        cropInitialOffsetX = 300;
+                        cropInitialOffsetY = 300;
+                        cropInitialWidth = 295;
+                        cropInitialHeight = 413;
+                        state.crop.width = cropInitialWidth;
+                        state.crop.height = cropInitialHeight;
+                        cropWidth.value = cropInitialWidth;
+                        cropHeight.value = cropInitialHeight;
+                        highlightPreset('inch1');
+                        // 适应裁剪框
+                        fitImageToCropBox();
+                        showToast('✅ 照片已上传');
                     };
                     img.onerror = () => showToast('❌ 加载失败');
                     img.src = e.target.result;
@@ -2561,34 +2668,55 @@
                 showToast('已清除');
             }
 
-            // 预设尺寸
-            document.querySelectorAll('.size-preset').forEach(btn => {
+            // 应用尺寸（预设或自定义）
+            function applyCropSize(w, h, presetId) {
+                if (!cropImage) { showToast('请先上传照片'); return; }
+                if (w <= 0 || h <= 0) { showToast('请输入有效尺寸'); return; }
+                state.crop.width = w;
+                state.crop.height = h;
+                cropWidth.value = w;
+                cropHeight.value = h;
+                if (presetId) highlightPreset(presetId);
+                fitImageToCropBox();
+                showToast(`✅ 已应用 ${w}×${h}px`);
+            }
+
+            // 预设尺寸点击
+            presetBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
                     const w = parseInt(btn.dataset.w, 10);
                     const h = parseInt(btn.dataset.h, 10);
-                    if (w && h) {
-                        state.crop.width = w;
-                        state.crop.height = h;
-                        cropWidth.value = w;
-                        cropHeight.value = h;
-                        drawCropScene();
-                        showToast(`✅ 已应用 ${w}×${h}px`);
+                    const preset = btn.dataset.preset;
+                    if (preset === 'custom') {
+                        // 自定义：使用输入框的值
+                        const cw = parseInt(cropWidth.value, 10);
+                        const ch = parseInt(cropHeight.value, 10);
+                        if (cw > 0 && ch > 0) {
+                            applyCropSize(cw, ch, 'custom');
+                        } else {
+                            showToast('⚠️ 请先填写自定义宽高');
+                        }
+                    } else {
+                        if (w > 0 && h > 0) {
+                            applyCropSize(w, h, preset);
+                        }
                     }
                 });
             });
 
+            // 应用自定义按钮
             cropApplyCustomBtn.addEventListener('click', () => {
                 const w = parseInt(cropWidth.value, 10);
                 const h = parseInt(cropHeight.value, 10);
                 if (w > 0 && h > 0) {
-                    state.crop.width = w;
-                    state.crop.height = h;
-                    drawCropScene();
-                    showToast(`✅ 已应用 ${w}×${h}px`);
+                    applyCropSize(w, h, 'custom');
                 } else {
-                    showToast('⚠️ 请输入有效尺寸');
+                    showToast('⚠️ 请输入有效的宽和高');
                 }
             });
+
+            // 重置按钮
+            cropResetBtn.addEventListener('click', resetCrop);
 
             // 导出裁剪
             function exportCrop() {
@@ -2597,14 +2725,15 @@
                     ch = state.crop.height;
                 if (cw <= 0 || ch <= 0) { showToast('请选择有效尺寸'); return; }
 
-                // 计算裁剪区域
                 const canvasSize = 600;
-                const boxW = parseFloat(cropBoxOverlay.style.width) || 500;
-                const boxH = parseFloat(cropBoxOverlay.style.height) || 500;
+                const ratio = ch / cw;
+                let boxW = 500,
+                    boxH = boxW * ratio;
+                if (boxH > 500) { boxH = 500;
+                    boxW = boxH / ratio; }
                 const boxX = (canvasSize - boxW) / 2,
                     boxY = (canvasSize - boxH) / 2;
 
-                // 计算在原始图片上的裁剪区域
                 const s = cropImageScale;
                 const imgW = cropImage.width * s,
                     imgH = cropImage.height * s;
@@ -2616,7 +2745,6 @@
                 const srcW = boxW / s;
                 const srcH = boxH / s;
 
-                // 裁剪并导出
                 const off = document.createElement('canvas');
                 off.width = cw;
                 off.height = ch;
@@ -2624,7 +2752,6 @@
                 oc.drawImage(cropImage, srcX, srcY, srcW, srcH, 0, 0, cw, ch);
 
                 const format = cropFormat.value;
-                const mime = format;
                 const ext = format === 'image/png' ? 'png' : 'jpg';
                 off.toBlob((blob) => {
                     if (!blob) { showToast('❌ 导出失败'); return; }
@@ -2637,7 +2764,7 @@
                     document.body.removeChild(a);
                     setTimeout(() => URL.revokeObjectURL(url), 5000);
                     showToast(`✅ 已导出 ${cw}×${ch}`);
-                }, mime, 0.92);
+                }, format, 0.92);
             }
 
             function saveCropToWarehouse() {
@@ -2646,8 +2773,11 @@
                     ch = state.crop.height;
                 if (cw <= 0 || ch <= 0) { showToast('请选择有效尺寸'); return; }
                 const canvasSize = 600;
-                const boxW = parseFloat(cropBoxOverlay.style.width) || 500;
-                const boxH = parseFloat(cropBoxOverlay.style.height) || 500;
+                const ratio = ch / cw;
+                let boxW = 500,
+                    boxH = boxW * ratio;
+                if (boxH > 500) { boxH = 500;
+                    boxW = boxH / ratio; }
                 const boxX = (canvasSize - boxW) / 2,
                     boxY = (canvasSize - boxH) / 2;
                 const s = cropImageScale;
@@ -2727,7 +2857,6 @@
                         onMove(e); } }, { passive: false });
                 window.addEventListener('touchend', onUp);
 
-                // 滚轮缩放
                 cropCanvas.addEventListener('wheel', (e) => {
                     if (!cropImage) return;
                     e.preventDefault();
@@ -2754,7 +2883,7 @@
             }
 
             // ================================================================
-            // 证件照 - 压缩
+            // 证件照 - 压缩（增强版：预览压缩 + 导出下载）
             // ================================================================
             const compressCanvas = document.getElementById('compressCanvas');
             const compressCtx = compressCanvas.getContext('2d');
@@ -2767,6 +2896,8 @@
             const compressScale = document.getElementById('compressScale');
             const scaleDisplay = document.getElementById('scaleDisplay');
             const compressBtn = document.getElementById('compressBtn');
+            const compressDownloadBtn = document.getElementById('compressDownloadBtn');
+            const compressExportFormat = document.getElementById('compressExportFormat');
             const compressSaveBtn = document.getElementById('compressSaveBtn');
             const compressInfo = document.getElementById('compressInfo');
             const beforeSize = document.getElementById('beforeSize');
@@ -2778,6 +2909,7 @@
             let compressOriginalImage = null;
             let compressOriginalDataURL = null;
             let compressResultDataURL = null;
+            let compressResultBlob = null;
 
             function drawCompressScene(img) {
                 const w = 600,
@@ -2803,15 +2935,15 @@
                         compressOriginalImage = img;
                         compressOriginalDataURL = dataURL;
                         compressResultDataURL = null;
+                        compressResultBlob = null;
                         compressInfo.style.display = 'none';
                         drawCompressScene(img);
-                        // 显示原始信息
                         const sizeKB = (dataURL.length * 3 / 4) / 1024;
                         beforeSize.textContent = sizeKB.toFixed(2) + ' KB';
                         beforeDim.textContent = img.width + '×' + img.height + 'px';
                         afterSize.textContent = '—';
                         afterDim.textContent = '—';
-                        showToast('✅ 图片已上传，点击「开始压缩」');
+                        showToast('✅ 图片已上传，点击「预览压缩」');
                         compressStatus.textContent = '已上传，等待压缩';
                     };
                     img.onerror = () => showToast('❌ 加载失败');
@@ -2824,6 +2956,7 @@
                 compressOriginalImage = null;
                 compressOriginalDataURL = null;
                 compressResultDataURL = null;
+                compressResultBlob = null;
                 compressInfo.style.display = 'none';
                 drawCompressScene(null);
                 compressStatus.textContent = '未上传';
@@ -2831,6 +2964,7 @@
                 compressFileInput.value = '';
             }
 
+            // 预览压缩（原"开始压缩"）
             function doCompress() {
                 if (!compressOriginalImage) { showToast('请先上传图片'); return; }
                 const quality = parseInt(compressQuality.value, 10) / 100;
@@ -2853,22 +2987,67 @@
                     reader.onload = (e) => {
                         const dataURL = e.target.result;
                         compressResultDataURL = dataURL;
-                        // 显示压缩后信息
+                        compressResultBlob = blob;
                         const sizeKB = blob.size / 1024;
                         afterSize.textContent = sizeKB.toFixed(2) + ' KB';
                         afterDim.textContent = newW + '×' + newH + 'px';
                         compressInfo.style.display = 'grid';
-                        // 更新预览
                         const previewImg = new Image();
                         previewImg.onload = () => {
                             drawCompressScene(previewImg);
                         };
                         previewImg.src = dataURL;
-                        showToast(`✅ 压缩完成 (${sizeKB.toFixed(2)} KB)`);
+                        showToast(`✅ 压缩预览完成 (${sizeKB.toFixed(2)} KB)`);
                         compressStatus.textContent = '已压缩';
                     };
                     reader.readAsDataURL(blob);
                 }, mime, quality);
+            }
+
+            // 导出下载压缩后的图片
+            function downloadCompressed() {
+                if (!compressResultBlob) {
+                    showToast('⚠️ 请先点击「预览压缩」');
+                    return;
+                }
+                const format = compressExportFormat.value;
+                const ext = format === 'image/png' ? 'png' : format === 'image/webp' ? 'webp' : 'jpg';
+                // 如果格式与当前blob格式不同，需要重新编码
+                if (format === compressResultBlob.type) {
+                    // 直接下载
+                    const url = URL.createObjectURL(compressResultBlob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `压缩后.${ext}`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    setTimeout(() => URL.revokeObjectURL(url), 5000);
+                    showToast('✅ 已下载');
+                } else {
+                    // 转换格式
+                    const img = new Image();
+                    img.onload = () => {
+                        const off = document.createElement('canvas');
+                        off.width = img.width;
+                        off.height = img.height;
+                        const oc = off.getContext('2d');
+                        oc.drawImage(img, 0, 0);
+                        off.toBlob((blob) => {
+                            if (!blob) { showToast('❌ 导出失败'); return; }
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = `压缩后.${ext}`;
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                            setTimeout(() => URL.revokeObjectURL(url), 5000);
+                            showToast('✅ 已下载');
+                        }, format, 0.92);
+                    };
+                    img.src = compressResultDataURL;
+                }
             }
 
             function saveCompressToWarehouse() {
@@ -2894,7 +3073,10 @@
                 compressScale.addEventListener('input', () => {
                     scaleDisplay.textContent = compressScale.value;
                 });
+                // "预览压缩"
                 compressBtn.addEventListener('click', doCompress);
+                // 导出下载
+                compressDownloadBtn.addEventListener('click', downloadCompressed);
                 compressSaveBtn.addEventListener('click', saveCompressToWarehouse);
                 drawCompressScene(null);
             }
@@ -2922,7 +3104,6 @@
                         }
                     });
                 });
-                // 默认激活裁剪
                 document.querySelector('.idphoto-tabs .tab-btn[data-sub="crop"]')?.click();
             }
 
@@ -2933,12 +3114,11 @@
             initCrop();
             initCompress();
             renderWarehouse();
-            // 默认激活证件照子标签 (在页面加载后)
             setTimeout(initIdphotoTabs, 100);
 
             console.log('🌸 表情包证件照修改器已启动 | KIKI');
             console.log('🔑 密码: 1998 (搜索 CORRECT_PIN 修改)');
-            console.log('📌 证件照: 裁剪 + 压缩 两大模块');
+            console.log('📌 证件照: 裁剪 + 压缩 两大模块 (已增强)');
 
         })();
     </script>
