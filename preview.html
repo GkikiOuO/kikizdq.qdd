@@ -58,7 +58,7 @@
         .lock-box {
             background: rgba(255, 245, 247, 0.92);
             backdrop-filter: blur(24px);
-            border-radius: 48px;
+            border-radius 48px;
             padding: 40px 44px 44px;
             max-width: 420px;
             width: 100%;
@@ -119,14 +119,14 @@
             font-size: 14px;
             color: #ccc;
         }
-        .lock-box .lock-error {
+        .lock-error {
             color: #d45a7a;
             font-size: 14px;
             min-height: 24px;
             margin-bottom: 12px;
             font-weight: 500;
         }
-        .lock-box .lock-btn {
+        .lock-btn {
             padding: 10px 40px;
             border-radius: 40px;
             border: none;
@@ -138,14 +138,14 @@
             transition: all 0.25s;
             box-shadow: 0 4px 20px rgba(255, 100, 130, 0.25);
         }
-        .lock-box .lock-btn:hover {
+        .lock-btn:hover {
             transform: scale(1.04);
             box-shadow: 0 8px 30px rgba(255, 100, 130, 0.35);
         }
-        .lock-box .lock-btn:active {
+        .lock-btn:active {
             transform: scale(0.96);
         }
-        .lock-box .lock-hint {
+        .lock-hint {
             font-size: 12px;
             color: #b58a9a;
             margin-top: 14px;
@@ -215,13 +215,13 @@
             flex-shrink: 0;
             border: 2px solid rgba(255, 255, 255, 0.70);
         }
-        .header-right .maker-text {
+        .maker-text {
             font-size: 15px;
             color: #7a4e5e;
             font-weight: 500;
             white-space: nowrap;
         }
-        .header-right .maker-text span {
+        .maker-text span {
             color: #b45374;
             font-weight: 600;
         }
@@ -229,29 +229,29 @@
         #page-home {
             display: block;
         }
-        #page-home .home-content {
+        .home-content {
             text-align: center;
             padding: 30px 20px 20px;
         }
-        #page-home .home-content .home-title {
+        .home-title {
             font-size: 28px;
             font-weight: 700;
             color: #6b3a4a;
             margin-bottom: 8px;
         }
-        #page-home .home-content .home-sub {
+        .home-sub {
             font-size: 16px;
             color: #9a7a8a;
             margin-bottom: 28px;
         }
-        #page-home .home-buttons {
+        .home-buttons {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             gap: 16px 24px;
             margin-bottom: 36px;
         }
-        #page-home .home-buttons .home-btn {
+        .home-btn {
             padding: 14px 40px;
             border-radius: 60px;
             border: none;
@@ -266,16 +266,16 @@
             box-shadow: 0 4px 16px rgba(255, 130, 160, 0.06);
             min-width: 140px;
         }
-        #page-home .home-buttons .home-btn:hover {
+        .home-btn:hover {
             transform: translateY(-4px) scale(1.02);
             background: rgba(255, 255, 255, 0.75);
             box-shadow: 0 8px 28px rgba(255, 130, 160, 0.12);
             border-color: #ff8da1;
         }
-        #page-home .home-buttons .home-btn .emoji {
+        .home-btn .emoji {
             margin-right: 8px;
         }
-        #page-home .home-bubble {
+        .home-bubble {
             max-width: 640px;
             margin: 0 auto;
             background: rgba(255, 255, 255, 0.45);
@@ -288,20 +288,20 @@
             line-height: 1.8;
             box-shadow: 0 4px 20px rgba(255, 130, 160, 0.06);
         }
-        #page-home .home-bubble .bubble-title {
+        .bubble-title {
             font-weight: 600;
             font-size: 16px;
             margin-bottom: 6px;
             color: #b45374;
         }
-        #page-home .home-bubble .bubble-divider {
+        .bubble-divider {
             width: 40px;
             height: 2px;
             background: #ffb0c0;
             margin: 8px auto 12px;
             border-radius: 4px;
         }
-        #page-home .home-bubble .bubble-footer {
+        .bubble-footer {
             margin-top: 12px;
             font-size: 13px;
             color: #9a7a8a;
@@ -317,14 +317,8 @@
             display: block;
         }
         @keyframes fadeIn {
-            0% {
-                opacity: 0.3;
-                transform: translateY(10px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            0% { opacity: 0.3; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
         }
         .func-nav {
             display: flex;
@@ -334,7 +328,7 @@
             padding-bottom: 12px;
             border-bottom: 1px solid rgba(255, 180, 195, 0.25);
         }
-        .func-nav .nav-btn {
+        .nav-btn {
             padding: 8px 24px;
             border: none;
             border-radius: 40px;
@@ -347,10 +341,10 @@
             border: 1px solid transparent;
             backdrop-filter: blur(4px);
         }
-        .func-nav .nav-btn:hover {
+        .nav-btn:hover {
             background: rgba(255, 255, 255, 0.55);
         }
-        .func-nav .nav-btn.active {
+        .nav-btn.active {
             background: rgba(255, 255, 255, 0.70);
             border-color: rgba(255, 140, 170, 0.30);
             box-shadow: 0 2px 12px rgba(255, 130, 160, 0.08);
@@ -364,7 +358,7 @@
         .func-layout.single {
             grid-template-columns: 1fr;
         }
-        .func-layout .preview-area {
+        .preview-area {
             background: rgba(255, 255, 255, 0.35);
             border-radius: 28px;
             padding: 14px;
@@ -372,7 +366,7 @@
             backdrop-filter: blur(4px);
             position: relative;
         }
-        .func-layout .preview-area .label-row {
+        .label-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -437,7 +431,7 @@
             background: #000;
             object-fit: contain;
         }
-        .gif-preview-wrapper .gif-placeholder {
+        .gif-placeholder {
             position: absolute;
             top: 50%;
             left: 50%;
@@ -446,7 +440,7 @@
             font-size: 14px;
             text-align: center;
         }
-        .gif-preview-wrapper .gif-placeholder .big {
+        .gif-placeholder .big {
             font-size: 40px;
             display: block;
         }
@@ -478,19 +472,19 @@
             border: 2px solid #fff;
             box-shadow: 0 2px 8px rgba(255, 100, 130, 0.3);
         }
-        .gif-timeline .timeline-labels {
+        .timeline-labels {
             display: flex;
             justify-content: space-between;
             font-size: 12px;
             color: #7a4e5e;
             margin-top: 2px;
         }
-        .gif-timeline .clip-lines {
+        .clip-lines {
             position: relative;
             height: 30px;
             margin-top: 2px;
         }
-        .gif-timeline .clip-lines .line {
+        .clip-lines .line {
             position: absolute;
             top: 0;
             height: 100%;
@@ -500,7 +494,7 @@
             transition: left 0.1s;
             z-index: 2;
         }
-        .gif-timeline .clip-lines .line::after {
+        .clip-lines .line::after {
             content: '';
             position: absolute;
             top: -6px;
@@ -512,19 +506,19 @@
             border-right: 6px solid transparent;
             border-bottom: 6px solid #ff8da1;
         }
-        .gif-timeline .clip-lines .line.start {
+        .clip-lines .line.start {
             background: #ff6b8a;
         }
-        .gif-timeline .clip-lines .line.start::after {
+        .clip-lines .line.start::after {
             border-bottom-color: #ff6b8a;
         }
-        .gif-timeline .clip-lines .line.end {
+        .clip-lines .line.end {
             background: #6bc8ff;
         }
-        .gif-timeline .clip-lines .line.end::after {
+        .clip-lines .line.end::after {
             border-bottom-color: #6bc8ff;
         }
-        .gif-timeline .clip-lines .line-label {
+        .line-label {
             position: absolute;
             top: 22px;
             font-size: 10px;
@@ -533,13 +527,7 @@
             transform: translateX(-50%);
             white-space: nowrap;
         }
-        .gif-timeline .clip-lines .line.start .line-label {
-            color: #ff6b8a;
-        }
-        .gif-timeline .clip-lines .line.end .line-label {
-            color: #6bc8ff;
-        }
-        .gif-timeline .clip-highlight {
+        .clip-highlight {
             position: absolute;
             top: 0;
             height: 100%;
@@ -560,7 +548,7 @@
             gap: 8px;
             max-height: 500px;
         }
-        .sidebar .sidebar-title {
+        .sidebar-title {
             font-size: 14px;
             font-weight: 600;
             color: #6b3a4a;
@@ -568,7 +556,7 @@
             justify-content: space-between;
             align-items: center;
         }
-        .sidebar .sidebar-title .badge {
+        .badge {
             background: rgba(255, 255, 255, 0.5);
             padding: 2px 12px;
             border-radius: 20px;
@@ -613,22 +601,22 @@
             border-color: #ff8da1;
             box-shadow: 0 0 0 2px rgba(255, 140, 170, 0.15);
         }
-        .text-tag .tag-text {
+        .tag-text {
             flex: 1;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
-        .text-tag .tag-del {
+        .tag-del {
             font-size: 16px;
             color: #b58a9a;
             cursor: pointer;
             padding: 0 2px;
         }
-        .text-tag .tag-del:hover {
+        .tag-del:hover {
             color: #d45a7a;
         }
-        .sidebar .hint {
+        .hint {
             font-size: 11px;
             color: #b58a9a;
             text-align: center;
@@ -642,7 +630,7 @@
             backdrop-filter: blur(4px);
             margin-top: 14px;
         }
-        .panel-box .panel-title {
+        .panel-title {
             font-size: 15px;
             font-weight: 600;
             color: #6b3a4a;
@@ -685,7 +673,7 @@
             box-shadow: 0 0 0 3px rgba(255, 140, 170, 0.15);
             background: rgba(255, 255, 255, 0.8);
         }
-        .row-flex .btn-sm {
+        .btn-sm {
             padding: 6px 18px;
             border-radius: 40px;
             border: none;
@@ -696,20 +684,20 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-        .row-flex .btn-sm:hover {
+        .btn-sm:hover {
             transform: scale(1.03);
             box-shadow: 0 4px 14px rgba(255, 100, 130, 0.25);
         }
-        .row-flex .btn-sm.outline {
+        .btn-sm.outline {
             background: rgba(255, 255, 255, 0.5);
             color: #6b3a4a;
             border: 1px solid rgba(255, 180, 195, 0.3);
             box-shadow: none;
         }
-        .row-flex .btn-sm.success {
+        .btn-sm.success {
             background: linear-gradient(135deg, #a8d8ea, #7ac0d4);
         }
-        .row-flex .btn-sm.danger {
+        .btn-sm.danger {
             background: linear-gradient(135deg, #ff6b8a, #e85577);
         }
         /* ===== 证件照网格 ===== */
@@ -723,13 +711,13 @@
                 grid-template-columns: 1fr;
             }
         }
-        .idphoto-grid .spec-group {
+        .spec-group {
             background: rgba(255, 255, 255, 0.25);
             border-radius: 16px;
             padding: 12px 14px;
             border: 1px solid rgba(255, 255, 255, 0.3);
         }
-        .idphoto-grid .spec-group .spec-title {
+        .spec-title {
             font-size: 12px;
             color: #8a5a6a;
             font-weight: 500;
@@ -772,7 +760,7 @@
             object-fit: cover;
             display: block;
         }
-        .wh-item .wh-check {
+        .wh-check {
             position: absolute;
             top: 5px;
             left: 5px;
@@ -783,7 +771,7 @@
             z-index: 2;
             opacity: 0.8;
         }
-        .wh-item .wh-del {
+        .wh-del {
             position: absolute;
             top: 3px;
             right: 3px;
@@ -806,10 +794,10 @@
         .wh-item:hover .wh-del {
             opacity: 1;
         }
-        .wh-item .wh-del:hover {
+        .wh-del:hover {
             background: rgba(255, 200, 210, 0.8);
         }
-        .wh-item .wh-download {
+        .wh-download {
             position: absolute;
             bottom: 5px;
             right: 5px;
@@ -832,7 +820,7 @@
         .wh-item:hover .wh-download {
             opacity: 1;
         }
-        .wh-item .wh-download:hover {
+        .wh-download:hover {
             background: rgba(255, 255, 255, 0.9);
         }
         .wh-empty {
@@ -886,7 +874,7 @@
         .editor-modal.active {
             display: flex;
         }
-        .editor-modal .editor-box {
+        .editor-box {
             background: rgba(255, 245, 247, 0.95);
             backdrop-filter: blur(20px);
             border-radius: 32px;
@@ -899,7 +887,7 @@
             box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
             border: 1px solid rgba(255, 255, 255, 0.3);
         }
-        .editor-modal .editor-header {
+        .editor-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -907,7 +895,7 @@
             flex-wrap: wrap;
             gap: 8px;
         }
-        .editor-modal .editor-header .editor-title {
+        .editor-title {
             font-size: 18px;
             font-weight: 600;
             color: #6b3a4a;
@@ -915,12 +903,12 @@
             align-items: center;
             gap: 10px;
         }
-        .editor-modal .editor-header .editor-actions {
+        .editor-actions {
             display: flex;
             gap: 10px;
             align-items: center;
         }
-        .editor-modal .editor-header .editor-actions button {
+        .editor-actions button {
             padding: 7px 22px;
             border: none;
             border-radius: 40px;
@@ -929,23 +917,23 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-        .editor-modal .editor-header .editor-actions .btn-confirm {
+        .btn-confirm {
             background: linear-gradient(135deg, #ff8da1, #f5728a);
             color: #fff;
             box-shadow: 0 4px 14px rgba(255, 100, 130, 0.25);
         }
-        .editor-modal .editor-header .editor-actions .btn-confirm:hover {
+        .btn-confirm:hover {
             transform: scale(1.04);
         }
-        .editor-modal .editor-header .editor-actions .btn-cancel {
+        .btn-cancel {
             background: rgba(255, 255, 255, 0.5);
             color: #6b3a4a;
             border: 1px solid rgba(255, 180, 195, 0.3);
         }
-        .editor-modal .editor-header .editor-actions .btn-cancel:hover {
+        .btn-cancel:hover {
             background: rgba(255, 255, 255, 0.8);
         }
-        .editor-modal .editor-canvas-wrap {
+        .editor-canvas-wrap {
             position: relative;
             width: 100%;
             padding-bottom: 100%;
@@ -957,10 +945,10 @@
             touch-action: none;
             user-select: none;
         }
-        .editor-modal .editor-canvas-wrap:active {
+        .editor-canvas-wrap:active {
             cursor: grabbing;
         }
-        .editor-modal .editor-canvas-wrap canvas {
+        .editor-canvas-wrap canvas {
             position: absolute;
             top: 0;
             left: 0;
@@ -970,7 +958,7 @@
             border-radius: 18px;
             background: #f8f4f6;
         }
-        .editor-modal .crop-overlay {
+        .crop-overlay {
             position: absolute;
             top: 0;
             left: 0;
@@ -980,256 +968,130 @@
             z-index: 5;
             border-radius: 18px;
         }
-        .editor-modal .crop-overlay .crop-box {
+        .crop-box {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            border: 2.5px solid rgba(255, 255, 255, 0.85);
+            border: 2.5px solid rgba(255, 255, 0.85);
             border-radius: 12px;
-            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.45);
+            box-shadow: 0 0 0 9999px rgba(0,0,0,0.45);
             pointer-events: none;
         }
-        .editor-modal .crop-overlay .crop-box .corner {
+        .corner {
             position: absolute;
             width: 14px;
             height: 14px;
-            border-color: rgba(255, 255, 255, 0.9);
+            border-color: rgba(255,255,0.9);
             border-style: solid;
-            border-width: 0;
-            pointer-events: none;
+            border-width:0;
+            pointer-events:none;
         }
-        .editor-modal .crop-overlay .crop-box .corner.tl {
-            top: -2px;
-            left: -2px;
-            border-top-width: 3px;
-            border-left-width: 3px;
-            border-radius: 3px 0 0 0;
-        }
-        .editor-modal .crop-overlay .crop-box .corner.tr {
-            top: -2px;
-            right: -2px;
-            border-top-width: 3px;
-            border-right-width: 3px;
-            border-radius: 0 3px 0 0;
-        }
-        .editor-modal .crop-overlay .crop-box .corner.bl {
-            bottom: -2px;
-            left: -2px;
-            border-bottom-width: 3px;
-            border-left-width: 3px;
-            border-radius: 0 0 3px 0;
-        }
-        .editor-modal .crop-overlay .crop-box .corner.br {
-            bottom: -2px;
-            right: -2px;
-            border-bottom-width 3px;
-            border-right-width: 3px;
-            border-radius: 0 0 3px 0;
-        }
-        .editor-modal .editor-footer {
+        .corner.tl { top:-2px; left:-2px; border-top-width:3px; border-left-width:3px; border-radius:3px 0 0 0; }
+        .corner.tr { top:-2px; right:-2px; border-top-width:3px; border-right-width:3px; border-radius:0 3px 0 0; }
+        .corner.bl { bottom:-2px; left:-2px; border-bottom-width:3px; border-left-width:3px; border-radius:0 0 3px 0; }
+        .corner.br { bottom:-2px; right:-2px; border-bottom-width:3px; border-right-width:3px; border-radius:0 0 0 3px; }
+        .editor-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 14px;
+            margin-top:14px;
             flex-wrap: wrap;
-            gap: 8px;
+            gap:8px;
         }
-        .editor-modal .editor-footer .zoom-info {
-            font-size: 13px;
-            color: #7a4e5e;
-            background: rgba(255, 255, 255, 0.4);
-            padding: 4px 16px;
-            border-radius: 30px;
+        .zoom-info {
+            font-size:13px;
+            color:#7a4e5e;
+            background:rgba(255,255,0.4);
+            padding:4px 16px;
+            border-radius:30px;
         }
-        .editor-modal .editor-footer .zoom-info span {
-            font-weight: 600;
-            color: #b45374;
+        .zoom-info span { font-weight:600; color:#b45374; }
+        .zoom-controls { display:flex; gap:6px; align-items:center; }
+        .zoom-controls button {
+            width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,180,195,0.3);
+            background:rgba(255,255,0.5);color:#6b3a4a;font-size:16px;cursor:pointer;
+            display:flex;align-items:center;justify-content:center;
         }
-        .editor-modal .editor-footer .zoom-controls {
-            display: flex;
-            gap: 6px;
-            align-items: center;
-        }
-        .editor-modal .editor-footer .zoom-controls button {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            border: 1px solid rgba(255, 180, 195, 0.3);
-            background: rgba(255, 255, 255, 0.5);
-            color: #6b3a4a;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .editor-modal .editor-footer .zoom-controls button:hover {
-            background: rgba(255, 255, 255, 0.8);
-            border-color: #ff8da1;
-        }
-        .editor-modal .editor-footer .zoom-controls .zoom-slider {
-            width: 100px;
-            accent-color: #ff8da1;
-            cursor: pointer;
-        }
+        .zoom-controls button:hover { background:rgba(255,255,0.8);border-color:#ff8da1; }
+        .zoom-slider { width:100px;accent-color:#ff8da1;cursor:pointer; }
         /* ===== 预览模态框 ===== */
         .preview-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(12px);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            padding: 24px;
+            display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+            background:rgba(0,0,0,0.7);backdrop-filter:blur(12px);z-index:1000;
+            justify-content:center;align-items:center;padding:24px;
         }
-        .preview-modal.active {
-            display: flex;
+        .preview-modal.active { display:flex; }
+        .modal-content {
+            background:rgba(255,255,0.1);border-radius:24px;padding:20px;max-width:90vmin;
+            max-height:90vh;position:relative;border:1px solid rgba(255,255,0.15);
         }
-        .preview-modal .modal-content {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-            padding: 20px;
-            max-width: 90vmin;
-            max-height: 90vh;
-            position: relative;
-            border: 1px solid rgba(255, 255, 255, 0.15);
+        .modal-content img,.modal-content video {
+            max-width:100%;max-height:80vh;border-radius:16px;display:block;
+            background:#fff9fa;box-shadow:0 8px 40px rgba(0,0,0,0.3);
         }
-        .preview-modal .modal-content img,
-        .preview-modal .modal-content video {
-            max-width: 100%;
-            max-height: 80vh;
-            border-radius: 16px;
-            display: block;
-            background: #fff9fa;
-            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+        .modal-close {
+            position:absolute;top:-12px;right:-12px;width:36px;height:36px;border-radius:50%;border:none;
+            background:rgba(255,255,0.9);backdrop-filter:blur(8px);font-size:20px;color:#6b3a4a;
+            cursor:pointer;transition:all 0.2s;box-shadow:0 4px 16px rgba(0,0,0,0.15);
+            display:flex;align-items:center;justify-content:center;
         }
-        .preview-modal .modal-close {
-            position: absolute;
-            top: -12px;
-            right: -12px;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            border: none;
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(8px);
-            font-size: 20px;
-            color: #6b3a4a;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 4px 16 rgba(0,0,0,0.15);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .modal-close:hover { transform:scale(1.08); }
+        .modal-hint {
+            color:rgba(255,255,0.7);text-align:center;font-size:14px;margin-top:12px;
+            padding:8px 16px;background:rgba(0,0,0,0.3);border-radius:30px;backdrop-filter:blur(4px);
         }
-        .preview-modal .modal-close:hover {
-            transform: scale(1.08);
-        }
-        .preview-modal .modal-hint {
-            color: rgba(255, 255, 255, 0.7);
-            text-align: center;
-            font-size: 14px;
-            margin-top: 12px;
-            padding: 8px 16px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 30px;
-            backdrop-filter: blur(4px);
-        }
-        .preview-modal .modal-hint span {
-            color: #ffb8c8;
-            font-weight: 500;
-        }
-        /* ===== 新增专用修复样式 ===== */
-        /* 证件照预览虚线遮罩 */
+        .modal-hint span { color:#ffb8c8;font-weight:500; }
+        /* ===== 新增修复专用样式 ===== */
         .id-photo-crop-mask {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 5;
+            position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:5;
         }
         .id-crop-dash-box {
-            position: absolute;
-            border: 2px dashed #ff6b8a;
-            box-shadow: 0 0 0 9999px rgba(0,0,0,0.35);
+            position:absolute;border:2px dashed #ff6b8a;box-shadow:0 0 0 9999px rgba(0,0,0,0.35);
         }
-        /* 参数互斥单选 */
-        .param-radio-group {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 8px;
-        }
-        .param-radio-item {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        /* 锁定禁用按钮 */
-        .btn-disabled-lock {
-            opacity: 0.45;
-            pointer-events: none;
-            filter: grayscale(0.6);
-        }
+        .param-radio-group { display:flex;gap:10px;margin-bottom:8px; }
+        .param-radio-item { display:flex;align-items:center;gap:4px; }
+        .btn-disabled-lock { opacity:0.45;pointer-events:none;filter:grayscale(0.6); }
         /* ===== 工具类 ===== */
-        .mt-8 { margin-top: 8px; }
-        .mb-8 { margin-bottom: 8px; }
-        .flex-wrap { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-        .gap-4 { gap: 4px; }
-        .text-muted { color: #9a7a8a; font-size: 12px; }
-        .hidden { display: none !important; }
+        .mt-8 { margin-top:8px; }
+        .mb-8 { margin-bottom:8px; }
+        .flex-wrap { display:flex;flex-wrap:wrap;gap:8px;align-items:center; }
+        .gap-4 { gap:4px; }
+        .text-muted { color:#9a7a8a;font-size:12px; }
+        .hidden { display:none !important; }
         /* ===== 按钮选中 ===== */
+        .opt-btn {
+            padding:4px 14px;border:none;border-radius:30px;background:transparent;
+            font-size:12px;font-weight:500;color:#6b3a4a;cursor:pointer;transition:0.2s;
+        }
         .opt-btn.active-opt {
-            background: rgba(255, 140, 170, 0.35) !important;
-            color: #b45374 !important;
-            font-weight: 600 !important;
-            box-shadow: inset 0 1px 4px rgba(255, 100, 130, 0.15);
+            background:rgba(255,140,170,0.35) !important;color:#b45374 !important;font-weight:600 !important;
+            box-shadow:inset 0 1px 4px rgba(255,100,130,0.15);
         }
-        .btn-group .opt-btn {
-            padding: 4px 14px;
-            border: none;
-            border-radius: 30px;
-            background: transparent;
-            font-size: 12px;
-            font-weight: 500;
-            color: #6b3a4a;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .btn-group .opt-btn:hover:not(.active-opt) {
-            background: rgba(255, 255, 255, 0.3);
-        }
+        .opt-btn:hover:not(.active-opt) { background:rgba(255,255,0.3); }
         /* ===== 响应式 ===== */
-        @media (max-width: 1024px) {
-            .func-layout { grid-template-columns: 1fr; }
-            .sidebar { max-height: 180px; }
+        @media (max-width:1024px) {
+            .func-layout { grid-template-columns:1fr; }
+            .sidebar { max-height:180px; }
         }
-        @media (max-width: 600px) {
-            .app-container { padding: 12px; border-radius: 28px; }
-            .header-left h { font-size: 20px; }
-            .header-right { padding: 4px 12px 4px 6px; gap: 8px; }
-            .header-avatar { width: 32px; height: 32px; }
-            .header-right .maker-text { font-size: 13px; }
-            .home-buttons .home-btn { padding: 10px 20px; font-size: 15px; min-width: 100px; }
-            .home-bubble { padding: 16px 20px; }
-            .func-nav .nav-btn { padding: 6px 14px; font-size: 13px; }
-            .idphoto-grid { grid-template-columns: 1fr; }
-            .row-flex { gap: 6px; }
-            .lock-box { padding: 28px 20px 30px; margin: 0 16px; }
-            .lock-box .pin-input input { width: 44px; height: 50px; font-size: 22px; }
+        @media (max-width:600px) {
+            .app-container { padding:12px;border-radius:28px; }
+            .header-left h1 { font-size:20px; }
+            .header-right { padding:4px 12px 4px;gap:8px; }
+            .header-avatar { width:32px;height:32px; }
+            .maker-text { font-size:13px; }
+            .home-btn { padding:10px 20px;font-size:15px;min-width:100px; }
+            .home-bubble { padding:16px 20px; }
+            .nav-btn { padding:6px 14px;font-size:13px; }
+            .idphoto-grid { grid-template-columns:1fr; }
+            .row-flex { gap:6px; }
+            .lock-box { padding:28px 20px 30px;margin:0 16px; }
+            .pin-input input { width:44px;height:50px;font-size:22px; }
         }
     </style>
 </head>
 <body>
-    <!-- 密码锁 -->
+    <!-- 密码锁弹窗（修复输入逻辑） -->
     <div id="lock-screen">
         <div class="lock-box">
             <div class="lock-icon">🔐</div>
@@ -1237,10 +1099,10 @@
             <div class="lock-sub">请输入密码解锁</div>
             <div class="lock-maker">✦ 制作人：<span>KIKI</span></div>
             <div class="pin-input">
-                <input type="password" maxlength="1" inputmode="numeric" pattern="[0-9]" id="pin1" />
-                <input type="password" maxlength="1" inputmode="numeric" pattern="[0-9]" id="pin2" />
-                <input type="password" maxlength="1" inputmode="numeric" pattern="[0-9]" id="pin3" />
-                <input type="password" maxlength="1" inputmode="numeric" pattern="[0-9]" id="pin4" />
+                <input type="text" maxlength="1" inputmode="numeric" id="pin1" />
+                <input type="text" maxlength="1" inputmode="numeric" id="pin2" />
+                <input type="text" maxlength="1" inputmode="numeric" id="pin3" />
+                <input type="text" maxlength="1" inputmode="numeric" id="pin4" />
             </div>
             <div class="lock-error" id="lockError"></div>
             <button class="lock-btn" id="unlockBtn">🔓 解锁</button>
@@ -1298,7 +1160,7 @@
                 <h1 id="mainTitle">表情包证件照修改器</h1>
             </div>
             <div class="header-right">
-                <img class="header-avatar" id="headerAvatar" src="https://bee-reg-ab.imagency.cn/p/2c2d5fa9ab876940740a72da94a8d380.png" referrerpolicy="no-referrer" crossorigin="anonymous" onerror="this.style.display='none';document.getElementById('avatarFallback').style.display='flex';">
+                <img class="header-avatar" id="headerAvatar" src="https://bee-reg-ab.imagency.cn/p/2c2d5fa9ab876940740a72da94a8d380.png" referrerpolicy="no-referrer" crossorigin="anonymous" onerror="this.style.display='none'; document.getElementById('avatarFallback').style.display='flex';">
                 <span class="header-avatar-fallback" id="avatarFallback">🌸</span>
                 <span class="maker-text">✦ 制作人：<span>KIKI</span></span>
             </div>
@@ -1325,7 +1187,7 @@
         <!-- 表情包页面 -->
         <div class="page-func" id="page-emoji">
             <div class="func-nav">
-                <button class="nav-btn active" data-page="emoji">😊 表情包</button>
+                <button class="nav-btn" data-page="emoji">😊 表情包</button>
                 <button class="nav-btn" data-page="gif">🎬 GIF</button>
                 <button class="nav-btn" data-page="idphoto">📷 证件照</button>
                 <button class="nav-btn" data-page="warehouse">📦 仓库</button>
@@ -1338,9 +1200,9 @@
                         <canvas id="emojiCanvas" width="600" height="600"></canvas>
                         <div class="placeholder-text" id="emojiPlaceholder"><span class="big">📷</span>上传图片</div>
                         <div style="position:absolute;bottom:24px;right:24px;display:flex;gap:8px;z-index:10;">
-                            <button class="float-btn" id="emojiUploadBtn">📤 上传图片</button>
-                            <button class="float-btn primary" id="emojiEditBtn" style="display:none;">✂️ 裁剪</button>
-                            <button class="float-btn danger" id="emojiClearBtn">✕ 清空</button>
+                            <button class="btn-sm" id="emojiUploadBtn">📤 上传图片</button>
+                            <button class="btn-sm primary" id="emojiEditBtn" style="display:none;">✂️ 裁剪</button>
+                            <button class="btn-sm danger" id="emojiClearBtn">✕ 清空</button>
                             <input type="file" id="emojiFileInput" accept="image/*" style="display:none;">
                         </div>
                     </div>
@@ -1392,7 +1254,7 @@
                 </div>
             </div>
         </div>
-        <!-- GIF 视频压缩页面（修复完整版） -->
+        <!-- GIF 视频压缩页面（完整修复） -->
         <div class="page-func" id="page-gif">
             <div class="func-nav">
                 <button class="nav-btn" data-page="emoji">😊 表情包</button>
@@ -1424,7 +1286,7 @@
                         <div class="clip-lines">
                             <div class="line start" id="clipStartLine" style="left:0%"><span class="line-label">起点</span></div>
                             <div class="line end" id="clipEndLine" style="left:100%"><span class="line-label">终点</span></div>
-                            <div class="clip-highlight" id="clipHighlight"></div>
+                            <div class="clipHighlight" id="clipHighlight"></div>
                         </div>
                     </div>
                     <!-- 片段控制：新增确认锁定按钮，时长限制2s -->
@@ -1439,4 +1301,59 @@
                 </div>
                 <!-- 裁剪文字面板（未锁定全部禁用） -->
                 <div class="panel-box">
-                    <div class="panel-title">✂
+                    <div class="panel-title">✂️ 裁剪 & 文字 <span class="text-muted">(锁定片段后可用)</span></div>
+                    <div class="row-flex">
+                        <button class="btn-sm btn-disabled-lock" id="gifCropBtn">✂️ 1:1裁剪</button>
+                        <button class="btn-sm outline btn-disabled-lock" id="gifResetCropBtn">↺ 重置裁剪</button>
+                        <span class="text-muted" id="gifCropInfo">未裁剪</span>
+                        <button class="btn-sm success btn-disabled-lock" id="gifPreviewPlayBtn">▶ 预览片段效果</button>
+                    </div>
+                    <div class="row-flex mt-6">
+                        <input type="text" id="gifTextInput" class="btn-disabled-lock" placeholder="输入文字" maxlength="20" style="flex:1;min-width:100px;">
+                        <button class="btn-sm btn-disabled-lock" id="gifAddTextBtn">添加文字</button>
+                        <label>颜色<input type="color" id="gifTextColor" value="#d45a7a" style="width:28px;height:28px;border:none;"></label>
+                        <label><input type="checkbox" id="gifBoldCheck">粗体</label>
+                        <label>字号<input type="range" id="gifFontSizeSlider" min="16" max="120" value="32"><span id="gifFontSizeLabel">32</span></label>
+                    </div>
+                    <div class="text-list" id="gifTextList" style="max-height:60px;flex-wrap:wrap;gap:4px;"></div>
+                </div>
+                <!-- GIF生成面板 -->
+                <div class="panel-box">
+                    <div class="panel-title">⚡ 生成GIF</div>
+                    <div class="row-flex">
+                        <label>尺寸<select id="gifSizeSelect">
+                            <option value="120">120px</option>
+                            <option value="240" selected>240px(推荐)</option>
+                            <option value="320">320px</option>
+                            <option value="480">480px</option>
+                        </select></label>
+                        <label>导出模式<select id="gifExportSize">
+                            <option value="normal">正常导出</option>
+                            <option value="compress" selected>压缩至1MB内</option>
+                        </select></label>
+                        <button class="btn-sm success btn-disabled-lock" id="gifGenBtn">生成GIF</button>
+                        <button class="btn-sm outline btn-disabled-lock" id="gifPreviewGenBtn">预览生成</button>
+                    </div>
+                    <div class="text-muted mt-8">提示：未锁定片段按钮灰色不可点击</div>
+                </div>
+            </div>
+        </div>
+        <!-- 证件照页面 -->
+        <div class="page-func" id="page-idphoto">
+            <div class="func-nav">
+                <button class="nav-btn" data-page="emoji">😊 表情包</button>
+                <button class="nav-btn" data-page="gif">🎬 GIF</button>
+                <button class="nav-btn active" data-page="idphoto">📷 证件照</button>
+                <button class="nav-btn" data-page="warehouse">📦 仓库</button>
+                <button class="nav-btn" style="margin-left:auto;" id="backHomeBtn3">🏠 主页</button>
+            </div>
+            <div class="func-layout single">
+                <div class="preview-area" style="position:relative;">
+                    <div class="id-photo-crop-mask" id="idCropMask"></div>
+                    <div class="label-row"><span>证件照预览(显示尺寸虚线框)</span><span id="idphotoSizeInfo">未设置尺寸</span></div>
+                    <div class="canvas-wrapper" id="idphotoCanvasWrapper">
+                        <canvas id="idphotoCanvas" width="600" height="600"></canvas>
+                        <div class="placeholder-text" id="idphotoPlaceholder"><span class="big">📷</span>上传照片制作证件照</div>
+                        <div style="position:absolute;bottom:24px;right:24px;display:flex;gap:8px;z-index:10;">
+                            <button class="btn-sm" id="idphotoUploadBtn">📤 上传照片</button>
+                            <button
