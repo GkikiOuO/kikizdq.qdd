@@ -4,10 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>表情包证件照修改器</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js">
-    </script>
     <style>
-        /* ===== 全部样式保持不变，此处仅保留关键新增样式 ===== */
+        /* ===== 全局重置 & 主题 ===== */
         * {
             margin: 0;
             padding: 0;
@@ -401,140 +399,6 @@
             display: block;
         }
 
-        /* ===== GIF 预览区 ===== */
-        .gif-preview-wrapper {
-            position: relative;
-            width: 100%;
-            padding-bottom: 56.25%;
-            background: rgba(0, 0, 0, 0.08);
-            border-radius: 16px;
-            overflow: hidden;
-            border: 2px solid rgba(255, 180, 195, 0.3);
-        }
-        .gif-preview-wrapper video {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: block;
-            border-radius: 14px;
-            background: #000;
-            object-fit: contain;
-        }
-        .gif-preview-wrapper .gif-placeholder {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #b58a9a;
-            font-size: 14px;
-            text-align: center;
-        }
-        .gif-preview-wrapper .gif-placeholder .big {
-            font-size: 40px;
-            display: block;
-        }
-
-        /* ===== GIF 进度条 & 选择线 ===== */
-        .gif-timeline {
-            position: relative;
-            width: 100%;
-            margin-top: 10px;
-            padding: 4px 0;
-        }
-        .gif-timeline input[type="range"] {
-            width: 100%;
-            accent-color: #ff8da1;
-            cursor: pointer;
-            height: 6px;
-            border-radius: 4px;
-            background: rgba(255, 180, 195, 0.3);
-            -webkit-appearance: none;
-            appearance: none;
-        }
-        .gif-timeline input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #ff8da1, #f5728a);
-            cursor: pointer;
-            border: 2px solid #fff;
-            box-shadow: 0 2px 8px rgba(255, 100, 130, 0.3);
-        }
-        .gif-timeline .timeline-labels {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            color: #7a4e5e;
-            margin-top: 2px;
-        }
-        .gif-timeline .clip-lines {
-            position: relative;
-            height: 30px;
-            margin-top: 2px;
-        }
-        .gif-timeline .clip-lines .line {
-            position: absolute;
-            top: 0;
-            height: 100%;
-            width: 2px;
-            background: #ff8da1;
-            border-radius: 2px;
-            transition: left 0.1s;
-            z-index: 2;
-        }
-        .gif-timeline .clip-lines .line::after {
-            content: '';
-            position: absolute;
-            top: -6px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 6px solid transparent;
-            border-right: 6px solid transparent;
-            border-bottom: 6px solid #ff8da1;
-        }
-        .gif-timeline .clip-lines .line.start {
-            background: #ff6b8a;
-        }
-        .gif-timeline .clip-lines .line.start::after {
-            border-bottom-color: #ff6b8a;
-        }
-        .gif-timeline .clip-lines .line.end {
-            background: #6bc8ff;
-        }
-        .gif-timeline .clip-lines .line.end::after {
-            border-bottom-color: #6bc8ff;
-        }
-        .gif-timeline .clip-lines .line-label {
-            position: absolute;
-            top: 22px;
-            font-size: 10px;
-            color: #6b3a4a;
-            font-weight: 500;
-            transform: translateX(-50%);
-            white-space: nowrap;
-        }
-        .gif-timeline .clip-lines .line.start .line-label {
-            color: #ff6b8a;
-        }
-        .gif-timeline .clip-lines .line.end .line-label {
-            color: #6bc8ff;
-        }
-        .gif-timeline .clip-highlight {
-            position: absolute;
-            top: 0;
-            height: 100%;
-            background: rgba(255, 140, 170, 0.15);
-            border-radius: 4px;
-            pointer-events: none;
-            z-index: 1;
-        }
-
         /* ===== 侧边栏 ===== */
         .sidebar {
             background: rgba(255, 255, 255, 0.35);
@@ -708,48 +572,143 @@
         .row-flex .btn-sm:disabled {
             opacity: 0.5;
             cursor: not-allowed;
-            transform: none !important;
         }
 
-        /* ===== 证件照网格 ===== */
-        .idphoto-grid {
+        /* ===== 证件照子标签 ===== */
+        .idphoto-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .idphoto-tabs .tab-btn {
+            padding: 6px 20px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 180, 195, 0.3);
+            background: rgba(255, 255, 255, 0.3);
+            font-size: 14px;
+            font-weight: 500;
+            color: #6b3a4a;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .idphoto-tabs .tab-btn.active {
+            background: rgba(255, 255, 255, 0.6);
+            border-color: #ff8da1;
+            color: #b45374;
+        }
+        .idphoto-tabs .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .idphoto-subpanel {
+            display: none;
+        }
+        .idphoto-subpanel.active {
+            display: block;
+        }
+
+        /* ===== 裁剪样式 ===== */
+        .idphoto-crop-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+            border-radius: 18px;
+        }
+        .idphoto-crop-overlay .crop-box {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 2.5px dashed rgba(255, 100, 130, 0.8);
+            border-radius: 8px;
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.15);
+            pointer-events: none;
+        }
+        .idphoto-crop-overlay .crop-box .corner {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-color: rgba(255, 100, 130, 0.9);
+            border-style: solid;
+            border-width: 0;
+            pointer-events: none;
+        }
+        .idphoto-crop-overlay .crop-box .corner.tl {
+            top: -2px;
+            left: -2px;
+            border-top-width: 3px;
+            border-left-width: 3px;
+            border-radius: 3px 0 0 0;
+        }
+        .idphoto-crop-overlay .crop-box .corner.tr {
+            top: -2px;
+            right: -2px;
+            border-top-width: 3px;
+            border-right-width: 3px;
+            border-radius: 0 3px 0 0;
+        }
+        .idphoto-crop-overlay .crop-box .corner.bl {
+            bottom: -2px;
+            left: -2px;
+            border-bottom-width: 3px;
+            border-left-width: 3px;
+            border-radius: 0 0 0 3px;
+        }
+        .idphoto-crop-overlay .crop-box .corner.br {
+            bottom: -2px;
+            right: -2px;
+            border-bottom-width: 3px;
+            border-right-width: 3px;
+            border-radius: 0 0 3px 0;
+        }
+        .idphoto-crop-overlay .crop-label {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(4px);
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            color: #6b3a4a;
+            font-weight: 500;
+            pointer-events: none;
+            border: 1px solid rgba(255, 200, 210, 0.3);
+        }
+
+        /* ===== 压缩信息卡片 ===== */
+        .compress-info {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            gap: 16px;
+            margin: 12px 0;
         }
-        @media (max-width: 600px) {
-            .idphoto-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        .idphoto-grid .spec-group {
-            background: rgba(255, 255, 255, 0.25);
+        .compress-info .info-card {
+            background: rgba(255, 255, 255, 0.3);
             border-radius: 16px;
-            padding: 12px 14px;
+            padding: 14px 18px;
             border: 1px solid rgba(255, 255, 255, 0.3);
         }
-        .idphoto-grid .spec-group .spec-title {
+        .compress-info .info-card .label {
             font-size: 12px;
             color: #8a5a6a;
             font-weight: 500;
-            margin-bottom: 6px;
         }
-        .idphoto-grid .spec-group .radio-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px 12px;
-            font-size: 12px;
+        .compress-info .info-card .value {
+            font-size: 18px;
+            font-weight: 600;
             color: #6b3a4a;
+            margin-top: 4px;
         }
-        .idphoto-grid .spec-group .radio-group label {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            cursor: pointer;
-        }
-        .idphoto-grid .spec-group .radio-group input[type="radio"] {
-            accent-color: #ff8da1;
-            cursor: pointer;
+        .compress-info .info-card .value small {
+            font-size: 13px;
+            font-weight: 400;
+            color: #9a7a8a;
         }
 
         /* ===== 仓库网格 ===== */
@@ -1218,6 +1177,9 @@
             .sidebar {
                 max-height: 180px;
             }
+            .compress-info {
+                grid-template-columns: 1fr;
+            }
         }
         @media (max-width: 600px) {
             .app-container {
@@ -1250,9 +1212,6 @@
                 padding: 6px 14px;
                 font-size: 13px;
             }
-            .idphoto-grid {
-                grid-template-columns: 1fr;
-            }
             .row-flex {
                 gap: 6px;
             }
@@ -1265,84 +1224,10 @@
                 height: 50px;
                 font-size: 22px;
             }
-            .gif-timeline .clip-lines .line-label {
-                font-size: 8px;
+            .idphoto-tabs .tab-btn {
+                font-size: 12px;
+                padding: 4px 12px;
             }
-        }
-
-        /* ===== 证件照尺寸虚线框 (主预览区叠加) ===== */
-        .idphoto-crop-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 5;
-            border-radius: 18px;
-        }
-        .idphoto-crop-overlay .idphoto-crop-box {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            border: 2.5px dashed rgba(255, 100, 130, 0.7);
-            border-radius: 8px;
-            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.15);
-            pointer-events: none;
-            transition: width 0.2s, height 0.2s;
-        }
-        .idphoto-crop-overlay .idphoto-crop-box .corner {
-            position: absolute;
-            width: 12px;
-            height: 12px;
-            border-color: rgba(255, 100, 130, 0.9);
-            border-style: solid;
-            border-width: 0;
-            pointer-events: none;
-        }
-        .idphoto-crop-overlay .idphoto-crop-box .corner.tl {
-            top: -2px;
-            left: -2px;
-            border-top-width: 3px;
-            border-left-width: 3px;
-            border-radius: 3px 0 0 0;
-        }
-        .idphoto-crop-overlay .idphoto-crop-box .corner.tr {
-            top: -2px;
-            right: -2px;
-            border-top-width: 3px;
-            border-right-width: 3px;
-            border-radius: 0 3px 0 0;
-        }
-        .idphoto-crop-overlay .idphoto-crop-box .corner.bl {
-            bottom: -2px;
-            left: -2px;
-            border-bottom-width: 3px;
-            border-left-width: 3px;
-            border-radius: 0 0 0 3px;
-        }
-        .idphoto-crop-overlay .idphoto-crop-box .corner.br {
-            bottom: -2px;
-            right: -2px;
-            border-bottom-width: 3px;
-            border-right-width: 3px;
-            border-radius: 0 0 3px 0;
-        }
-        .idphoto-crop-overlay .idphoto-crop-label {
-            position: absolute;
-            bottom: 8px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(4px);
-            padding: 2px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            color: #6b3a4a;
-            font-weight: 500;
-            pointer-events: none;
-            border: 1px solid rgba(255, 200, 210, 0.3);
         }
     </style>
 </head>
@@ -1379,11 +1264,11 @@
         </div>
     </div>
 
-    <!-- ===== 编辑器模态框 ===== -->
+    <!-- ===== 编辑器模态框（通用裁剪） ===== -->
     <div class="editor-modal" id="editorModal">
         <div class="editor-box">
             <div class="editor-header">
-                <div class="editor-title">✂️ 编辑图片</div>
+                <div class="editor-title">✂️ 裁剪图片</div>
                 <div class="editor-actions">
                     <button class="btn-cancel" id="editorCancelBtn">取消</button>
                     <button class="btn-confirm" id="editorConfirmBtn">✅ 确认</button>
@@ -1432,10 +1317,9 @@
         <div id="page-home">
             <div class="home-content">
                 <div class="home-title">🌸 表情包证件照修改器</div>
-                <div class="home-sub">一站式创作 · 表情包 · GIF · 证件照</div>
+                <div class="home-sub">一站式创作 · 表情包 · 证件照</div>
                 <div class="home-buttons">
                     <button class="home-btn" data-page="emoji">😊 表情包制作</button>
-                    <button class="home-btn" data-page="gif">🎬 GIF制作</button>
                     <button class="home-btn" data-page="idphoto">📷 证件照制作</button>
                     <button class="home-btn" data-page="warehouse">📦 仓库</button>
                 </div>
@@ -1443,7 +1327,7 @@
                     <div class="bubble-title">💬 作者的话</div>
                     <div class="bubble-divider"></div>
                     <p>✨ 欢迎使用「表情包证件照修改器」！<br>
-                    你可以制作专属表情包、将视频转为GIF、还能一键修改证件照尺寸。<br>
+                    你可以制作专属表情包，还能一键修改证件照尺寸并压缩大小。<br>
                     所有处理均在本地完成，隐私安全无忧。</p>
                     <div class="bubble-footer">© KIKI原创 · 禁抄袭，二改需授权</div>
                 </div>
@@ -1451,11 +1335,10 @@
         </div>
 
         <!-- ========================================================== -->
-        <!-- ===== 表情包制作 (与原版一致，仅保留核心) ===== -->
+        <!-- ===== 表情包制作（保留） ===== -->
         <div class="page-func" id="page-emoji">
             <div class="func-nav">
                 <button class="nav-btn active" data-page="emoji">😊 表情包制作</button>
-                <button class="nav-btn" data-page="gif">🎬 GIF制作</button>
                 <button class="nav-btn" data-page="idphoto">📷 证件照制作</button>
                 <button class="nav-btn" data-page="warehouse">📦 仓库</button>
                 <button class="nav-btn" style="margin-left:auto;" id="backHomeBtn">🏠 主页</button>
@@ -1507,175 +1390,106 @@
                     <button class="btn-sm success" id="emojiPreviewBtn">👁️ 预览保存</button>
                     <button class="btn-sm outline" id="emojiSaveBtn">📦 存到仓库</button>
                 </div>
-                <div class="text-muted mt-8" id="emojiSizeHint">📏 微信推荐 <strong>240×240</strong> · 静态图 &lt;500KB · GIF &lt;1MB</div>
+                <div class="text-muted mt-8" id="emojiSizeHint">📏 微信推荐 <strong>240×240</strong> · 静态图 &lt;500KB</div>
             </div>
         </div>
 
         <!-- ========================================================== -->
-        <!-- ===== GIF制作 (完全重构) ===== -->
-        <div class="page-func" id="page-gif">
-            <div class="func-nav">
-                <button class="nav-btn" data-page="emoji">😊 表情包制作</button>
-                <button class="nav-btn active" data-page="gif">🎬 GIF制作</button>
-                <button class="nav-btn" data-page="idphoto">📷 证件照制作</button>
-                <button class="nav-btn" data-page="warehouse">📦 仓库</button>
-                <button class="nav-btn" style="margin-left:auto;" id="backHomeBtn2">🏠 主页</button>
-            </div>
-            <div class="func-layout single">
-                <div class="preview-area">
-                    <div class="label-row"><span>🎬 视频预览 & 片段选择</span><span class="badge" id="gifClipInfo">未选择片段</span></div>
-                    <div class="gif-preview-wrapper" id="gifPreviewWrapper">
-                        <video id="gifPreviewVideo" playsinline></video>
-                        <div class="gif-placeholder" id="gifPlaceholder"><span class="big">📹</span> 上传视频开始编辑</div>
-                    </div>
-                    <div class="row-flex" style="margin-top:8px; justify-content:center;">
-                        <button class="btn-sm" id="gifUploadBtn">📤 上传视频</button>
-                        <input type="file" id="gifFileInput" accept="video/*" style="display:none;" />
-                        <button class="btn-sm danger" id="gifClearBtn">✕ 清空</button>
-                        <span class="text-muted" id="gifStatus">未选择视频</span>
-                    </div>
-                    <!-- 进度条 + 选择线 -->
-                    <div class="gif-timeline" id="gifTimeline">
-                        <input type="range" id="gifProgress" min="0" max="100" value="0" step="0.01" />
-                        <div class="timeline-labels">
-                            <span id="gifTimeCurrent">0.0s</span>
-                            <span id="gifTimeTotal">0.0s</span>
-                        </div>
-                        <div class="clip-lines" id="clipLines">
-                            <div class="line start" id="clipStartLine" style="left:0%;">
-                                <span class="line-label">▶ 起点</span>
-                            </div>
-                            <div class="line end" id="clipEndLine" style="left:100%;">
-                                <span class="line-label">◀ 终点</span>
-                            </div>
-                            <div class="clip-highlight" id="clipHighlight" style="left:0%; width:100%;"></div>
-                        </div>
-                    </div>
-                    <div class="row-flex" style="justify-content:center; margin-top:4px;">
-                        <label>起点 <input type="number" id="gifStartTime" value="0" step="0.05" min="0" max="2" style="width:60px;" />s</label>
-                        <label>终点 <input type="number" id="gifEndTime" value="1.5" step="0.05" min="0.1" max="2.5" style="width:60px;" />s</label>
-                        <button class="btn-sm success" id="gifConfirmClipBtn">✅ 确认片段</button>
-                        <button class="btn-sm outline" id="gifResetClipBtn">↺ 重置</button>
-                    </div>
-                    <div class="text-muted" style="text-align:center;">📌 拖动进度条预览 · 片段时长 ≤ 2.5s (推荐 ≤2s) · 确认后方可操作</div>
-                </div>
-
-                <!-- 裁剪 & 文字 (仅片段操作) -->
-                <div class="panel-box">
-                    <div class="panel-title">✂️ 裁剪 & 文字 <span class="text-muted" style="font-size:12px; font-weight:400;">(需先确认片段)</span></div>
-                    <div class="row-flex">
-                        <button class="btn-sm" id="gifCropBtn" disabled>✂️ 裁剪画面 (1:1)</button>
-                        <button class="btn-sm outline" id="gifResetCropBtn" disabled>↺ 重置裁剪</button>
-                        <span class="text-muted" id="gifCropInfo">未裁剪</span>
-                        <button class="btn-sm success" id="gifPreviewPlayBtn" disabled>▶ 预览效果</button>
-                    </div>
-                    <div class="row-flex" style="margin-top:6px;">
-                        <input type="text" id="gifTextInput" placeholder="添加文字..." maxlength="20" style="flex:1; min-width:100px;" />
-                        <button class="btn-sm" id="gifAddTextBtn" disabled>添加</button>
-                        <label>颜色 <input type="color" id="gifTextColor" value="#d45a7a" style="width:28px; height:28px; border-radius:50%; padding:0; border:none; cursor:pointer;" /></label>
-                        <label><input type="checkbox" id="gifBoldCheck" /> 粗体</label>
-                        <label>字号 <input type="range" id="gifFontSizeSlider" min="16" max="120" value="32" step="1" style="width:80px;" /><span id="gifFontSizeLabel" style="min-width:28px; font-weight:500; color:#b45374;">32</span></label>
-                    </div>
-                    <div class="text-list" id="gifTextList" style="max-height:60px; overflow-y:auto; display:flex; flex-wrap:wrap; gap:4px; padding:4px 0;"></div>
-                </div>
-
-                <!-- 生成 GIF -->
-                <div class="panel-box">
-                    <div class="panel-title">⚡ 生成 GIF</div>
-                    <div class="row-flex">
-                        <label>尺寸 <select id="gifSizeSelect"><option value="120">120</option><option value="240" selected>240 (推荐)</option><option value="320">320</option><option value="480">480</option></select></label>
-                        <label>导出大小 <select id="gifExportSize"><option value="normal">正常导出</option><option value="compress" selected>压缩到 ≤1MB</option></select></label>
-                        <button class="btn-sm success" id="gifGenBtn" disabled>⚡ 生成 GIF</button>
-                        <button class="btn-sm outline" id="gifPreviewGenBtn" disabled>👁️ 预览</button>
-                        <button class="btn-sm outline" id="gifSaveBtn" disabled>📦 存到仓库</button>
-                    </div>
-                    <div class="text-muted mt-8">📏 微信推荐 240×240 · 压缩选项自动控制 ≤1MB</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ========================================================== -->
-        <!-- ===== 证件照制作 (完全重构) ===== -->
+        <!-- ===== 证件照制作（全新） ===== -->
         <div class="page-func" id="page-idphoto">
             <div class="func-nav">
                 <button class="nav-btn" data-page="emoji">😊 表情包制作</button>
-                <button class="nav-btn" data-page="gif">🎬 GIF制作</button>
                 <button class="nav-btn active" data-page="idphoto">📷 证件照制作</button>
                 <button class="nav-btn" data-page="warehouse">📦 仓库</button>
-                <button class="nav-btn" style="margin-left:auto;" id="backHomeBtn3">🏠 主页</button>
+                <button class="nav-btn" style="margin-left:auto;" id="backHomeBtn2">🏠 主页</button>
             </div>
-            <div class="func-layout single">
-                <div class="preview-area">
-                    <div class="label-row"><span>🖼️ 证件照预览</span><span class="badge" id="idphotoSizeInfo">未设置</span></div>
-                    <div class="canvas-wrapper" id="idphotoCanvasWrapper">
-                        <canvas id="idphotoCanvas" width="600" height="600"></canvas>
-                        <div class="idphoto-crop-overlay" id="idphotoCropOverlay">
-                            <div class="idphoto-crop-box" id="idphotoCropBox" style="display:none;">
-                                <span class="corner tl"></span><span class="corner tr"></span>
-                                <span class="corner bl"></span><span class="corner br"></span>
+
+            <!-- 子标签切换 -->
+            <div class="idphoto-tabs">
+                <button class="tab-btn active" data-sub="crop">✂️ 照片裁剪</button>
+                <button class="tab-btn" data-sub="compress">📦 照片压缩</button>
+            </div>
+
+            <!-- ===== 子面板：裁剪 ===== -->
+            <div class="idphoto-subpanel active" id="idphoto-crop">
+                <div class="func-layout single">
+                    <div class="preview-area">
+                        <div class="label-row"><span>🖼️ 裁剪预览</span><span class="badge" id="cropSizeInfo">未选择尺寸</span></div>
+                        <div class="canvas-wrapper" id="idphotoCropWrapper">
+                            <canvas id="idphotoCropCanvas" width="600" height="600"></canvas>
+                            <div class="idphoto-crop-overlay" id="cropOverlay">
+                                <div class="crop-box" id="cropBoxOverlay" style="display:none;">
+                                    <span class="corner tl"></span><span class="corner tr"></span>
+                                    <span class="corner bl"></span><span class="corner br"></span>
+                                </div>
+                                <div class="crop-label" id="cropLabel" style="display:none;">—</div>
                             </div>
-                            <div class="idphoto-crop-label" id="idphotoCropLabel" style="display:none;">25×35mm</div>
+                            <div class="placeholder-text" id="cropPlaceholder"><span class="big">📷</span> 上传照片开始裁剪</div>
+                            <div class="preview-actions" style="position:absolute; bottom:24px; right:24px; display:flex; gap:8px; z-index:10; flex-wrap:wrap; justify-content:flex-end;">
+                                <button class="float-btn" id="cropUploadBtn">📤 上传照片</button>
+                                <button class="float-btn danger" id="cropClearBtn">✕ 清除</button>
+                                <input type="file" id="cropFileInput" accept="image/*" style="display:none;" />
+                            </div>
                         </div>
-                        <div class="placeholder-text" id="idphotoPlaceholder"><span class="big">📷</span> 上传照片制作证件照</div>
-                        <div class="preview-actions" style="position:absolute; bottom:24px; right:24px; display:flex; gap:8px; z-index:10; flex-wrap:wrap; justify-content:flex-end;">
-                            <button class="float-btn" id="idphotoUploadBtn">📤 上传照片</button>
-                            <button class="float-btn primary" id="idphotoEditBtn" style="display:none;">✂️ 裁剪</button>
-                            <button class="float-btn danger" id="idphotoClearBtn">✕ 清除</button>
-                            <input type="file" id="idphotoFileInput" accept="image/*" style="display:none;" />
+                    </div>
+
+                    <div class="panel-box">
+                        <div class="panel-title">📐 裁剪尺寸</div>
+                        <div class="row-flex">
+                            <button class="btn-sm outline size-preset" data-w="295" data-h="413">一寸 (295×413)</button>
+                            <button class="btn-sm outline size-preset" data-w="413" data-h="579">二寸 (413×579)</button>
+                            <button class="btn-sm outline size-preset" data-w="500" data-h="700">小 (500×700)</button>
+                            <button class="btn-sm outline size-preset" data-w="260" data-h="360">自定义小</button>
                         </div>
+                        <div class="row-flex">
+                            <label>自定义宽 <input type="number" id="cropWidth" value="295" step="1" min="10" style="width:80px;" /> px</label>
+                            <label>高 <input type="number" id="cropHeight" value="413" step="1" min="10" style="width:80px;" /> px</label>
+                            <button class="btn-sm" id="cropApplyCustomBtn">应用</button>
+                        </div>
+                        <div class="row-flex">
+                            <label>导出格式 <select id="cropFormat"><option value="image/jpeg">JPEG</option><option value="image/png">PNG</option></select></label>
+                            <button class="btn-sm success" id="cropExportBtn">💾 导出裁剪图片</button>
+                            <button class="btn-sm outline" id="cropSaveBtn">📦 存到仓库</button>
+                        </div>
+                        <div class="text-muted mt-8">💡 点击预设尺寸自动裁剪，可拖动图片调整位置</div>
                     </div>
                 </div>
+            </div>
 
-                <div class="panel-box">
-                    <div class="panel-title">📐 证件照规格</div>
-                    <div class="idphoto-grid">
-                        <div class="spec-group">
-                            <div class="spec-title">📏 常用尺寸模板</div>
-                            <div class="flex-wrap">
-                                <button class="btn-sm outline size-template" data-w="25" data-h="35">小一寸 25×35</button>
-                                <button class="btn-sm outline size-template" data-w="33" data-h="48">一寸 33×48</button>
-                                <button class="btn-sm outline size-template" data-w="35" data-h="53">二寸 35×53</button>
-                                <button class="btn-sm outline size-template" data-w="50" data-h="70">大二寸 50×70</button>
-                            </div>
-                        </div>
-                        <div class="spec-group">
-                            <div class="spec-title">📐 自定义尺寸 (mm)</div>
-                            <div class="flex-wrap">
-                                <label>宽 <input type="number" id="idphotoWidth" value="25" step="0.5" min="10" style="width:70px;" /></label>
-                                <label>高 <input type="number" id="idphotoHeight" value="35" step="0.5" min="10" style="width:70px;" /></label>
-                                <button class="btn-sm" id="idphotoApplySizeBtn">应用</button>
-                            </div>
-                        </div>
-                        <div class="spec-group">
-                            <div class="spec-title">📱 导出像素 & DPI <span class="text-muted" style="font-size:10px;">(二选一)</span></div>
-                            <div class="radio-group">
-                                <label><input type="radio" name="idphotoMode" value="px" checked /> 像素</label>
-                                <label><input type="radio" name="idphotoMode" value="dpi" /> DPI</label>
-                            </div>
-                            <div class="flex-wrap" style="margin-top:4px;">
-                                <label>宽 <input type="number" id="idphotoPxWidth" value="295" step="1" min="100" style="width:70px;" /></label>
-                                <label>高 <input type="number" id="idphotoPxHeight" value="413" step="1" min="100" style="width:70px;" /></label>
-                                <label>DPI <input type="number" id="idphotoDPI" value="300" step="1" min="72" style="width:60px;" /></label>
-                                <button class="btn-sm" id="idphotoApplyPxBtn">应用</button>
-                            </div>
-                        </div>
-                        <div class="spec-group">
-                            <div class="spec-title">📦 文件大小控制</div>
-                            <div class="flex-wrap">
-                                <label>最小 <input type="number" id="idphotoMinKB" value="0" step="10" min="0" style="width:70px;" /> KB</label>
-                                <label>最大 <input type="number" id="idphotoMaxKB" value="200" step="10" min="10" style="width:70px;" /> KB</label>
-                                <button class="btn-sm" id="idphotoApplySizeBtn2">应用</button>
-                                <button class="btn-sm outline" id="idphotoResetSizeBtn">↺ 复原</button>
+            <!-- ===== 子面板：压缩 ===== -->
+            <div class="idphoto-subpanel" id="idphoto-compress">
+                <div class="func-layout single">
+                    <div class="preview-area">
+                        <div class="label-row"><span>📦 图片压缩</span><span class="badge" id="compressStatus">未上传</span></div>
+                        <div class="canvas-wrapper" id="compressWrapper">
+                            <canvas id="compressCanvas" width="600" height="600"></canvas>
+                            <div class="placeholder-text" id="compressPlaceholder"><span class="big">📷</span> 上传图片查看压缩效果</div>
+                            <div class="preview-actions" style="position:absolute; bottom:24px; right:24px; display:flex; gap:8px; z-index:10; flex-wrap:wrap; justify-content:flex-end;">
+                                <button class="float-btn" id="compressUploadBtn">📤 上传图片</button>
+                                <button class="float-btn danger" id="compressClearBtn">✕ 清除</button>
+                                <input type="file" id="compressFileInput" accept="image/*" style="display:none;" />
                             </div>
                         </div>
                     </div>
-                    <div class="row-flex" style="margin-top:10px;">
-                        <label>导出格式 <select id="idphotoFormat"><option value="image/jpeg">JPEG</option><option value="image/jpg">JPG</option><option value="image/png">PNG</option></select></label>
-                        <button class="btn-sm" id="idphotoExportBtn">💾 导出证件照</button>
-                        <button class="btn-sm success" id="idphotoPreviewBtn">👁️ 预览</button>
-                        <button class="btn-sm outline" id="idphotoSaveBtn">📦 存到仓库</button>
+
+                    <div class="panel-box">
+                        <div class="panel-title">⚙️ 压缩参数</div>
+                        <div class="row-flex">
+                            <label>压缩质量 <input type="range" id="compressQuality" min="1" max="100" value="30" style="width:160px;" /> <span id="qualityDisplay">30</span>%</label>
+                            <label>尺寸缩放 <input type="range" id="compressScale" min="10" max="100" value="95" style="width:160px;" /> <span id="scaleDisplay">95</span>%</label>
+                        </div>
+                        <div class="row-flex">
+                            <button class="btn-sm success" id="compressBtn">⚡ 开始压缩</button>
+                            <button class="btn-sm outline" id="compressSaveBtn">📦 存到仓库</button>
+                        </div>
+                        <div class="compress-info" id="compressInfo" style="display:none;">
+                            <div class="info-card"><div class="label">压缩前大小</div><div class="value" id="beforeSize">—</div></div>
+                            <div class="info-card"><div class="label">压缩后大小</div><div class="value" id="afterSize">—</div></div>
+                            <div class="info-card"><div class="label">压缩前尺寸</div><div class="value" id="beforeDim">—</div></div>
+                            <div class="info-card"><div class="label">压缩后尺寸</div><div class="value" id="afterDim">—</div></div>
+                        </div>
+                        <div class="text-muted mt-8">💡 调整滑块控制压缩程度，实时查看对比</div>
                     </div>
-                    <div class="text-muted mt-8" id="idphotoHint">💡 点击模板自动设置尺寸 · 主预览区显示尺寸虚线框</div>
                 </div>
             </div>
         </div>
@@ -1685,13 +1499,12 @@
         <div class="page-func" id="page-warehouse">
             <div class="func-nav">
                 <button class="nav-btn" data-page="emoji">😊 表情包制作</button>
-                <button class="nav-btn" data-page="gif">🎬 GIF制作</button>
                 <button class="nav-btn" data-page="idphoto">📷 证件照制作</button>
                 <button class="nav-btn active" data-page="warehouse">📦 仓库</button>
-                <button class="nav-btn" style="margin-left:auto;" id="backHomeBtn4">🏠 主页</button>
+                <button class="nav-btn" style="margin-left:auto;" id="backHomeBtn3">🏠 主页</button>
             </div>
             <div class="panel-box">
-                <div class="panel-title">📦 表情仓库</div>
+                <div class="panel-title">📦 仓库</div>
                 <div class="row-flex" style="justify-content:space-between;">
                     <span class="text-muted" id="whCount">共 0 个</span>
                     <div class="flex-wrap">
@@ -1710,7 +1523,7 @@
 
     <script>
         // ================================================================
-        // 主应用 - 完全重构 GIF & 证件照模块
+        // 主应用 - 移除 GIF，重构证件照
         // ================================================================
         (function() {
             'use strict';
@@ -1762,7 +1575,6 @@
             const pages = {
                 home: document.getElementById('page-home'),
                 emoji: document.getElementById('page-emoji'),
-                gif: document.getElementById('page-gif'),
                 idphoto: document.getElementById('page-idphoto'),
                 warehouse: document.getElementById('page-warehouse'),
             };
@@ -1785,14 +1597,14 @@
                     if (target) {
                         target.style.display = 'block';
                         target.classList.add('active');
-                        const names = { emoji: '表情包制作', gif: 'GIF制作', idphoto: '证件照制作', warehouse: '仓库' };
+                        const names = { emoji: '表情包制作', idphoto: '证件照制作', warehouse: '仓库' };
                         mainTitle.textContent = '表情包证件照修改器 · ' + (names[pageId] || '');
                         document.querySelectorAll('.func-nav .nav-btn').forEach(b => {
                             b.classList.toggle('active', b.dataset.page === pageId);
                         });
                         if (pageId === 'warehouse') renderWarehouse();
                         if (pageId === 'emoji') drawEmojiScene();
-                        if (pageId === 'idphoto') drawIdphotoScene();
+                        if (pageId === 'idphoto') initIdphotoTabs();
                     }
                 }
             }
@@ -1812,32 +1624,10 @@
             // ================================================================
             const state = {
                 emoji: { image: null, texts: [], nextId: 1, selectedId: null, canvasSize: 600 },
-                gif: {
-                    videoFile: null,
-                    videoURL: null,
-                    videoElement: null,
-                    clipStart: 0,
-                    clipEnd: 1.5,
-                    isClipped: false,
-                    cropData: null,
-                    texts: [],
-                    nextId: 1,
-                    selectedTextId: null,
-                    originalVideoData: null,
-                },
-                idphoto: {
-                    image: null,
-                    width: 25,
-                    height: 35,
-                    pxWidth: 295,
-                    pxHeight: 413,
-                    dpi: 300,
-                    minKB: 0,
-                    maxKB: 200,
-                    format: 'image/jpeg',
-                    mode: 'px', // 'px' or 'dpi'
-                    cropRatio: 35 / 25, // 高度/宽度 (竖版)
-                },
+                // 证件照裁剪
+                crop: { image: null, width: 295, height: 413, format: 'image/jpeg' },
+                // 压缩
+                compress: { image: null, originalDataURL: null, quality: 30, scale: 95, compressedDataURL: null },
                 warehouse: [],
             };
 
@@ -1855,8 +1645,18 @@
                 }
             }
 
+            function dataURLToBlob(dataURL) {
+                const arr = dataURL.split(','),
+                    mime = arr[0].match(/:(.*?);/)[1];
+                const bstr = atob(arr[1]),
+                    n = bstr.length;
+                const u8arr = new Uint8Array(n);
+                for (let i = 0; i < n; i++) u8arr[i] = bstr.charCodeAt(i);
+                return new Blob([u8arr], { type: mime });
+            }
+
             // ================================================================
-            // 表情包模块 (保持原有功能)
+            // 表情包模块 (保留)
             // ================================================================
             const emojiCanvas = document.getElementById('emojiCanvas');
             const emojiCtx = emojiCanvas.getContext('2d');
@@ -1888,7 +1688,6 @@
                 emojiDragOffX = 0,
                 emojiDragOffY = 0;
 
-            // 初始化按钮高亮
             document.querySelectorAll('.btn-group').forEach(group => {
                 group.querySelectorAll('.opt-btn').forEach(btn => {
                     btn.addEventListener('click', function() {
@@ -2290,7 +2089,7 @@
             }
 
             // ================================================================
-            // 编辑器 (裁剪)
+            // 通用编辑器 (裁剪)
             // ================================================================
             let editorCallback = null;
             let editorImage = null;
@@ -2322,7 +2121,6 @@
                 const size = 600;
                 editorCanvas.width = size;
                 editorCanvas.height = size;
-                // 根据宽高比调整裁剪框
                 const cropBox = document.querySelector('#editorModal .crop-box');
                 if (aspectRatio && aspectRatio !== 1) {
                     let cw, ch;
@@ -2671,732 +2469,81 @@
             });
 
             // ================================================================
-            // GIF 模块 (完全重构)
+            // 证件照 - 裁剪
             // ================================================================
-            const gifVideo = document.getElementById('gifPreviewVideo');
-            const gifPlaceholder = document.getElementById('gifPlaceholder');
-            const gifUploadBtn = document.getElementById('gifUploadBtn');
-            const gifFileInput = document.getElementById('gifFileInput');
-            const gifClearBtn = document.getElementById('gifClearBtn');
-            const gifStatus = document.getElementById('gifStatus');
-            const gifClipInfo = document.getElementById('gifClipInfo');
-            const gifStartTime = document.getElementById('gifStartTime');
-            const gifEndTime = document.getElementById('gifEndTime');
-            const gifConfirmClipBtn = document.getElementById('gifConfirmClipBtn');
-            const gifResetClipBtn = document.getElementById('gifResetClipBtn');
-            const gifProgress = document.getElementById('gifProgress');
-            const gifTimeCurrent = document.getElementById('gifTimeCurrent');
-            const gifTimeTotal = document.getElementById('gifTimeTotal');
-            const clipStartLine = document.getElementById('clipStartLine');
-            const clipEndLine = document.getElementById('clipEndLine');
-            const clipHighlight = document.getElementById('clipHighlight');
-            const gifCropBtn = document.getElementById('gifCropBtn');
-            const gifResetCropBtn = document.getElementById('gifResetCropBtn');
-            const gifCropInfo = document.getElementById('gifCropInfo');
-            const gifTextInput = document.getElementById('gifTextInput');
-            const gifAddTextBtn = document.getElementById('gifAddTextBtn');
-            const gifTextColor = document.getElementById('gifTextColor');
-            const gifBoldCheck = document.getElementById('gifBoldCheck');
-            const gifFontSizeSlider = document.getElementById('gifFontSizeSlider');
-            const gifFontSizeLabel = document.getElementById('gifFontSizeLabel');
-            const gifTextList = document.getElementById('gifTextList');
-            const gifSizeSelect = document.getElementById('gifSizeSelect');
-            const gifExportSize = document.getElementById('gifExportSize');
-            const gifGenBtn = document.getElementById('gifGenBtn');
-            const gifPreviewGenBtn = document.getElementById('gifPreviewGenBtn');
-            const gifSaveBtn = document.getElementById('gifSaveBtn');
-            const gifPreviewPlayBtn = document.getElementById('gifPreviewPlayBtn');
+            const cropCanvas = document.getElementById('idphotoCropCanvas');
+            const cropCtx = cropCanvas.getContext('2d');
+            const cropPlaceholder = document.getElementById('cropPlaceholder');
+            const cropUploadBtn = document.getElementById('cropUploadBtn');
+            const cropFileInput = document.getElementById('cropFileInput');
+            const cropClearBtn = document.getElementById('cropClearBtn');
+            const cropWidth = document.getElementById('cropWidth');
+            const cropHeight = document.getElementById('cropHeight');
+            const cropApplyCustomBtn = document.getElementById('cropApplyCustomBtn');
+            const cropFormat = document.getElementById('cropFormat');
+            const cropExportBtn = document.getElementById('cropExportBtn');
+            const cropSaveBtn = document.getElementById('cropSaveBtn');
+            const cropSizeInfo = document.getElementById('cropSizeInfo');
+            const cropBoxOverlay = document.getElementById('cropBoxOverlay');
+            const cropLabel = document.getElementById('cropLabel');
 
-            let gifTexts = [];
-            let gifNextId = 1;
-            let gifSelectedTextId = null;
-            let gifCropData = null;
-            let gifIsClipped = false;
-            let gifClipStart = 0,
-                gifClipEnd = 1.5;
-            let gifDuration = 0;
-            let gifVideoDataURL = null;
+            let cropImage = null;
+            let cropImageOffsetX = 0,
+                cropImageOffsetY = 0;
+            let cropImageScale = 1;
+            let cropIsDragging = false,
+                cropDragStartX = 0,
+                cropDragStartY = 0,
+                cropDragStartOffX = 0,
+                cropDragStartOffY = 0;
 
-            // ----- 视频加载 & 压缩 -----
-            function loadGifVideo(file) {
-                if (!file) return;
-                const url = URL.createObjectURL(file);
-                const video = document.createElement('video');
-                video.src = url;
-                video.muted = true;
-                video.preload = 'auto';
-
-                video.onloadeddata = () => {
-                    const vw = video.videoWidth || 640;
-                    const vh = video.videoHeight || 480;
-                    // 压缩到 360P
-                    let targetW = 360,
-                        targetH = 360;
-                    if (vw > vh) { targetW = 360;
-                        targetH = Math.round(360 * vh / vw); } else { targetH = 360;
-                        targetW = Math.round(360 * vw / vh); }
-                    if (targetW < 80) targetW = 80;
-                    if (targetH < 80) targetH = 80;
-
-                    const canvas = document.createElement('canvas');
-                    canvas.width = targetW;
-                    canvas.height = targetH;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(video, 0, 0, targetW, targetH);
-                    const dataURL = canvas.toDataURL('video/mp4', 0.4);
-
-                    const compressedVideo = document.createElement('video');
-                    compressedVideo.src = dataURL;
-                    compressedVideo.muted = true;
-                    compressedVideo.preload = 'auto';
-                    compressedVideo.onloadeddata = () => {
-                        state.gif.videoElement = compressedVideo;
-                        state.gif.videoFile = file;
-                        gifVideoDataURL = dataURL;
-                        gifVideo.src = dataURL;
-                        gifVideo.load();
-                        gifVideo.onloadeddata = () => {
-                            gifPlaceholder.style.display = 'none';
-                            gifDuration = gifVideo.duration || 3;
-                            gifTimeTotal.textContent = gifDuration.toFixed(1) + 's';
-                            gifProgress.max = gifDuration;
-                            gifStatus.textContent = '✅ 已压缩: ' + file.name;
-                            gifClipStart = 0;
-                            gifClipEnd = Math.min(1.5, gifDuration);
-                            gifStartTime.value = gifClipStart;
-                            gifEndTime.value = gifClipEnd;
-                            gifIsClipped = false;
-                            updateClipLines();
-                            gifClipInfo.textContent = '未确认片段';
-                            showToast('✅ 视频已加载并压缩 (360P)');
-                            // 启用按钮
-                            updateGifButtons();
-                        };
-                        gifVideo.onerror = () => {
-                            // 降级: 使用原视频
-                            gifVideo.src = url;
-                            gifVideo.load();
-                            gifVideo.onloadeddata = () => {
-                                gifPlaceholder.style.display = 'none';
-                                gifDuration = gifVideo.duration || 3;
-                                gifTimeTotal.textContent = gifDuration.toFixed(1) + 's';
-                                gifProgress.max = gifDuration;
-                                gifStatus.textContent = '⚠️ 压缩失败，使用原视频: ' + file.name;
-                                gifClipStart = 0;
-                                gifClipEnd = Math.min(1.5, gifDuration);
-                                gifStartTime.value = gifClipStart;
-                                gifEndTime.value = gifClipEnd;
-                                gifIsClipped = false;
-                                updateClipLines();
-                                gifClipInfo.textContent = '未确认片段';
-                                showToast('⚠️ 使用原视频');
-                                updateGifButtons();
-                            };
-                            gifVideo.onerror = () => showToast('❌ 视频加载失败');
-                            gifVideo.play().then(() => gifVideo.pause()).catch(() => {});
-                        };
-                        gifVideo.play().then(() => gifVideo.pause()).catch(() => {});
-                    };
-                    compressedVideo.onerror = () => {
-                        // 降级
-                        gifVideo.src = url;
-                        gifVideo.load();
-                        gifVideo.onloadeddata = () => {
-                            gifPlaceholder.style.display = 'none';
-                            gifDuration = gifVideo.duration || 3;
-                            gifTimeTotal.textContent = gifDuration.toFixed(1) + 's';
-                            gifProgress.max = gifDuration;
-                            gifStatus.textContent = '⚠️ 压缩失败，使用原视频: ' + file.name;
-                            gifClipStart = 0;
-                            gifClipEnd = Math.min(1.5, gifDuration);
-                            gifStartTime.value = gifClipStart;
-                            gifEndTime.value = gifClipEnd;
-                            gifIsClipped = false;
-                            updateClipLines();
-                            gifClipInfo.textContent = '未确认片段';
-                            showToast('⚠️ 使用原视频');
-                            updateGifButtons();
-                        };
-                        gifVideo.onerror = () => showToast('❌ 视频加载失败');
-                        gifVideo.play().then(() => gifVideo.pause()).catch(() => {});
-                    };
-                    compressedVideo.load();
-                };
-                video.onerror = () => {
-                    showToast('❌ 视频加载失败');
-                    gifStatus.textContent = '❌ 加载失败';
-                };
-                video.load();
-            }
-
-            function clearGifVideo() {
-                gifVideo.src = '';
-                gifVideo.load();
-                gifPlaceholder.style.display = 'block';
-                gifStatus.textContent = '未选择视频';
-                gifClipInfo.textContent = '未选择片段';
-                gifTimeTotal.textContent = '0.0s';
-                gifTimeCurrent.textContent = '0.0s';
-                gifProgress.value = 0;
-                state.gif.videoElement = null;
-                state.gif.videoFile = null;
-                gifIsClipped = false;
-                gifCropData = null;
-                gifTexts = [];
-                renderGifTextList();
-                gifCropInfo.textContent = '未裁剪';
-                gifVideoDataURL = null;
-                showToast('已清空视频');
-                updateGifButtons();
-            }
-
-            // ----- 更新按钮状态 -----
-            function updateGifButtons() {
-                const hasVideo = state.gif.videoElement !== null;
-                const clipped = gifIsClipped;
-                gifCropBtn.disabled = !hasVideo || !clipped;
-                gifResetCropBtn.disabled = !hasVideo || !clipped;
-                gifPreviewPlayBtn.disabled = !hasVideo || !clipped;
-                gifAddTextBtn.disabled = !hasVideo || !clipped;
-                gifGenBtn.disabled = !hasVideo || !clipped;
-                gifPreviewGenBtn.disabled = !hasVideo || !clipped;
-                gifSaveBtn.disabled = !hasVideo || !clipped;
-                if (!hasVideo) {
-                    gifCropInfo.textContent = '请先上传视频';
-                } else if (!clipped) {
-                    gifCropInfo.textContent = '请先确认片段';
-                } else {
-                    gifCropInfo.textContent = gifCropData ? '✅ 1:1 裁剪' : '未裁剪';
-                }
-            }
-
-            // ----- 进度条 & 选择线 -----
-            function updateClipLines() {
-                const dur = gifDuration || 1;
-                const startPct = Math.max(0, Math.min(100, (gifClipStart / dur) * 100));
-                const endPct = Math.max(0, Math.min(100, (gifClipEnd / dur) * 100));
-                clipStartLine.style.left = startPct + '%';
-                clipEndLine.style.left = endPct + '%';
-                clipHighlight.style.left = startPct + '%';
-                clipHighlight.style.width = (endPct - startPct) + '%';
-                gifStartTime.value = gifClipStart.toFixed(2);
-                gifEndTime.value = gifClipEnd.toFixed(2);
-                gifClipInfo.textContent = gifIsClipped ? `✅ ${gifClipStart.toFixed(1)}-${gifClipEnd.toFixed(1)}s (已确认)` :
-                    '未确认片段';
-            }
-
-            // ----- 确认片段 (强校验) -----
-            function confirmGifClip() {
-                const start = parseFloat(gifStartTime.value) || 0;
-                let end = parseFloat(gifEndTime.value) || 1.5;
-                const dur = gifDuration || 3;
-                if (end > dur) end = dur;
-                if (start < 0) { showToast('⚠️ 起点不能为负数'); return; }
-                if (start >= end) { showToast('⚠️ 起点必须小于终点'); return; }
-                if (end - start > 2.5) { showToast('⚠️ 片段最长 2.5 秒 (推荐 ≤2s)'); return; }
-                if (end - start < 0.1) { showToast('⚠️ 片段太短，至少 0.1 秒'); return; }
-                gifClipStart = start;
-                gifClipEnd = end;
-                gifIsClipped = true;
-                updateClipLines();
-                gifVideo.currentTime = start;
-                gifVideo.play();
-                setTimeout(() => gifVideo.pause(), 300);
-                showToast(`✅ 片段已确认: ${start.toFixed(1)}-${end.toFixed(1)}s (${(end-start).toFixed(1)}s)`);
-                updateGifButtons();
-            }
-
-            function resetGifClip() {
-                const dur = gifDuration || 3;
-                gifClipStart = 0;
-                gifClipEnd = Math.min(1.5, dur);
-                gifIsClipped = false;
-                updateClipLines();
-                gifVideo.currentTime = 0;
-                gifCropData = null;
-                gifCropInfo.textContent = '未裁剪';
-                showToast('↺ 已重置片段');
-                updateGifButtons();
-            }
-
-            // ----- GIF 文字 -----
-            function renderGifTextList() {
-                gifTextList.innerHTML = '';
-                for (const t of gifTexts) {
-                    const tag = document.createElement('span');
-                    tag.className = 'text-tag' + (gifSelectedTextId === t.id ? ' active-tag' : '');
-                    tag.style.fontSize = '12px';
-                    const span = document.createElement('span');
-                    span.className = 'tag-text';
-                    span.textContent = t.text;
-                    tag.appendChild(span);
-                    const del = document.createElement('span');
-                    del.className = 'tag-del';
-                    del.textContent = '×';
-                    del.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        gifTexts = gifTexts.filter(x => x.id !== t.id);
-                        if (gifSelectedTextId === t.id) gifSelectedTextId = null;
-                        renderGifTextList();
-                    });
-                    tag.appendChild(del);
-                    tag.addEventListener('click', () => { gifSelectedTextId = t.id;
-                        renderGifTextList(); });
-                    gifTextList.appendChild(tag);
-                }
-            }
-
-            function addGifText() {
-                const txt = gifTextInput.value.trim();
-                if (!txt) { showToast('请输入文字'); return; }
-                if (!gifIsClipped) { showToast('⚠️ 请先确认片段'); return; }
-                gifTexts.push({ id: gifNextId++, text: txt, color: gifTextColor.value, bold: gifBoldCheck.checked,
-                    fontSize: parseInt(gifFontSizeSlider.value, 10) || 32 });
-                gifTextInput.value = '';
-                renderGifTextList();
-                showToast('✅ 已添加文字');
-            }
-
-            // ----- 裁剪 (1:1) 仅片段生效 -----
-            function applyGifCrop() {
-                if (!gifIsClipped) { showToast('⚠️ 请先确认片段'); return; }
-                if (!state.gif.videoElement) { showToast('⚠️ 请先上传视频'); return; }
-                const video = state.gif.videoElement;
-                const canvas = document.createElement('canvas');
-                const vw = video.videoWidth || 640,
-                    vh = video.videoHeight || 480;
-                canvas.width = vw;
-                canvas.height = vh;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(video, 0, 0);
-
-                const img = new Image();
-                img.onload = () => {
-                    // 强制 1:1
-                    const size = Math.min(img.width, img.height);
-                    const sx = (img.width - size) / 2,
-                        sy = (img.height - size) / 2;
-                    const temp = document.createElement('canvas');
-                    temp.width = size;
-                    temp.height = size;
-                    const tc = temp.getContext('2d');
-                    tc.drawImage(img, sx, sy, size, size, 0, 0, size, size);
-                    const finalImg = new Image();
-                    finalImg.onload = () => {
-                        gifCropData = { x: sx / img.width, y: sy / img.height, w: size / img.width, h: size / img
-                            .height };
-                        gifCropInfo.textContent = '✅ 1:1 裁剪';
-                        showToast('✅ 1:1 裁剪已应用');
-                        updateGifButtons();
-                    };
-                    finalImg.src = temp.toDataURL('image/png');
-                };
-                img.src = canvas.toDataURL();
-            }
-
-            function resetGifCrop() {
-                if (!gifIsClipped) { showToast('⚠️ 请先确认片段'); return; }
-                gifCropData = null;
-                gifCropInfo.textContent = '未裁剪';
-                showToast('↺ 已重置裁剪');
-                updateGifButtons();
-            }
-
-            // ----- 预览效果 (循环播放选中片段) -----
-            function previewGifEffect() {
-                if (!gifIsClipped) { showToast('⚠️ 请先确认片段'); return; }
-                const video = gifVideo;
-                const start = gifClipStart,
-                    end = gifClipEnd;
-                // 使用 loop 和时间范围
-                video.currentTime = start;
-                video.play();
-                const checkLoop = () => {
-                    if (video.currentTime >= end) {
-                        video.currentTime = start;
-                    }
-                    if (!video.paused) {
-                        requestAnimationFrame(checkLoop);
-                    }
-                };
-                const onPlay = () => {
-                    requestAnimationFrame(checkLoop);
-                };
-                video.addEventListener('play', onPlay);
-                // 清理
-                setTimeout(() => {
-                    video.removeEventListener('play', onPlay);
-                }, 100);
-                showToast('▶️ 循环预览片段');
-            }
-
-            // ----- 生成 GIF (优化压缩) -----
-            function generateGifFromVideo() {
-                if (!gifIsClipped) { showToast('⚠️ 请先确认片段'); return; }
-                if (!state.gif.videoElement) { showToast('⚠️ 请先上传视频'); return; }
-
-                const video = state.gif.videoElement;
-                const start = gifClipStart,
-                    end = gifClipEnd;
-                const duration = end - start;
-                if (duration > 2.5) { showToast('⚠️ 片段最长 2.5 秒'); return; }
-
-                const size = parseInt(gifSizeSelect.value, 10);
-                // 动态调整帧数：根据时长和尺寸
-                let maxFrames = Math.min(35, Math.floor(duration / 0.04));
-                if (size > 240) maxFrames = Math.min(25, maxFrames);
-                if (size > 320) maxFrames = Math.min(18, maxFrames);
-                const interval = duration / maxFrames;
-                const totalFrames = Math.min(Math.floor(duration / interval), maxFrames);
-                if (totalFrames < 2) { showToast('⏱️ 片段太短'); return; }
-
-                gifGenBtn.disabled = true;
-                gifGenBtn.textContent = '⏳ 生成中...';
-
-                // 使用较低 quality 保证生成
-                const gifQuality = gifExportSize.value === 'compress' ? 5 : 10;
-                const gif = new GIF({
-                    workers: 2,
-                    quality: gifQuality,
-                    width: size,
-                    height: size,
-                    workerURL: 'https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js',
-                });
-
-                const off = document.createElement('canvas');
-                off.width = size;
-                off.height = size;
-                const oc = off.getContext('2d');
-
-                let frameCount = 0;
-                let currentTime = start;
-
-                function addFrame() {
-                    if (frameCount >= totalFrames || currentTime >= end) {
-                        gif.render();
-                        return;
-                    }
-                    video.currentTime = currentTime;
-                    video.addEventListener('seeked', function onSeek() {
-                        video.removeEventListener('seeked', onSeek);
-                        oc.clearRect(0, 0, size, size);
-                        oc.fillStyle = '#ffffff';
-                        oc.fillRect(0, 0, size, size);
-
-                        const vw = video.videoWidth || 640,
-                            vh = video.videoHeight || 480;
-                        let sx = 0,
-                            sy = 0,
-                            sw = vw,
-                            sh = vh;
-                        if (gifCropData) {
-                            const cropSize = Math.min(vw, vh);
-                            sx = (vw - cropSize) / 2;
-                            sy = (vh - cropSize) / 2;
-                            sw = cropSize;
-                            sh = cropSize;
-                        }
-                        const s = Math.min(size / sw, size / sh);
-                        const dw = sw * s,
-                            dh = sh * s;
-                        oc.drawImage(video, sx, sy, sw, sh, (size - dw) / 2, (size - dh) / 2, dw, dh);
-
-                        for (const t of gifTexts) {
-                            const fs = Math.max(10, Math.round((t.fontSize || 32) * (size / 600)));
-                            oc.save();
-                            oc.textAlign = 'center';
-                            oc.textBaseline = 'middle';
-                            oc.font = (t.bold ? 'bold ' : '') + fs +
-                            'px "PingFang SC","Microsoft YaHei","Segoe UI",sans-serif';
-                            oc.fillStyle = t.color || '#d45a7a';
-                            oc.fillText(t.text, size / 2, size / 2);
-                            oc.restore();
-                        }
-
-                        gif.addFrame(off, { copy: true, delay: Math.round(interval * 1000) });
-                        frameCount++;
-                        currentTime += interval;
-                        const pct = Math.round((frameCount / totalFrames) * 60);
-                        gifGenBtn.textContent = `⏳ ${pct}%`;
-                        setTimeout(addFrame, 15);
-                    });
-                    const timeout = setTimeout(() => {
-                        if (frameCount < totalFrames) {
-                            frameCount++;
-                            currentTime += interval;
-                            gifGenBtn.textContent = `⏳ ${Math.round((frameCount/totalFrames)*60)}%`;
-                            setTimeout(addFrame, 15);
-                        }
-                    }, 400);
-                    video.addEventListener('seeked', () => clearTimeout(timeout), { once: true });
-                }
-
-                gif.on('progress', (p) => {
-                    gifGenBtn.textContent = `⏳ ${Math.round(p * 100)}%`;
-                });
-
-                gif.on('finished', (blob) => {
-                    gifGenBtn.disabled = false;
-                    gifGenBtn.textContent = '⚡ 生成 GIF';
-                    if (!blob || blob.size === 0) { showToast('❌ 生成失败'); return; }
-
-                    let finalBlob = blob;
-                    // 如果压缩模式且 >1MB，使用更激进的压缩
-                    if (gifExportSize.value === 'compress' && blob.size > 1024 * 1024) {
-                        // 重新生成更小尺寸
-                        showToast('⏳ 压缩到 ≤1MB...');
-                        const smallerSize = Math.min(size, 160);
-                        const gif2 = new GIF({
-                            workers: 2,
-                            quality: 3,
-                            width: smallerSize,
-                            height: smallerSize,
-                            workerURL: 'https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js',
-                        });
-                        const off2 = document.createElement('canvas');
-                        off2.width = smallerSize;
-                        off2.height = smallerSize;
-                        const oc2 = off2.getContext('2d');
-                        let fi = 0;
-                        let t = start;
-                        const totalFrames2 = Math.min(15, totalFrames);
-                        const interval2 = duration / totalFrames2;
-
-                        function addFrame2() {
-                            if (fi >= totalFrames2 || t >= end) {
-                                gif2.render();
-                                return;
-                            }
-                            video.currentTime = t;
-                            video.addEventListener('seeked', function onSeek2() {
-                                video.removeEventListener('seeked', onSeek2);
-                                oc2.clearRect(0, 0, smallerSize, smallerSize);
-                                oc2.fillStyle = '#ffffff';
-                                oc2.fillRect(0, 0, smallerSize, smallerSize);
-                                const vw = video.videoWidth || 640,
-                                    vh = video.videoHeight || 480;
-                                let sx = 0,
-                                    sy = 0,
-                                    sw = vw,
-                                    sh = vh;
-                                if (gifCropData) {
-                                    const cropSize = Math.min(vw, vh);
-                                    sx = (vw - cropSize) / 2;
-                                    sy = (vh - cropSize) / 2;
-                                    sw = cropSize;
-                                    sh = cropSize;
-                                }
-                                const s2 = Math.min(smallerSize / sw, smallerSize / sh);
-                                oc2.drawImage(video, sx, sy, sw, sh, (smallerSize - sw * s2) / 2, (smallerSize - sh *
-                                    s2) / 2, sw * s2, sh * s2);
-                                for (const t of gifTexts) {
-                                    const fs = Math.max(8, Math.round((t.fontSize || 32) * (smallerSize / 600)));
-                                    oc2.save();
-                                    oc2.textAlign = 'center';
-                                    oc2.textBaseline = 'middle';
-                                    oc2.font = (t.bold ? 'bold ' : '') + fs +
-                                    'px "PingFang SC","Microsoft YaHei","Segoe UI",sans-serif';
-                                    oc2.fillStyle = t.color || '#d45a7a';
-                                    oc2.fillText(t.text, smallerSize / 2, smallerSize / 2);
-                                    oc2.restore();
-                                }
-                                gif2.addFrame(off2, { copy: true, delay: Math.round(interval2 * 1000) });
-                                fi++;
-                                t += interval2;
-                                setTimeout(addFrame2, 15);
-                            });
-                            const to = setTimeout(() => {
-                                if (fi < totalFrames2) { fi++;
-                                    t += interval2;
-                                    setTimeout(addFrame2, 15); }
-                            }, 300);
-                            video.addEventListener('seeked', () => clearTimeout(to), { once: true });
-                        }
-                        gif2.on('finished', (compressedBlob) => {
-                            finalBlob = compressedBlob;
-                            downloadGif(finalBlob, smallerSize);
-                        });
-                        setTimeout(addFrame2, 200);
-                        return;
-                    }
-                    downloadGif(finalBlob, size);
-                });
-
-                setTimeout(addFrame, 300);
-
-                const globalTimeout = setTimeout(() => {
-                    if (gifGenBtn.disabled) {
-                        gifGenBtn.disabled = false;
-                        gifGenBtn.textContent = '⚡ 生成 GIF';
-                        showToast('⏱️ 生成超时');
-                    }
-                }, 50000);
-                gif.on('finished', () => clearTimeout(globalTimeout));
-            }
-
-            function downloadGif(blob, size) {
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `表情_${size}x${size}.gif`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                setTimeout(() => URL.revokeObjectURL(url), 5000);
-                showToast(`✅ GIF 已生成 (${(blob.size/1024).toFixed(1)}KB)`);
-
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const items = getWarehouseItems();
-                    items.push({ type: 'gif', data: e.target.result, size: size, time: Date.now() });
-                    saveWarehouseItems(items);
-                    renderWarehouse();
-                };
-                reader.readAsDataURL(blob);
-            }
-
-            // ----- 初始化 GIF -----
-            function initGif() {
-                gifUploadBtn.addEventListener('click', () => gifFileInput.click());
-                gifFileInput.addEventListener('change', (e) => {
-                    if (e.target.files && e.target.files[0]) loadGifVideo(e.target.files[0]);
-                });
-                gifClearBtn.addEventListener('click', clearGifVideo);
-
-                gifVideo.addEventListener('timeupdate', () => {
-                    gifProgress.value = gifVideo.currentTime;
-                    gifTimeCurrent.textContent = gifVideo.currentTime.toFixed(1) + 's';
-                });
-                gifProgress.addEventListener('input', () => {
-                    const val = parseFloat(gifProgress.value);
-                    gifVideo.currentTime = val;
-                    gifTimeCurrent.textContent = val.toFixed(1) + 's';
-                });
-
-                gifConfirmClipBtn.addEventListener('click', confirmGifClip);
-                gifResetClipBtn.addEventListener('click', resetGifClip);
-
-                gifAddTextBtn.addEventListener('click', addGifText);
-                gifTextInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault();
-                        addGifText(); } });
-                gifFontSizeSlider.addEventListener('input', () => { gifFontSizeLabel.textContent = gifFontSizeSlider.value; });
-
-                gifCropBtn.addEventListener('click', applyGifCrop);
-                gifResetCropBtn.addEventListener('click', resetGifCrop);
-                gifPreviewPlayBtn.addEventListener('click', previewGifEffect);
-
-                gifGenBtn.addEventListener('click', generateGifFromVideo);
-                gifPreviewGenBtn.addEventListener('click', generateGifFromVideo);
-                gifSaveBtn.addEventListener('click', () => {
-                    showToast('💡 请先生成 GIF，会自动存入仓库');
-                });
-
-                updateGifButtons();
-            }
-
-            // ================================================================
-            // 证件照模块 (完全重构)
-            // ================================================================
-            const idphotoCanvas = document.getElementById('idphotoCanvas');
-            const idphotoCtx = idphotoCanvas.getContext('2d');
-            const idphotoPlaceholder = document.getElementById('idphotoPlaceholder');
-            const idphotoUploadBtn = document.getElementById('idphotoUploadBtn');
-            const idphotoFileInput = document.getElementById('idphotoFileInput');
-            const idphotoEditBtn = document.getElementById('idphotoEditBtn');
-            const idphotoClearBtn = document.getElementById('idphotoClearBtn');
-            const idphotoWidth = document.getElementById('idphotoWidth');
-            const idphotoHeight = document.getElementById('idphotoHeight');
-            const idphotoPxWidth = document.getElementById('idphotoPxWidth');
-            const idphotoPxHeight = document.getElementById('idphotoPxHeight');
-            const idphotoDPI = document.getElementById('idphotoDPI');
-            const idphotoMinKB = document.getElementById('idphotoMinKB');
-            const idphotoMaxKB = document.getElementById('idphotoMaxKB');
-            const idphotoFormat = document.getElementById('idphotoFormat');
-            const idphotoSizeInfo = document.getElementById('idphotoSizeInfo');
-            const idphotoHint = document.getElementById('idphotoHint');
-            const idphotoCropBox = document.getElementById('idphotoCropBox');
-            const idphotoCropLabel = document.getElementById('idphotoCropLabel');
-            const idphotoCropOverlay = document.getElementById('idphotoCropOverlay');
-
-            let idphotoMode = 'px'; // 'px' or 'dpi'
-
-            // 监听模式切换
-            document.querySelectorAll('input[name="idphotoMode"]').forEach(el => {
-                el.addEventListener('change', () => {
-                    idphotoMode = document.querySelector('input[name="idphotoMode"]:checked').value;
-                    showToast(`模式: ${idphotoMode === 'px' ? '像素' : 'DPI'}`);
-                });
-            });
-
-            function drawIdphotoScene() {
+            function drawCropScene() {
                 const w = 600,
                     h = 600;
-                idphotoCtx.clearRect(0, 0, w, h);
-                drawCheckerboard(idphotoCtx, w, h);
-                if (state.idphoto.image) {
-                    const img = state.idphoto.image;
-                    const s = Math.min(w / img.width, h / img.height);
-                    idphotoCtx.drawImage(img, (w - img.width * s) / 2, (h - img.height * s) / 2, img.width * s, img.height *
-                    s);
+                cropCtx.clearRect(0, 0, w, h);
+                drawCheckerboard(cropCtx, w, h);
+                if (cropImage) {
+                    const s = cropImageScale;
+                    const dx = cropImageOffsetX - cropImage.width * s / 2;
+                    const dy = cropImageOffsetY - cropImage.height * s / 2;
+                    cropCtx.drawImage(cropImage, dx, dy, cropImage.width * s, cropImage.height * s);
                 }
-                idphotoPlaceholder.style.display = state.idphoto.image ? 'none' : 'block';
-                idphotoEditBtn.style.display = state.idphoto.image ? 'inline-block' : 'none';
+                cropPlaceholder.style.display = cropImage ? 'none' : 'block';
 
-                // 更新尺寸信息
-                const mm = state.idphoto.width + '×' + state.idphoto.height + 'mm';
-                const px = state.idphoto.pxWidth + '×' + state.idphoto.pxHeight + 'px';
-                const dpi = state.idphoto.dpi || 300;
-                idphotoSizeInfo.textContent = mm + ' · ' + px + ' · ' + dpi + 'DPI';
-
-                // 更新预览虚线框
-                updateIdphotoCropBox();
-            }
-
-            function updateIdphotoCropBox() {
-                if (!state.idphoto.image) {
-                    idphotoCropBox.style.display = 'none';
-                    idphotoCropLabel.style.display = 'none';
-                    return;
-                }
-                // 计算虚线框位置 (基于当前尺寸比例)
-                const w = state.idphoto.width || 25;
-                const h = state.idphoto.height || 35;
-                const ratio = h / w; // 高度/宽度
-
-                const canvasSize = 600;
-                // 在画布内适配
-                let boxW, boxH;
-                if (ratio > 1) {
-                    boxH = canvasSize * 0.72;
-                    boxW = boxH / ratio;
+                // 更新裁剪框
+                const cw = state.crop.width;
+                const ch = state.crop.height;
+                if (cropImage && cw > 0 && ch > 0) {
+                    const ratio = ch / cw;
+                    let boxW = 500,
+                        boxH = boxW * ratio;
+                    if (boxH > 500) { boxH = 500;
+                        boxW = boxH / ratio; }
+                    cropBoxOverlay.style.display = 'block';
+                    cropBoxOverlay.style.width = boxW + 'px';
+                    cropBoxOverlay.style.height = boxH + 'px';
+                    cropLabel.style.display = 'block';
+                    cropLabel.textContent = `${cw}×${ch}px`;
+                    cropSizeInfo.textContent = `${cw}×${ch}px`;
                 } else {
-                    boxW = canvasSize * 0.72;
-                    boxH = boxW * ratio;
+                    cropBoxOverlay.style.display = 'none';
+                    cropLabel.style.display = 'none';
+                    if (!cropImage) cropSizeInfo.textContent = '未选择尺寸';
                 }
-                // 限制最大尺寸
-                const maxSize = canvasSize * 0.85;
-                if (boxW > maxSize) { boxW = maxSize;
-                    boxH = boxW * ratio; }
-                if (boxH > maxSize) { boxH = maxSize;
-                    boxW = boxH / ratio; }
-
-                idphotoCropBox.style.width = boxW + 'px';
-                idphotoCropBox.style.height = boxH + 'px';
-                idphotoCropBox.style.display = 'block';
-                idphotoCropLabel.textContent = `${Math.round(w)}×${Math.round(h)}mm`;
-                idphotoCropLabel.style.display = 'block';
             }
 
-            function loadIdphotoImage(file) {
+            function loadCropImage(file) {
                 if (!file) return;
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     const img = new Image();
                     img.onload = () => {
-                        state.idphoto.image = img;
-                        drawIdphotoScene();
-                        showToast('✅ 照片已上传');
-                        idphotoEditBtn.style.display = 'inline-block';
+                        cropImage = img;
+                        cropImageScale = Math.min(600 / img.width, 600 / img.height) * 0.8;
+                        cropImageOffsetX = 300;
+                        cropImageOffsetY = 300;
+                        drawCropScene();
+                        showToast('✅ 照片已上传，请选择尺寸');
                     };
                     img.onerror = () => showToast('❌ 加载失败');
                     img.src = e.target.result;
@@ -3404,185 +2551,125 @@
                 reader.readAsDataURL(file);
             }
 
-            function clearIdphotoImage() {
-                state.idphoto.image = null;
-                drawIdphotoScene();
-                idphotoFileInput.value = '';
-                idphotoEditBtn.style.display = 'none';
-                idphotoCropBox.style.display = 'none';
-                idphotoCropLabel.style.display = 'none';
+            function clearCropImage() {
+                cropImage = null;
+                drawCropScene();
+                cropFileInput.value = '';
+                cropBoxOverlay.style.display = 'none';
+                cropLabel.style.display = 'none';
+                cropSizeInfo.textContent = '未选择尺寸';
+                showToast('已清除');
             }
 
-            // 模板尺寸
-            document.querySelectorAll('.size-template').forEach(btn => {
+            // 预设尺寸
+            document.querySelectorAll('.size-preset').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    const w = parseFloat(btn.dataset.w);
-                    const h = parseFloat(btn.dataset.h);
-                    idphotoWidth.value = w;
-                    idphotoHeight.value = h;
-                    const dpi = parseInt(idphotoDPI.value, 10) || 300;
-                    const pxW = Math.round(w / 25.4 * dpi);
-                    const pxH = Math.round(h / 25.4 * dpi);
-                    idphotoPxWidth.value = pxW;
-                    idphotoPxHeight.value = pxH;
-                    state.idphoto.width = w;
-                    state.idphoto.height = h;
-                    state.idphoto.pxWidth = pxW;
-                    state.idphoto.pxHeight = pxH;
-                    state.idphoto.dpi = dpi;
-                    state.idphoto.cropRatio = h / w;
-                    drawIdphotoScene();
-                    showToast(`✅ 已应用 ${w}×${h}mm (${pxW}×${pxH}px @ ${dpi}DPI)`);
-                    // 自动打开裁剪
-                    if (state.idphoto.image) {
-                        openEditorForImage(state.idphoto.image, (cropped) => {
-                            state.idphoto.image = cropped;
-                            drawIdphotoScene();
-                            showToast('✅ 裁剪完成');
-                        }, h / w);
+                    const w = parseInt(btn.dataset.w, 10);
+                    const h = parseInt(btn.dataset.h, 10);
+                    if (w && h) {
+                        state.crop.width = w;
+                        state.crop.height = h;
+                        cropWidth.value = w;
+                        cropHeight.value = h;
+                        drawCropScene();
+                        showToast(`✅ 已应用 ${w}×${h}px`);
                     }
                 });
             });
 
-            document.getElementById('idphotoApplySizeBtn').addEventListener('click', () => {
-                const w = parseFloat(idphotoWidth.value) || 25;
-                const h = parseFloat(idphotoHeight.value) || 35;
-                state.idphoto.width = w;
-                state.idphoto.height = h;
-                state.idphoto.cropRatio = h / w;
-                const dpi = parseInt(idphotoDPI.value, 10) || 300;
-                state.idphoto.pxWidth = Math.round(w / 25.4 * dpi);
-                state.idphoto.pxHeight = Math.round(h / 25.4 * dpi);
-                state.idphoto.dpi = dpi;
-                drawIdphotoScene();
-                showToast(`✅ 已设置 ${w}×${h}mm`);
-            });
-
-            document.getElementById('idphotoApplyPxBtn').addEventListener('click', () => {
-                const w = parseInt(idphotoPxWidth.value, 10) || 295;
-                const h = parseInt(idphotoPxHeight.value, 10) || 413;
-                const dpi = parseInt(idphotoDPI.value, 10) || 300;
-                state.idphoto.pxWidth = w;
-                state.idphoto.pxHeight = h;
-                state.idphoto.dpi = dpi;
-                if (idphotoMode === 'px') {
-                    state.idphoto.width = Math.round(w / dpi * 25.4 * 10) / 10;
-                    state.idphoto.height = Math.round(h / dpi * 25.4 * 10) / 10;
+            cropApplyCustomBtn.addEventListener('click', () => {
+                const w = parseInt(cropWidth.value, 10);
+                const h = parseInt(cropHeight.value, 10);
+                if (w > 0 && h > 0) {
+                    state.crop.width = w;
+                    state.crop.height = h;
+                    drawCropScene();
+                    showToast(`✅ 已应用 ${w}×${h}px`);
                 } else {
-                    // DPI 模式：根据DPI计算mm
-                    state.idphoto.width = Math.round(w / dpi * 25.4 * 10) / 10;
-                    state.idphoto.height = Math.round(h / dpi * 25.4 * 10) / 10;
+                    showToast('⚠️ 请输入有效尺寸');
                 }
-                state.idphoto.cropRatio = state.idphoto.height / state.idphoto.width;
-                drawIdphotoScene();
-                showToast(`✅ 已设置 ${w}×${h}px @ ${dpi}DPI`);
             });
 
-            document.getElementById('idphotoApplySizeBtn2').addEventListener('click', () => {
-                state.idphoto.minKB = parseInt(idphotoMinKB.value, 10) || 0;
-                state.idphoto.maxKB = parseInt(idphotoMaxKB.value, 10) || 200;
-                showToast(`✅ 文件大小 ${state.idphoto.minKB}-${state.idphoto.maxKB}KB`);
-            });
+            // 导出裁剪
+            function exportCrop() {
+                if (!cropImage) { showToast('请先上传照片'); return; }
+                const cw = state.crop.width,
+                    ch = state.crop.height;
+                if (cw <= 0 || ch <= 0) { showToast('请选择有效尺寸'); return; }
 
-            document.getElementById('idphotoResetSizeBtn').addEventListener('click', () => {
-                idphotoMinKB.value = 0;
-                idphotoMaxKB.value = 200;
-                state.idphoto.minKB = 0;
-                state.idphoto.maxKB = 200;
-                showToast('↺ 已复原');
-            });
+                // 计算裁剪区域
+                const canvasSize = 600;
+                const boxW = parseFloat(cropBoxOverlay.style.width) || 500;
+                const boxH = parseFloat(cropBoxOverlay.style.height) || 500;
+                const boxX = (canvasSize - boxW) / 2,
+                    boxY = (canvasSize - boxH) / 2;
 
-            function exportIdphoto() {
-                if (!state.idphoto.image) { showToast('请先上传照片'); return; }
-                const pw = state.idphoto.pxWidth || 295;
-                const ph = state.idphoto.pxHeight || 413;
-                const format = idphotoFormat.value;
+                // 计算在原始图片上的裁剪区域
+                const s = cropImageScale;
+                const imgW = cropImage.width * s,
+                    imgH = cropImage.height * s;
+                const imgX = cropImageOffsetX - imgW / 2,
+                    imgY = cropImageOffsetY - imgH / 2;
+
+                const srcX = (boxX - imgX) / s;
+                const srcY = (boxY - imgY) / s;
+                const srcW = boxW / s;
+                const srcH = boxH / s;
+
+                // 裁剪并导出
                 const off = document.createElement('canvas');
-                off.width = pw;
-                off.height = ph;
+                off.width = cw;
+                off.height = ch;
                 const oc = off.getContext('2d');
-                oc.fillStyle = '#ffffff';
-                oc.fillRect(0, 0, pw, ph);
-                const img = state.idphoto.image;
-                const s = Math.min(pw / img.width, ph / img.height);
-                oc.drawImage(img, (pw - img.width * s) / 2, (ph - img.height * s) / 2, img.width * s, img.height * s);
+                oc.drawImage(cropImage, srcX, srcY, srcW, srcH, 0, 0, cw, ch);
 
-                let quality = 0.92;
-                let mime = format;
-                let ext = 'jpg';
-                if (format === 'image/png') { mime = 'image/png';
-                    ext = 'png';
-                    quality = undefined; }
-
-                function tryExport(q) {
-                    off.toBlob((blob) => {
-                        if (!blob) { showToast('❌ 导出失败'); return; }
-                        const sizeKB = blob.size / 1024;
-                        const minKB = state.idphoto.minKB || 0;
-                        const maxKB = state.idphoto.maxKB || 200;
-                        if (sizeKB > maxKB && q > 0.1) { tryExport(q - 0.08); return; }
-                        if (sizeKB < minKB && q < 0.98) { tryExport(q + 0.05); return; }
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = `证件照_${pw}x${ph}.${ext}`;
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                        setTimeout(() => URL.revokeObjectURL(url), 5000);
-                        showToast(`✅ 已导出 ${pw}×${ph} (${Math.round(sizeKB)}KB)`);
-                    }, mime, q);
-                }
-                tryExport(quality);
-            }
-
-            function previewIdphoto() {
-                if (!state.idphoto.image) { showToast('请先上传照片'); return; }
-                const pw = state.idphoto.pxWidth || 295;
-                const ph = state.idphoto.pxHeight || 413;
-                const off = document.createElement('canvas');
-                off.width = pw;
-                off.height = ph;
-                const oc = off.getContext('2d');
-                oc.fillStyle = '#ffffff';
-                oc.fillRect(0, 0, pw, ph);
-                const img = state.idphoto.image;
-                const s = Math.min(pw / img.width, ph / img.height);
-                oc.drawImage(img, (pw - img.width * s) / 2, (ph - img.height * s) / 2, img.width * s, img.height * s);
+                const format = cropFormat.value;
+                const mime = format;
+                const ext = format === 'image/png' ? 'png' : 'jpg';
                 off.toBlob((blob) => {
-                    if (!blob) { showToast('❌ 预览失败'); return; }
+                    if (!blob) { showToast('❌ 导出失败'); return; }
                     const url = URL.createObjectURL(blob);
-                    const modal = document.getElementById('previewModal');
-                    const imgEl = document.getElementById('previewImage');
-                    const vid = document.getElementById('previewVideo');
-                    imgEl.src = url;
-                    imgEl.style.display = 'block';
-                    vid.style.display = 'none';
-                    vid.pause();
-                    modal.classList.add('active');
-                    modal.onclick = (e) => { if (e.target === modal) closePreviewModal(); };
-                }, 'image/png');
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `证件照_${cw}x${ch}.${ext}`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    setTimeout(() => URL.revokeObjectURL(url), 5000);
+                    showToast(`✅ 已导出 ${cw}×${ch}`);
+                }, mime, 0.92);
             }
 
-            function saveIdphotoToWarehouse() {
-                if (!state.idphoto.image) { showToast('请先上传照片'); return; }
-                const pw = state.idphoto.pxWidth || 295;
-                const ph = state.idphoto.pxHeight || 413;
+            function saveCropToWarehouse() {
+                if (!cropImage) { showToast('请先上传照片'); return; }
+                const cw = state.crop.width,
+                    ch = state.crop.height;
+                if (cw <= 0 || ch <= 0) { showToast('请选择有效尺寸'); return; }
+                const canvasSize = 600;
+                const boxW = parseFloat(cropBoxOverlay.style.width) || 500;
+                const boxH = parseFloat(cropBoxOverlay.style.height) || 500;
+                const boxX = (canvasSize - boxW) / 2,
+                    boxY = (canvasSize - boxH) / 2;
+                const s = cropImageScale;
+                const imgW = cropImage.width * s,
+                    imgH = cropImage.height * s;
+                const imgX = cropImageOffsetX - imgW / 2,
+                    imgY = cropImageOffsetY - imgH / 2;
+                const srcX = (boxX - imgX) / s;
+                const srcY = (boxY - imgY) / s;
+                const srcW = boxW / s;
+                const srcH = boxH / s;
                 const off = document.createElement('canvas');
-                off.width = pw;
-                off.height = ph;
+                off.width = cw;
+                off.height = ch;
                 const oc = off.getContext('2d');
-                oc.fillStyle = '#ffffff';
-                oc.fillRect(0, 0, pw, ph);
-                const img = state.idphoto.image;
-                const s = Math.min(pw / img.width, ph / img.height);
-                oc.drawImage(img, (pw - img.width * s) / 2, (ph - img.height * s) / 2, img.width * s, img.height * s);
+                oc.drawImage(cropImage, srcX, srcY, srcW, srcH, 0, 0, cw, ch);
                 off.toBlob((blob) => {
                     if (!blob) { showToast('❌ 保存失败'); return; }
                     const reader = new FileReader();
                     reader.onload = (e) => {
                         const items = getWarehouseItems();
-                        items.push({ type: 'image', data: e.target.result, size: pw, time: Date.now() });
+                        items.push({ type: 'image', data: e.target.result, size: cw, time: Date.now() });
                         saveWarehouseItems(items);
                         renderWarehouse();
                         showToast('📦 已存入仓库');
@@ -3591,57 +2678,267 @@
                 }, 'image/png');
             }
 
-            function initIdphoto() {
-                idphotoCanvas.width = 600;
-                idphotoCanvas.height = 600;
-                idphotoUploadBtn.addEventListener('click', () => idphotoFileInput.click());
-                idphotoFileInput.addEventListener('change', (e) => {
-                    if (e.target.files && e.target.files[0]) loadIdphotoImage(e.target.files[0]);
-                });
-                idphotoClearBtn.addEventListener('click', clearIdphotoImage);
-                idphotoEditBtn.addEventListener('click', () => {
-                    if (state.idphoto.image) {
-                        const ratio = state.idphoto.cropRatio || 35 / 25;
-                        openEditorForImage(state.idphoto.image, (cropped) => {
-                            state.idphoto.image = cropped;
-                            drawIdphotoScene();
-                            showToast('✅ 裁剪完成');
-                        }, ratio);
-                    }
-                });
-                document.getElementById('idphotoExportBtn').addEventListener('click', exportIdphoto);
-                document.getElementById('idphotoPreviewBtn').addEventListener('click', previewIdphoto);
-                document.getElementById('idphotoSaveBtn').addEventListener('click', saveIdphotoToWarehouse);
+            // 拖动图片调整位置
+            function setupCropDrag() {
+                function getPos(e) {
+                    const rect = cropCanvas.getBoundingClientRect();
+                    const sx = 600 / rect.width,
+                        sy = 600 / rect.height;
+                    const cx = e.clientX || (e.touches && e.touches[0].clientX);
+                    const cy = e.clientY || (e.touches && e.touches[0].clientY);
+                    if (cx == null) return { x: 0, y: 0 };
+                    return { x: (cx - rect.left) * sx, y: (cy - rect.top) * sy };
+                }
 
-                const dpi = 300;
-                const w = 25,
-                    h = 35;
-                idphotoWidth.value = w;
-                idphotoHeight.value = h;
-                idphotoDPI.value = dpi;
-                idphotoPxWidth.value = Math.round(w / 25.4 * dpi);
-                idphotoPxHeight.value = Math.round(h / 25.4 * dpi);
-                state.idphoto.width = w;
-                state.idphoto.height = h;
-                state.idphoto.pxWidth = Math.round(w / 25.4 * dpi);
-                state.idphoto.pxHeight = Math.round(h / 25.4 * dpi);
-                state.idphoto.dpi = dpi;
-                state.idphoto.cropRatio = h / w;
-                drawIdphotoScene();
+                function onDown(e) {
+                    if (!cropImage) return;
+                    e.preventDefault();
+                    cropIsDragging = true;
+                    const p = getPos(e);
+                    cropDragStartX = p.x;
+                    cropDragStartY = p.y;
+                    cropDragStartOffX = cropImageOffsetX;
+                    cropDragStartOffY = cropImageOffsetY;
+                    cropCanvas.style.cursor = 'grabbing';
+                }
+
+                function onMove(e) {
+                    if (!cropIsDragging || !cropImage) return;
+                    e.preventDefault();
+                    const p = getPos(e);
+                    cropImageOffsetX = cropDragStartOffX + (p.x - cropDragStartX);
+                    cropImageOffsetY = cropDragStartOffY + (p.y - cropDragStartY);
+                    drawCropScene();
+                }
+
+                function onUp(e) {
+                    if (cropIsDragging) {
+                        cropIsDragging = false;
+                        cropCanvas.style.cursor = 'default';
+                    }
+                }
+
+                cropCanvas.addEventListener('mousedown', onDown);
+                window.addEventListener('mousemove', onMove);
+                window.addEventListener('mouseup', onUp);
+                cropCanvas.addEventListener('touchstart', (e) => { e.preventDefault();
+                    onDown(e); }, { passive: false });
+                window.addEventListener('touchmove', (e) => { if (cropIsDragging) { e.preventDefault();
+                        onMove(e); } }, { passive: false });
+                window.addEventListener('touchend', onUp);
+
+                // 滚轮缩放
+                cropCanvas.addEventListener('wheel', (e) => {
+                    if (!cropImage) return;
+                    e.preventDefault();
+                    const delta = e.deltaY > 0 ? -0.05 : 0.05;
+                    const ns = cropImageScale * (1 + delta);
+                    if (ns < 0.1 || ns > 5) return;
+                    cropImageScale = ns;
+                    drawCropScene();
+                }, { passive: false });
+            }
+
+            function initCrop() {
+                cropCanvas.width = 600;
+                cropCanvas.height = 600;
+                cropUploadBtn.addEventListener('click', () => cropFileInput.click());
+                cropFileInput.addEventListener('change', (e) => {
+                    if (e.target.files && e.target.files[0]) loadCropImage(e.target.files[0]);
+                });
+                cropClearBtn.addEventListener('click', clearCropImage);
+                cropExportBtn.addEventListener('click', exportCrop);
+                cropSaveBtn.addEventListener('click', saveCropToWarehouse);
+                setupCropDrag();
+                drawCropScene();
+            }
+
+            // ================================================================
+            // 证件照 - 压缩
+            // ================================================================
+            const compressCanvas = document.getElementById('compressCanvas');
+            const compressCtx = compressCanvas.getContext('2d');
+            const compressPlaceholder = document.getElementById('compressPlaceholder');
+            const compressUploadBtn = document.getElementById('compressUploadBtn');
+            const compressFileInput = document.getElementById('compressFileInput');
+            const compressClearBtn = document.getElementById('compressClearBtn');
+            const compressQuality = document.getElementById('compressQuality');
+            const qualityDisplay = document.getElementById('qualityDisplay');
+            const compressScale = document.getElementById('compressScale');
+            const scaleDisplay = document.getElementById('scaleDisplay');
+            const compressBtn = document.getElementById('compressBtn');
+            const compressSaveBtn = document.getElementById('compressSaveBtn');
+            const compressInfo = document.getElementById('compressInfo');
+            const beforeSize = document.getElementById('beforeSize');
+            const afterSize = document.getElementById('afterSize');
+            const beforeDim = document.getElementById('beforeDim');
+            const afterDim = document.getElementById('afterDim');
+            const compressStatus = document.getElementById('compressStatus');
+
+            let compressOriginalImage = null;
+            let compressOriginalDataURL = null;
+            let compressResultDataURL = null;
+
+            function drawCompressScene(img) {
+                const w = 600,
+                    h = 600;
+                compressCtx.clearRect(0, 0, w, h);
+                drawCheckerboard(compressCtx, w, h);
+                if (img) {
+                    const s = Math.min(w / img.width, h / img.height);
+                    compressCtx.drawImage(img, (w - img.width * s) / 2, (h - img.height * s) / 2, img.width * s, img.height *
+                    s);
+                }
+                compressPlaceholder.style.display = img ? 'none' : 'block';
+                compressStatus.textContent = img ? '已上传' : '未上传';
+            }
+
+            function loadCompressImage(file) {
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const dataURL = e.target.result;
+                    const img = new Image();
+                    img.onload = () => {
+                        compressOriginalImage = img;
+                        compressOriginalDataURL = dataURL;
+                        compressResultDataURL = null;
+                        compressInfo.style.display = 'none';
+                        drawCompressScene(img);
+                        // 显示原始信息
+                        const sizeKB = (dataURL.length * 3 / 4) / 1024;
+                        beforeSize.textContent = sizeKB.toFixed(2) + ' KB';
+                        beforeDim.textContent = img.width + '×' + img.height + 'px';
+                        afterSize.textContent = '—';
+                        afterDim.textContent = '—';
+                        showToast('✅ 图片已上传，点击「开始压缩」');
+                        compressStatus.textContent = '已上传，等待压缩';
+                    };
+                    img.onerror = () => showToast('❌ 加载失败');
+                    img.src = dataURL;
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function clearCompressImage() {
+                compressOriginalImage = null;
+                compressOriginalDataURL = null;
+                compressResultDataURL = null;
+                compressInfo.style.display = 'none';
+                drawCompressScene(null);
+                compressStatus.textContent = '未上传';
+                showToast('已清除');
+                compressFileInput.value = '';
+            }
+
+            function doCompress() {
+                if (!compressOriginalImage) { showToast('请先上传图片'); return; }
+                const quality = parseInt(compressQuality.value, 10) / 100;
+                const scale = parseInt(compressScale.value, 10) / 100;
+
+                const img = compressOriginalImage;
+                const newW = Math.round(img.width * scale);
+                const newH = Math.round(img.height * scale);
+
+                const off = document.createElement('canvas');
+                off.width = newW;
+                off.height = newH;
+                const oc = off.getContext('2d');
+                oc.drawImage(img, 0, 0, newW, newH);
+
+                const mime = 'image/jpeg';
+                off.toBlob((blob) => {
+                    if (!blob) { showToast('❌ 压缩失败'); return; }
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const dataURL = e.target.result;
+                        compressResultDataURL = dataURL;
+                        // 显示压缩后信息
+                        const sizeKB = blob.size / 1024;
+                        afterSize.textContent = sizeKB.toFixed(2) + ' KB';
+                        afterDim.textContent = newW + '×' + newH + 'px';
+                        compressInfo.style.display = 'grid';
+                        // 更新预览
+                        const previewImg = new Image();
+                        previewImg.onload = () => {
+                            drawCompressScene(previewImg);
+                        };
+                        previewImg.src = dataURL;
+                        showToast(`✅ 压缩完成 (${sizeKB.toFixed(2)} KB)`);
+                        compressStatus.textContent = '已压缩';
+                    };
+                    reader.readAsDataURL(blob);
+                }, mime, quality);
+            }
+
+            function saveCompressToWarehouse() {
+                if (!compressResultDataURL) { showToast('请先压缩图片'); return; }
+                const items = getWarehouseItems();
+                items.push({ type: 'image', data: compressResultDataURL, size: 0, time: Date.now() });
+                saveWarehouseItems(items);
+                renderWarehouse();
+                showToast('📦 已存入仓库');
+            }
+
+            function initCompress() {
+                compressCanvas.width = 600;
+                compressCanvas.height = 600;
+                compressUploadBtn.addEventListener('click', () => compressFileInput.click());
+                compressFileInput.addEventListener('change', (e) => {
+                    if (e.target.files && e.target.files[0]) loadCompressImage(e.target.files[0]);
+                });
+                compressClearBtn.addEventListener('click', clearCompressImage);
+                compressQuality.addEventListener('input', () => {
+                    qualityDisplay.textContent = compressQuality.value;
+                });
+                compressScale.addEventListener('input', () => {
+                    scaleDisplay.textContent = compressScale.value;
+                });
+                compressBtn.addEventListener('click', doCompress);
+                compressSaveBtn.addEventListener('click', saveCompressToWarehouse);
+                drawCompressScene(null);
+            }
+
+            // ================================================================
+            // 证件照子标签切换
+            // ================================================================
+            function initIdphotoTabs() {
+                const tabs = document.querySelectorAll('.idphoto-tabs .tab-btn');
+                const panels = {
+                    crop: document.getElementById('idphoto-crop'),
+                    compress: document.getElementById('idphoto-compress'),
+                };
+                tabs.forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        tabs.forEach(t => t.classList.remove('active'));
+                        tab.classList.add('active');
+                        const sub = tab.dataset.sub;
+                        Object.keys(panels).forEach(k => {
+                            panels[k].classList.toggle('active', k === sub);
+                        });
+                        if (sub === 'crop') drawCropScene();
+                        if (sub === 'compress') {
+                            if (compressOriginalImage) drawCompressScene(compressOriginalImage);
+                        }
+                    });
+                });
+                // 默认激活裁剪
+                document.querySelector('.idphoto-tabs .tab-btn[data-sub="crop"]')?.click();
             }
 
             // ================================================================
             // 初始化
             // ================================================================
             initEmoji();
-            initIdphoto();
-            initGif();
+            initCrop();
+            initCompress();
             renderWarehouse();
+            // 默认激活证件照子标签 (在页面加载后)
+            setTimeout(initIdphotoTabs, 100);
 
             console.log('🌸 表情包证件照修改器已启动 | KIKI');
             console.log('🔑 密码: 1998 (搜索 CORRECT_PIN 修改)');
-            console.log('📌 GIF: 强制确认片段 → 1:1裁剪 → 文字 → 生成');
-            console.log('📌 证件照: 主预览区显示尺寸虚线框 · 竖版比例裁剪');
+            console.log('📌 证件照: 裁剪 + 压缩 两大模块');
 
         })();
     </script>
